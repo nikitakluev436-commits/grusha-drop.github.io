@@ -261,7 +261,7 @@ main{padding:28px 0 60px;}
   margin-top:2px;
 }
 
-/* ===================== ПРОКРУТКА (РУЛЕТКА) ===================== */
+/* ===================== ПРОКРУТКА (РУЛЕТКА) для кейсов ===================== */
 .roll-section{
   width:100%;
   display:none;
@@ -373,16 +373,109 @@ main{padding:28px 0 60px;}
 .up-empty{color:var(--muted); font-size:13px; padding:20px 0;}
 
 .up-middle{
-  background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:20px 16px;
-  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px;
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:20px 16px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:16px;
 }
-.chance-dial{text-align:center;}
-.chance-dial .num{font-size:36px; font-weight:800; color:var(--accent2);}
-.chance-dial .lbl{font-size:11px; color:var(--muted); letter-spacing:1px;}
+/* Контейнер для рулетки – со свечением */
+.upgrade-wheel-container{
+  width:100%;
+  max-width:340px;
+  margin:0 auto;
+  border-radius:50%;
+  box-shadow: 0 0 40px rgba(57, 255, 20, 0.15), 0 0 80px rgba(57, 255, 20, 0.05);
+}
+.upgrade-wheel-container canvas{
+  display:block;
+  width:100%;
+  aspect-ratio:1/1;
+  border-radius:50%;
+  background:#1c2540;
+}
+.upgrade-wheel-container{
+  position:relative;
+  transition: box-shadow .15s, background .15s;
+}
+.upgrade-wheel-container.wheel-win-active{
+  animation: wheelWinPulse 0.5s ease-in-out 4;
+}
+@keyframes wheelWinPulse{
+  0%{
+    box-shadow: 0 0 40px rgba(57,255,20,.15), 0 0 80px rgba(57,255,20,.05);
+  }
+  50%{
+    box-shadow: 0 0 60px 20px rgba(57,255,20,.9), 0 0 120px 40px rgba(57,255,20,.6);
+  }
+  100%{
+    box-shadow: 0 0 40px rgba(57,255,20,.15), 0 0 80px rgba(57,255,20,.05);
+  }
+}
+.upgrade-wheel-container.wheel-win-active canvas{
+  animation: wheelCanvasFlash 0.5s ease-in-out 4;
+}
+@keyframes wheelCanvasFlash{
+  0%, 100%{ filter: brightness(1) saturate(1); }
+  50%{ filter: brightness(1.6) saturate(1.6); }
+}
+.wheel-win-overlay{
+  position:absolute;
+  inset:0;
+  border-radius:50%;
+  background: radial-gradient(circle, #7dff5c 0%, #2be014 55%, #159108 100%);
+  opacity:0;
+  pointer-events:none;
+  z-index:4;
+}
+.upgrade-wheel-container.wheel-win-active .wheel-win-overlay{
+  opacity:1;
+  animation: wheelOverlayGlow 0.6s ease-in-out infinite;
+}
+@keyframes wheelOverlayGlow{
+  0%, 100%{ box-shadow: 0 0 40px 10px rgba(57,255,20,.9), 0 0 90px 20px rgba(57,255,20,.5); filter:brightness(1); }
+  50%{ box-shadow: 0 0 70px 25px rgba(57,255,20,1), 0 0 130px 40px rgba(57,255,20,.7); filter:brightness(1.3); }
+}
+.win-burst{
+  position:absolute;
+  top:50%; left:50%;
+  transform:translate(-50%,-50%) scale(.3);
+  font-size:38px;
+  font-weight:900;
+  letter-spacing:2px;
+  color:#ffffff;
+  text-shadow:0 2px 4px rgba(0,0,0,.85), 0 0 18px rgba(0,0,0,.6);
+  opacity:0;
+  pointer-events:none;
+  z-index:5;
+  white-space:nowrap;
+}
+.win-burst.show{
+  animation: winBurstPop 1.4s cubic-bezier(.2,.8,.3,1.2) forwards;
+}
+@keyframes winBurstPop{
+  0%{ opacity:0; transform:translate(-50%,-50%) scale(.2) rotate(-8deg); }
+  15%{ opacity:1; transform:translate(-50%,-50%) scale(1.25) rotate(3deg); }
+  30%{ transform:translate(-50%,-50%) scale(1) rotate(0deg); }
+  75%{ opacity:1; transform:translate(-50%,-50%) scale(1) rotate(0deg); }
+  100%{ opacity:0; transform:translate(-50%,-50%) scale(1.15) rotate(0deg); }
+}
+
 .exchange-btn{
   background:linear-gradient(180deg,var(--accent2),var(--accent));
-  border:none; color:#241000; font-weight:800; padding:14px 20px;
-  border-radius:10px; cursor:pointer; font-size:14px; width:100%;
+  border:none;
+  color:#241000;
+  font-weight:800;
+  padding:14px 20px;
+  border-radius:10px;
+  cursor:pointer;
+  font-size:14px;
+  width:100%;
+  max-width:280px;
   box-shadow:0 4px 0 #b04c1e;
 }
 .exchange-btn:active{transform:translateY(3px); box-shadow:0 1px 0 #b04c1e;}
@@ -395,7 +488,9 @@ main{padding:28px 0 60px;}
 .up-inv-col h4{font-size:13px; color:var(--muted); margin-bottom:10px; font-weight:600;}
 .up-inv-grid{
   display:grid; grid-template-columns:repeat(4,1fr); gap:8px; max-height:260px; overflow-y:auto;
+  scrollbar-width:none; -ms-overflow-style:none;
 }
+.up-inv-grid::-webkit-scrollbar{ width:0; height:0; display:none; }
 .up-inv-item{
   background:var(--panel2); border:1px solid var(--border); border-radius:8px;
   padding:6px; text-align:center; cursor:pointer;
@@ -412,7 +507,9 @@ main{padding:28px 0 60px;}
 .up-inv-item .price{font-size:9px; color:var(--gold);}
 .up-target-grid{
   display:grid; grid-template-columns:repeat(4,1fr); gap:8px; max-height:260px; overflow-y:auto;
+  scrollbar-width:none; -ms-overflow-style:none;
 }
+.up-target-grid::-webkit-scrollbar{ width:0; height:0; display:none; }
 .up-target-item{
   background:var(--panel2); border:1px solid var(--border); border-radius:8px;
   padding:6px; text-align:center; cursor:pointer;
@@ -720,7 +817,13 @@ footer{
         <div class="up-preview" id="upFromPreview"><div class="up-empty">Ничего не выбрано</div></div>
       </div>
       <div class="up-middle">
-        <div class="chance-dial"><div class="num" id="chanceNum">—</div><div class="lbl">ШАНС УСПЕХА</div></div>
+        <!-- Рулетка -->
+        <div class="upgrade-wheel-container" id="upgradeWheelContainer">
+          <canvas id="upgradeWheelCanvas" width="400" height="400"></canvas>
+          <div class="wheel-win-overlay"></div>
+          <div class="win-burst" id="winBurst">УСПЕХ!</div>
+        </div>
+        <!-- Кнопка под рулеткой -->
         <button class="exchange-btn" id="exchangeBtn" disabled>⬆️ ПРОКАЧАТЬ</button>
       </div>
       <div class="up-card">
@@ -728,16 +831,10 @@ footer{
         <div class="up-preview" id="upToPreview"><div class="up-empty">Ничего не выбрано</div></div>
       </div>
     </div>
-    <div class="roll-section" id="upgradeRollSection">
-      <div class="roll-viewport">
-        <div class="roll-pointer"></div>
-        <div class="roll-track" id="upgradeRollTrack"></div>
-      </div>
-    </div>
     <div class="up-result-bar"><div class="up-result" id="upResult">Выберите исходные и целевой предметы, затем нажмите «Прокачать».</div></div>
     <div class="up-inventory-area">
       <div class="up-inv-col">
-        <h4>🧰 ВАШ ИНВЕНТАРЬ (кликните для выбора/отмены)</h4>
+        <h4>🧰 ВАШ ИНВЕНТАРЬ (каждый экземпляр отдельно)</h4>
         <div class="up-inv-grid" id="inventoryGrid"></div>
       </div>
       <div class="up-inv-col">
@@ -822,7 +919,7 @@ footer{
 
 <script>
 /* =========================================================================
-   ГРУША-ДРОП – АПГРЕЙД С МНОЖЕСТВЕННЫМ ВЫБОРОМ (фикс целей по цене)
+   ГРУША-ДРОП – ФИНАЛ: РУЛЕТКА ВСЕГДА ВИДНА, ПРОЦЕНТ НА CANVAS, КНОПКА СНИЗУ
    ========================================================================= */
 
 /* ---------- 1. Данные о предметах и кейсах ---------- */
@@ -834,7 +931,6 @@ const RARITY_LABEL = {
 const RARITY_WEIGHT = { common:1, uncommon:2, rare:3, epic:4, legendary:5, mythical:6 };
 const BASE_SELL_PRICES = { common:10, uncommon:25, rare:50, epic:100, legendary:250, mythical:500 };
 
-// Индивидуальные цены
 const ITEM_PRICES = {
   18: 50, 19: 50, 20: 100, 21: 100, 22: 200, 23: 200, 24: 400, 25: 400, 26: 800, 27: 1600,
   28: 30, 29: 30, 30: 60, 31: 60, 32: 120, 33: 120, 34: 240, 35: 240, 36: 480, 37: 960,
@@ -965,12 +1061,30 @@ const CASES = [
       {id:53, chance:15}, {id:54, chance:15}, {id:55, chance:15},
       {id:56, chance:15}, {id:57, chance:20}, {id:58, chance:20}
     ]
+  },
+  {
+    id: 6,
+    name: "Дорогой",
+    cost: 3000,
+    img: "golda.jpg",
+    sound: "soundg",
+    items: [
+      {id:10, chance:11},
+      {id:27, chance:11},
+      {id:37, chance:11},
+      {id:47, chance:12},
+      {id:58, chance:11},
+      {id:38, chance:11},
+      {id:39, chance:11},
+      {id:40, chance:11},
+      {id:41, chance:11}
+    ]
   }
 ];
 
 /* ---------- 2. Состояние ---------- */
 let balance = 100;
-let inventory = {};
+let inventory = [];
 let stats = {
   totalCasesOpened: 0,
   bestDropId: null,
@@ -978,15 +1092,38 @@ let stats = {
   totalCoinsSpent: 0,
   totalCoinsEarned: 0,
   lastDailyBonus: null,
-  usedCoupons: []
+  usedCoupons: [],
+  couponGoldaUses: 0
 };
 let selectedCaseId = 1;
 let username = "user";
 let pendingItem = null;
-
-// Для апгрейда
-let selectedFromIds = [];
+let selectedFromUniqueIds = [];
 let selectedToId = null;
+
+/* ---------- 3. Вспомогательные функции ---------- */
+function addItemInstance(itemId) {
+  const uniqueId = Date.now() + Math.random() * 100000 + '_' + itemId;
+  inventory.push({ uniqueId, itemId });
+}
+function removeItemInstance(uniqueId) {
+  const idx = inventory.findIndex(it => it.uniqueId === uniqueId);
+  if (idx !== -1) inventory.splice(idx, 1);
+}
+function getItemInstances(itemId) {
+  return inventory.filter(it => it.itemId === itemId);
+}
+function getCount(itemId) {
+  return getItemInstances(itemId).length;
+}
+function getAllItemsGrouped() {
+  const groups = {};
+  for (const inst of inventory) {
+    if (!groups[inst.itemId]) groups[inst.itemId] = [];
+    groups[inst.itemId].push(inst.uniqueId);
+  }
+  return groups;
+}
 
 function loadGameData() {
   try {
@@ -994,19 +1131,33 @@ function loadGameData() {
     if (saved) {
       const data = JSON.parse(saved);
       balance = data.balance ?? 100;
-      inventory = data.inventory ?? {};
-      stats = data.stats ?? stats;
+      if (data.inventory && !Array.isArray(data.inventory)) {
+        const oldInv = data.inventory;
+        inventory = [];
+        for (const [id, count] of Object.entries(oldInv)) {
+          for (let i = 0; i < count; i++) {
+            addItemInstance(parseInt(id));
+          }
+        }
+      } else if (Array.isArray(data.inventory)) {
+        inventory = data.inventory;
+      } else {
+        inventory = [];
+      }
+      stats = data.stats || stats;
       selectedCaseId = data.selectedCaseId ?? 1;
       username = data.username ?? "user";
     }
   } catch (e) {}
 }
 function saveGameData() {
-  localStorage.setItem('grushaDropData', JSON.stringify({ balance, inventory, stats, selectedCaseId, username }));
-}
-
-function getCurrentCase() {
-  return CASES.find(c => c.id === selectedCaseId);
+  localStorage.setItem('grushaDropData', JSON.stringify({
+    balance,
+    inventory,
+    stats,
+    selectedCaseId,
+    username
+  }));
 }
 
 function byId(list, id){ return list.find(i => i.id === id); }
@@ -1015,14 +1166,13 @@ function rarityBgClass(r){ return "bg-" + r; }
 function fmtChance(c){ return (c % 1 === 0 ? c : c.toFixed(1)) + "%"; }
 function getRarityIndex(r){ return RARITY_ORDER.indexOf(r); }
 function getRarityWeight(r){ return RARITY_WEIGHT[r] || 0; }
-
 function imgOrPlaceholder(item, cls){
   return `<img src="${item.img}" class="${cls}" onerror="this.outerHTML='<div class=&quot;${cls==='mimg'?'mimg':'ph'}&quot;>📸</div>'">`;
 }
-
 function updateBalanceUI(){ document.getElementById('balance').textContent = balance; }
+function getCurrentCase() { return CASES.find(c => c.id === selectedCaseId); }
 
-/* ---------- 3. Ежедневный бонус ---------- */
+/* ---------- 4. Ежедневный бонус и купоны ---------- */
 function checkDailyBonus() {
   const today = new Date().toISOString().slice(0,10);
   if (stats.lastDailyBonus !== today) {
@@ -1047,23 +1197,40 @@ function checkDailyBonus() {
   }
 }
 
-/* ---------- 4. Промокоды ---------- */
 const COUPONS = {
   'mishel': 9999,
   'pozdnyak': 500,
-  'bilet-na-vertoletik': 1488
+  'bilet-na-vertoletik': 1488,
+  'chiter': 999999,
+  'golda': 1500
 };
 function activateCoupon() {
   const input = document.getElementById('couponInput');
   const msg = document.getElementById('couponMessage');
   const code = input.value.trim().toLowerCase();
   if (!code) { msg.textContent = '❌ Введите промокод'; msg.style.color = '#ff6b6b'; return; }
-  if (stats.usedCoupons.includes(code)) { msg.textContent = '❌ Этот промокод уже использован'; msg.style.color = '#ff6b6b'; return; }
+  if (stats.usedCoupons.includes(code) && code !== 'golda') {
+    msg.textContent = '❌ Этот промокод уже использован';
+    msg.style.color = '#ff6b6b';
+    return;
+  }
+  if (code === 'golda') {
+    if (stats.couponGoldaUses >= 3) {
+      msg.textContent = '❌ Лимит использований golda (3) исчерпан';
+      msg.style.color = '#ff6b6b';
+      return;
+    }
+  }
   if (!(code in COUPONS)) { msg.textContent = '❌ Неверный промокод'; msg.style.color = '#ff6b6b'; return; }
   const reward = COUPONS[code];
   balance += reward;
   stats.totalCoinsEarned += reward;
-  stats.usedCoupons.push(code);
+  if (code === 'golda') {
+    stats.couponGoldaUses += 1;
+    if (stats.couponGoldaUses >= 3) stats.usedCoupons.push('golda');
+  } else {
+    stats.usedCoupons.push(code);
+  }
   saveGameData();
   updateBalanceUI();
   updateProfileStats();
@@ -1072,7 +1239,7 @@ function activateCoupon() {
   input.value = '';
 }
 
-/* ---------- 5. Рендер кейсов ---------- */
+/* ---------- 5. Рендер кейсов и переключение ---------- */
 function renderCasesGrid() {
   const grid = document.getElementById('casesGridContainer');
   grid.innerHTML = CASES.map(c => `
@@ -1091,7 +1258,6 @@ function renderCasesGrid() {
   });
 }
 
-/* ---------- 6. Переключение режимов ---------- */
 const gridContainer = document.getElementById('casesGridContainer');
 const detailContainer = document.getElementById('caseDetailContainer');
 
@@ -1112,13 +1278,11 @@ function showDetailView() {
   renderDetailView();
 }
 
-/* ---------- 7. Детальный режим (с ценами в содержимом) ---------- */
 function renderDetailView() {
   const c = getCurrentCase();
   if (!c) return;
   document.getElementById('detailCaseName').textContent = c.name;
   document.getElementById('detailCaseCost').textContent = c.cost + ' 🪙';
-
   const oddsTable = document.getElementById('detailOddsTable');
   oddsTable.innerHTML = c.items.map(({id, chance}) => {
     const item = byId(ALL_ITEMS, id);
@@ -1129,7 +1293,6 @@ function renderDetailView() {
     </div>`;
   }).join('');
   oddsTable.classList.remove('show');
-
   const grid = document.getElementById('detailContentsGrid');
   grid.innerHTML = c.items.map(({id, chance}) => {
     const item = byId(ALL_ITEMS, id);
@@ -1140,13 +1303,12 @@ function renderDetailView() {
       <div class="inv-price">${price} 🪙</div>
     </div>`;
   }).join('');
-
   document.getElementById('detailRollSection').classList.remove('show');
   document.getElementById('detailOpenBtn').disabled = false;
   document.getElementById('detailCaseAction').style.display = 'flex';
 }
 
-/* ---------- 8. Открытие кейса ---------- */
+/* ---------- 6. Открытие кейса ---------- */
 function weightedRandomItem(caseItems) {
   const total = caseItems.reduce((s, it) => s + it.chance, 0);
   let r = Math.random() * total;
@@ -1177,7 +1339,10 @@ detailOpenBtn.onclick = function() {
   stats.totalCoinsSpent += c.cost;
   stats.totalCasesOpened += 1;
   const won = weightedRandomItem(c.items);
-  if (!stats.bestDropId || getRarityWeight(won.rarity) > getRarityWeight(byId(ALL_ITEMS, stats.bestDropId).rarity)) {
+  const currentPrice = getItemPrice(won);
+  const bestItem = stats.bestDropId ? byId(ALL_ITEMS, stats.bestDropId) : null;
+  const bestPrice = bestItem ? getItemPrice(bestItem) : -1;
+  if (!stats.bestDropId || currentPrice > bestPrice) {
     stats.bestDropId = won.id;
   }
   saveGameData();
@@ -1219,9 +1384,9 @@ function buildDetailRollStrip(won, soundId) {
   const viewportEl = document.querySelector('.roll-viewport');
   const viewportWidth = viewportEl.clientWidth;
   const finalOffset = (REEL_LEN - 0.5) * itemWidth - viewportWidth / 2;
-  const ROLL_DURATION = 7;
+  const ROLL_DURATION = 4;
   requestAnimationFrame(() => {
-    track.style.transition = `transform ${ROLL_DURATION}s cubic-bezier(0.09, 0.9, 0.11, 1)`;
+    track.style.transition = `transform ${ROLL_DURATION}s cubic-bezier(0.22, 0.61, 0.36, 1)`;
     track.style.transform = `translateX(-${finalOffset}px)`;
   });
   setTimeout(() => {
@@ -1248,10 +1413,9 @@ function showResultModal(won) {
   document.getElementById('modalOverlay').classList.add('show');
   launchConfetti();
 }
-// Обработчики модалки
 document.getElementById('claimBtn').onclick = function() {
   if (!pendingItem) return;
-  inventory[pendingItem.id] = (inventory[pendingItem.id] || 0) + 1;
+  addItemInstance(pendingItem.id);
   saveGameData();
   closeModalAndCleanup();
 };
@@ -1279,12 +1443,11 @@ function closeModalAndCleanup() {
   if (document.getElementById('panel-profile').classList.contains('active')) updateProfileStats();
 }
 
-/* ---------- 9. Кнопка "Назад" ---------- */
 document.getElementById('backToCasesBtn').onclick = function() {
   showSelectionView();
 };
 
-/* ---------- 10. Эффекты ---------- */
+/* ---------- 7. Эффекты ---------- */
 function playDropSound(soundId) {
   const el = document.getElementById(soundId);
   if(el) { el.currentTime = 0; el.play().catch(()=>{}); }
@@ -1324,57 +1487,56 @@ function launchConfetti(){
   }
 }
 
-/* ---------- 11. Профиль + Инвентарь ---------- */
+/* ---------- 8. Профиль + Инвентарь ---------- */
 function updateProfileStats(){
   document.getElementById('statBalance').textContent = balance;
   const best = stats.bestDropId ? byId(ALL_ITEMS, stats.bestDropId) : null;
   const bestEl = document.getElementById('statBestDrop');
   if(best){
-    bestEl.textContent = `${best.name} (${RARITY_LABEL[best.rarity]})`;
+    bestEl.textContent = `${best.name} (${RARITY_LABEL[best.rarity]}) — ${getItemPrice(best)} 🪙`;
     bestEl.style.color = getComputedStyle(document.documentElement).getPropertyValue(`--${best.rarity}`).trim();
   } else {
     bestEl.textContent = '—';
     bestEl.style.color = 'var(--muted)';
   }
   document.getElementById('statCases').textContent = stats.totalCasesOpened;
-  const totalItems = Object.values(inventory).reduce((a,b) => a+b, 0);
-  document.getElementById('statItems').textContent = totalItems;
+  document.getElementById('statItems').textContent = inventory.length;
   document.getElementById('statUpgrades').textContent = stats.totalUpgradeSuccess;
   document.getElementById('statSpent').textContent = stats.totalCoinsSpent;
   document.getElementById('statEarned').textContent = stats.totalCoinsEarned;
   checkDailyBonus();
-
   document.getElementById('usernameDisplay').textContent = username;
   renderProfileInventory();
 }
 
 function renderProfileInventory() {
   const container = document.getElementById('profileInventoryList');
-  const entries = Object.entries(inventory).filter(([id, qty]) => qty > 0);
-  if (entries.length === 0) {
+  if (inventory.length === 0) {
     container.innerHTML = '<div class="inv-empty">Инвентарь пуст</div>';
     return;
   }
-  container.innerHTML = entries.map(([id, qty]) => {
-    const item = byId(ALL_ITEMS, Number(id));
+  const groups = getAllItemsGrouped();
+  container.innerHTML = Object.entries(groups).map(([itemId, uniqueIds]) => {
+    const item = byId(ALL_ITEMS, parseInt(itemId));
     if (!item) return '';
     const price = getItemPrice(item);
+    const count = uniqueIds.length;
     return `<div class="inv-item">
       <div class="inv-img">${imgOrPlaceholder(item, 'inv-img')}</div>
       <div class="inv-name ${rarityColorClass(item.rarity)}">${item.name}</div>
-      <div class="inv-qty">×${qty}</div>
+      <div class="inv-qty">×${count}</div>
       <div class="inv-price">Цена: ${price} 🪙</div>
-      <button class="sell-btn" data-id="${item.id}" data-price="${price}">Продать 1</button>
+      <button class="sell-btn" data-unique="${uniqueIds[0]}" data-price="${price}">Продать 1</button>
     </div>`;
   }).join('');
 
   container.querySelectorAll('.sell-btn').forEach(btn => {
     btn.addEventListener('click', function() {
-      const id = Number(this.dataset.id);
+      const uniqueId = this.dataset.unique;
       const price = Number(this.dataset.price);
-      if (!inventory[id] || inventory[id] <= 0) return;
-      inventory[id] -= 1;
-      if (inventory[id] <= 0) delete inventory[id];
+      const idx = inventory.findIndex(it => it.uniqueId === uniqueId);
+      if (idx === -1) return;
+      inventory.splice(idx, 1);
       balance += price;
       stats.totalCoinsEarned += price;
       saveGameData();
@@ -1389,25 +1551,20 @@ function renderProfileInventory() {
   });
 }
 
-/* ---------- 12. Продажа всего ---------- */
 document.getElementById('sellAllBtn').addEventListener('click', function() {
-  const entries = Object.entries(inventory);
-  if (entries.length === 0) {
+  if (inventory.length === 0) {
     alert('Инвентарь пуст!');
     return;
   }
   if (!confirm('Продать все предметы?')) return;
   let total = 0;
-  for (const [id, qty] of entries) {
-    const item = byId(ALL_ITEMS, Number(id));
-    if (item) {
-      const price = getItemPrice(item);
-      total += price * qty;
-    }
+  for (const inst of inventory) {
+    const item = byId(ALL_ITEMS, inst.itemId);
+    if (item) total += getItemPrice(item);
   }
-  inventory = {};
   balance += total;
   stats.totalCoinsEarned += total;
+  inventory = [];
   saveGameData();
   updateBalanceUI();
   updateProfileStats();
@@ -1418,7 +1575,6 @@ document.getElementById('sellAllBtn').addEventListener('click', function() {
   setTimeout(() => { msg.textContent = ''; }, 4000);
 });
 
-/* ---------- 13. Смена юзернейма ---------- */
 document.getElementById('usernameSaveBtn').addEventListener('click', function() {
   const input = document.getElementById('usernameInput');
   const newName = input.value.trim();
@@ -1436,7 +1592,6 @@ document.getElementById('usernameSaveBtn').addEventListener('click', function() 
   setTimeout(() => { msg.textContent = ''; }, 3000);
 });
 
-/* ---------- 14. Аватарка ---------- */
 let avatarDataURL = localStorage.getItem('avatarDataURL') || null;
 const avatarWrap = document.getElementById('avatarWrap');
 const avatarImg = document.getElementById('avatarImg');
@@ -1463,23 +1618,216 @@ avatarInput.addEventListener('change', (e) => {
   reader.readAsDataURL(file);
 });
 
-/* ---------- 15. Апгрейд (новая логика – цели по цене) ---------- */
+/* ---------- 9. Апгрейд с рулеткой на canvas и процентом внутри ---------- */
+const wheelCanvas = document.getElementById('upgradeWheelCanvas');
+const ctx = wheelCanvas.getContext('2d');
+const W = 400, H = 400;
+const cx = W/2, cy = H/2;
+const radius = 160;
+const arcWidth = 28;
+let wheelArrowAngle = 0;
+let isWheelSpinning = false;
 
-function calculateChance(fromIds, toId) {
-  if (!toId || fromIds.length === 0) return 0;
+function drawUpgradeWheel(chance, angleDeg) {
+  ctx.clearRect(0, 0, W, H);
+  const angleSuccess = (chance / 100) * 2 * Math.PI;
+
+  // внешний обод
+  ctx.beginPath();
+  ctx.arc(cx, cy, radius + 6, 0, 2 * Math.PI);
+  ctx.fillStyle = '#1c2540';
+  ctx.fill();
+  ctx.shadowBlur = 0;
+
+  ctx.beginPath();
+  ctx.arc(cx, cy, radius + 4, 0, 2 * Math.PI);
+  ctx.strokeStyle = '#2a3455';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  for (let i = 0; i < 12; i++) {
+    const a = (i / 12) * 2 * Math.PI - Math.PI/2;
+    const r1 = radius + 6;
+    const r2 = radius + 14;
+    ctx.beginPath();
+    ctx.moveTo(cx + r1 * Math.cos(a), cy + r1 * Math.sin(a));
+    ctx.lineTo(cx + r2 * Math.cos(a), cy + r2 * Math.sin(a));
+    ctx.strokeStyle = '#2a3455';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  }
+
+  // зелёный
+  ctx.beginPath();
+  ctx.arc(cx, cy, radius, -Math.PI/2, -Math.PI/2 + angleSuccess);
+  ctx.arc(cx, cy, radius - arcWidth, -Math.PI/2 + angleSuccess, -Math.PI/2, true);
+  ctx.closePath();
+  ctx.fillStyle = '#39ff14';
+  ctx.shadowColor = '#39ff14';
+  ctx.shadowBlur = 16;
+  ctx.fill();
+  ctx.shadowBlur = 0;
+  ctx.strokeStyle = '#1c2540';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // красный
+  ctx.beginPath();
+  ctx.arc(cx, cy, radius, -Math.PI/2 + angleSuccess, -Math.PI/2 + 2*Math.PI);
+  ctx.arc(cx, cy, radius - arcWidth, -Math.PI/2 + 2*Math.PI, -Math.PI/2 + angleSuccess, true);
+  ctx.closePath();
+  ctx.fillStyle = '#ff3131';
+  ctx.shadowColor = '#ff3131';
+  ctx.shadowBlur = 16;
+  ctx.fill();
+  ctx.shadowBlur = 0;
+  ctx.strokeStyle = '#1c2540';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // внутренний круг
+  ctx.beginPath();
+  ctx.arc(cx, cy, radius - arcWidth - 4, 0, 2 * Math.PI);
+  ctx.fillStyle = '#0e1320';
+  ctx.fill();
+  ctx.strokeStyle = '#2a3455';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.arc(cx, cy, 10, 0, 2 * Math.PI);
+  ctx.fillStyle = '#2a3455';
+  ctx.fill();
+  ctx.strokeStyle = '#1c2540';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // стрелка
+  const angleRad = angleDeg * Math.PI / 180;
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(angleRad);
+  ctx.shadowBlur = 0;
+  ctx.beginPath();
+  ctx.moveTo(0, -radius - 18);
+  ctx.lineTo(-10, -radius - 2);
+  ctx.lineTo(10, -radius - 2);
+  ctx.closePath();
+  ctx.fillStyle = '#ffa500';
+  ctx.shadowColor = '#ffa500';
+  ctx.shadowBlur = 20;
+  ctx.fill();
+  ctx.restore();
+
+  // Текст с процентом внутри
+  ctx.save();
+  ctx.shadowBlur = 0;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.font = 'bold 40px Segoe UI, Arial, sans-serif';
+  ctx.fillStyle = '#39ff14';
+  ctx.shadowColor = '#39ff14';
+  ctx.shadowBlur = 20;
+  ctx.fillText(Math.round(chance) + '%', cx, cy - 10);
+  ctx.shadowBlur = 0;
+  ctx.font = '18px Segoe UI, Arial, sans-serif';
+  ctx.fillStyle = '#8a92b2';
+  ctx.fillText('ШАНС УСПЕХА', cx, cy + 30);
+  ctx.restore();
+}
+
+function spinUpgradeWheel(chance, onComplete) {
+  if (isWheelSpinning) return;
+  isWheelSpinning = true;
+
+  const angleSuccessDeg = (chance / 100) * 360;
+  const rand = Math.random() * 100;
+  const isSuccess = rand < chance;
+  let targetAngleDeg = isSuccess
+    ? Math.random() * angleSuccessDeg
+    : angleSuccessDeg + Math.random() * (360 - angleSuccessDeg);
+
+  let currentNorm = wheelArrowAngle % 360;
+  if (currentNorm < 0) currentNorm += 360;
+  let targetNorm = targetAngleDeg % 360;
+  if (targetNorm < 0) targetNorm += 360;
+  let diff = (targetNorm - currentNorm + 360) % 360;
+  const extraSpins = 6 + Math.floor(Math.random() * 7);
+  const totalDelta = diff + extraSpins * 360;
+  const targetAngle = wheelArrowAngle + totalDelta;
+  const startAngle = wheelArrowAngle;
+  const duration = 3500 + Math.random() * 2000;
+  const startTime = performance.now();
+
+  const ruletka = document.getElementById('ruletkaSound');
+  ruletka.currentTime = 0;
+  ruletka.play().catch(() => {});
+
+  function animate(now) {
+    const elapsed = now - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const ease = 1 - Math.pow(1 - progress, 3);
+    const current = startAngle + (targetAngle - startAngle) * ease;
+    wheelArrowAngle = current;
+    drawUpgradeWheel(chance, current);
+
+    if (progress < 1) {
+      requestAnimationFrame(animate);
+    } else {
+      wheelArrowAngle = targetAngle;
+      drawUpgradeWheel(chance, targetAngle);
+      ruletka.pause();
+      ruletka.currentTime = 0;
+      isWheelSpinning = false;
+      const finalAngle = ((targetAngle % 360) + 360) % 360;
+      const inGreen = finalAngle < angleSuccessDeg;
+      if (inGreen) {
+        playWheelWinEffect();
+      }
+      onComplete(inGreen);
+    }
+  }
+  requestAnimationFrame(animate);
+}
+
+function playWheelWinEffect() {
+  const container = document.getElementById('upgradeWheelContainer');
+  const burst = document.getElementById('winBurst');
+  const sound = document.getElementById('dropSound');
+
+  if (sound) {
+    sound.currentTime = 0;
+    sound.play().catch(() => {});
+  }
+
+  if (container) {
+    container.classList.add('wheel-win-active');
+    setTimeout(() => container.classList.remove('wheel-win-active'), 2000);
+  }
+
+  if (burst) {
+    burst.classList.remove('show');
+    void burst.offsetWidth;
+    burst.classList.add('show');
+  }
+}
+
+function calculateChance(fromUniqueIds, toId) {
+  if (!toId || fromUniqueIds.length === 0) return 0;
   const to = byId(ALL_ITEMS, toId);
   if (!to) return 0;
   const toPrice = getItemPrice(to);
   if (toPrice <= 0) return 0;
   let totalFromPrice = 0;
-  for (const id of fromIds) {
-    const item = byId(ALL_ITEMS, id);
+  for (const uid of fromUniqueIds) {
+    const inst = inventory.find(it => it.uniqueId === uid);
+    if (!inst) continue;
+    const item = byId(ALL_ITEMS, inst.itemId);
     if (item) totalFromPrice += getItemPrice(item);
   }
   if (totalFromPrice <= 0) return 0;
   let chance = (totalFromPrice / toPrice) * 100;
-  // небольшой бонус за количество (до 1.3x)
-  const countBonus = Math.min(1.3, 1 + (fromIds.length - 1) * 0.03);
+  const countBonus = Math.min(1.3, 1 + (fromUniqueIds.length - 1) * 0.03);
   chance = chance * countBonus;
   return Math.round(Math.max(5, Math.min(95, chance)));
 }
@@ -1488,25 +1836,23 @@ function renderUpgradeTab(){
   renderInventoryUpgrade();
   renderTargets();
   updatePreview();
-  updateChanceDisplay();
 }
 
 function renderInventoryUpgrade(){
   const grid = document.getElementById('inventoryGrid');
-  const entries = Object.entries(inventory).filter(([id, qty]) => qty > 0);
-  if(entries.length === 0){
+  if (inventory.length === 0) {
     grid.innerHTML = '<div class="up-empty" style="grid-column:1/-1;">Инвентарь пуст</div>';
     return;
   }
-  grid.innerHTML = entries.map(([id, qty]) => {
-    const item = byId(ALL_ITEMS, Number(id));
-    if(!item) return '';
-    const active = selectedFromIds.includes(item.id) ? 'active' : '';
+  grid.innerHTML = inventory.map(inst => {
+    const item = byId(ALL_ITEMS, inst.itemId);
+    if (!item) return '';
+    const active = selectedFromUniqueIds.includes(inst.uniqueId) ? 'active' : '';
     const price = getItemPrice(item);
-    return `<div class="up-inv-item ${active}" data-id="${item.id}" onclick="toggleFrom(${item.id})">
+    return `<div class="up-inv-item ${active}" data-unique="${inst.uniqueId}" onclick="toggleFromUnique('${inst.uniqueId}')">
       ${imgOrPlaceholder(item,'ph')}
       <div class="n ${rarityColorClass(item.rarity)}">${item.name}</div>
-      <div class="qty">×${qty}</div>
+      <div class="qty">×1</div>
       <div class="price">${price} 🪙</div>
     </div>`;
   }).join('');
@@ -1514,23 +1860,22 @@ function renderInventoryUpgrade(){
 
 function renderTargets(){
   const grid = document.getElementById('targetGrid');
-  if(selectedFromIds.length === 0){
+  if (selectedFromUniqueIds.length === 0) {
     grid.innerHTML = '<div class="up-empty" style="grid-column:1/-1;">Сначала выберите исходные предметы</div>';
     return;
   }
-  // Вычисляем общую цену исходных
   let totalFromPrice = 0;
-  for (const id of selectedFromIds) {
-    const item = byId(ALL_ITEMS, id);
+  for (const uid of selectedFromUniqueIds) {
+    const inst = inventory.find(it => it.uniqueId === uid);
+    if (!inst) continue;
+    const item = byId(ALL_ITEMS, inst.itemId);
     if (item) totalFromPrice += getItemPrice(item);
   }
-  // Фильтруем предметы, цена которых > totalFromPrice
   const targets = ALL_ITEMS.filter(it => getItemPrice(it) > totalFromPrice);
   if(targets.length === 0){
     grid.innerHTML = '<div class="up-empty" style="grid-column:1/-1;">Нет предметов дороже суммы исходных</div>';
     return;
   }
-  // Сортируем по убыванию цены
   targets.sort((a,b) => getItemPrice(b) - getItemPrice(a));
   grid.innerHTML = targets.map(item => {
     const active = (item.id === selectedToId) ? 'active' : '';
@@ -1538,25 +1883,26 @@ function renderTargets(){
     return `<div class="up-target-item ${active}" data-id="${item.id}" onclick="selectTo(${item.id})">
       ${imgOrPlaceholder(item,'ph')}
       <div class="n ${rarityColorClass(item.rarity)}">${item.name}</div>
-      <div class="qty">(есть: ${inventory[item.id]||0})</div>
+      <div class="qty">(есть: ${getCount(item.id)})</div>
       <div class="price">${price} 🪙</div>
     </div>`;
   }).join('');
 }
 
-function toggleFrom(id) {
-  const idx = selectedFromIds.indexOf(id);
+window.toggleFromUnique = function(uniqueId) {
+  const idx = selectedFromUniqueIds.indexOf(uniqueId);
   if (idx !== -1) {
-    selectedFromIds.splice(idx, 1);
+    selectedFromUniqueIds.splice(idx, 1);
   } else {
-    if ((inventory[id] || 0) > 0) {
-      selectedFromIds.push(id);
+    if (inventory.some(it => it.uniqueId === uniqueId)) {
+      selectedFromUniqueIds.push(uniqueId);
     }
   }
-  // Если выбранная цель теперь не дороже суммы – сбросить
   if (selectedToId) {
-    const totalFromPrice = selectedFromIds.reduce((sum, fid) => {
-      const item = byId(ALL_ITEMS, fid);
+    const totalFromPrice = selectedFromUniqueIds.reduce((sum, uid) => {
+      const inst = inventory.find(it => it.uniqueId === uid);
+      if (!inst) return sum;
+      const item = byId(ALL_ITEMS, inst.itemId);
       return sum + (item ? getItemPrice(item) : 0);
     }, 0);
     const to = byId(ALL_ITEMS, selectedToId);
@@ -1565,16 +1911,18 @@ function toggleFrom(id) {
     }
   }
   renderUpgradeTab();
-}
+};
 
-function selectTo(id) {
+window.selectTo = function(id) {
   if (selectedToId === id) {
     selectedToId = null;
   } else {
     const to = byId(ALL_ITEMS, id);
     if (!to) return;
-    const totalFromPrice = selectedFromIds.reduce((sum, fid) => {
-      const item = byId(ALL_ITEMS, fid);
+    const totalFromPrice = selectedFromUniqueIds.reduce((sum, uid) => {
+      const inst = inventory.find(it => it.uniqueId === uid);
+      if (!inst) return sum;
+      const item = byId(ALL_ITEMS, inst.itemId);
       return sum + (item ? getItemPrice(item) : 0);
     }, 0);
     if (getItemPrice(to) > totalFromPrice) {
@@ -1584,20 +1932,22 @@ function selectTo(id) {
     }
   }
   renderUpgradeTab();
-}
+};
 
 function updatePreview(){
   const fromPreview = document.getElementById('upFromPreview');
   const toPreview = document.getElementById('upToPreview');
   const btn = document.getElementById('exchangeBtn');
 
-  if (selectedFromIds.length === 0) {
+  if (selectedFromUniqueIds.length === 0) {
     fromPreview.innerHTML = '<div class="up-empty">Ничего не выбрано</div>';
   } else {
     let html = '';
     let totalPrice = 0;
-    for (const id of selectedFromIds) {
-      const item = byId(ALL_ITEMS, id);
+    for (const uid of selectedFromUniqueIds) {
+      const inst = inventory.find(it => it.uniqueId === uid);
+      if (!inst) continue;
+      const item = byId(ALL_ITEMS, inst.itemId);
       if (item) {
         const price = getItemPrice(item);
         totalPrice += price;
@@ -1608,7 +1958,7 @@ function updatePreview(){
         </div>`;
       }
     }
-    html += `<div class="up-total">Всего: ${selectedFromIds.length} шт. | Сумма: ${totalPrice} 🪙</div>`;
+    html += `<div class="up-total">Всего: ${selectedFromUniqueIds.length} шт. | Сумма: ${totalPrice} 🪙</div>`;
     fromPreview.innerHTML = html;
   }
 
@@ -1618,112 +1968,73 @@ function updatePreview(){
       const price = getItemPrice(to);
       toPreview.innerHTML = `${imgOrPlaceholder(to,'ph')}
         <div class="pn ${rarityColorClass(to.rarity)}">${to.name}</div>
-        <div class="pq">Уже есть: ${inventory[to.id]||0} шт.</div>
+        <div class="pq">Уже есть: ${getCount(to.id)} шт.</div>
         <div class="price">Цена: ${price} 🪙</div>`;
     }
   } else {
     toPreview.innerHTML = '<div class="up-empty">Ничего не выбрано</div>';
   }
 
-  // Кнопка активна, если выбраны исходные и цель, и все исходные есть в наличии
-  const canUpgrade = selectedFromIds.length > 0 && selectedToId !== null &&
-    selectedFromIds.every(id => (inventory[id]||0) > 0);
+  const canUpgrade = selectedFromUniqueIds.length > 0 && selectedToId !== null &&
+    selectedFromUniqueIds.every(uid => inventory.some(it => it.uniqueId === uid));
   btn.disabled = !canUpgrade;
   if (canUpgrade) {
-    const chance = calculateChance(selectedFromIds, selectedToId);
-    document.getElementById('chanceNum').textContent = chance + '%';
+    const chance = calculateChance(selectedFromUniqueIds, selectedToId);
+    drawUpgradeWheel(chance, 0);
   } else {
-    document.getElementById('chanceNum').textContent = '—';
+    drawUpgradeWheel(0, 0);
   }
-}
-
-function updateChanceDisplay() {
-  // обновляется в updatePreview
 }
 
 document.getElementById('exchangeBtn').onclick = function(){
-  if (selectedFromIds.length === 0 || !selectedToId) return;
+  if (selectedFromUniqueIds.length === 0 || !selectedToId) return;
   const to = byId(ALL_ITEMS, selectedToId);
   if (!to) return;
-  for (const id of selectedFromIds) {
-    if ((inventory[id] || 0) < 1) {
-      alert('Не хватает предметов!');
+  for (const uid of selectedFromUniqueIds) {
+    if (!inventory.some(it => it.uniqueId === uid)) {
+      alert('Один из выбранных предметов уже отсутствует!');
       return;
     }
   }
-  const chance = calculateChance(selectedFromIds, selectedToId);
-  const success = Math.random() * 100 < chance;
+  const chance = calculateChance(selectedFromUniqueIds, selectedToId);
 
-  // Списываем исходные
-  for (const id of selectedFromIds) {
-    inventory[id] = (inventory[id] || 0) - 1;
-    if (inventory[id] <= 0) delete inventory[id];
-  }
-  if (success) {
-    inventory[to.id] = (inventory[to.id] || 0) + 1;
-    stats.totalUpgradeSuccess += 1;
-  }
-  saveGameData();
   this.disabled = true;
   document.getElementById('upResult').textContent = 'Крутим рулетку…';
   document.getElementById('upResult').className = 'up-result';
-  const fromCopy = [...selectedFromIds];
-  const toCopy = to;
-  selectedFromIds = [];
+
+  const fromCopy = [...selectedFromUniqueIds];
+  for (const uid of selectedFromUniqueIds) {
+    const idx = inventory.findIndex(it => it.uniqueId === uid);
+    if (idx !== -1) inventory.splice(idx, 1);
+  }
+  selectedFromUniqueIds = [];
   selectedToId = null;
-  runUpgradeRoll(success, toCopy, () => {
-    const resultEl = document.getElementById('upResult');
-    if(success){
-      resultEl.textContent = `✅ Успех! Вы получили ${toCopy.name}!`;
-      resultEl.className = 'up-result success';
+
+  spinUpgradeWheel(chance, (success) => {
+    if (success) {
+      addItemInstance(to.id);
+      stats.totalUpgradeSuccess += 1;
+      document.getElementById('upResult').textContent = `✅ Успех! Вы получили ${to.name}!`;
+      document.getElementById('upResult').className = 'up-result success';
       launchConfetti();
+      setTimeout(() => {
+        saveGameData();
+        renderUpgradeTab();
+        this.disabled = false;
+        if (document.getElementById('panel-profile').classList.contains('active')) updateProfileStats();
+      }, 2000);
     } else {
-      const names = fromCopy.map(id => byId(ALL_ITEMS, id).name).join(', ');
-      resultEl.textContent = `❌ Неудача. ${fromCopy.length} предмет(ов) (${names}) сгорели.`;
-      resultEl.className = 'up-result fail';
+      document.getElementById('upResult').textContent = `❌ Неудача. ${fromCopy.length} предмет(ов) сгорели.`;
+      document.getElementById('upResult').className = 'up-result fail';
+      saveGameData();
+      renderUpgradeTab();
+      this.disabled = false;
+      if (document.getElementById('panel-profile').classList.contains('active')) updateProfileStats();
     }
-    renderUpgradeTab();
-    this.disabled = false;
-    if(document.getElementById('panel-profile').classList.contains('active')) updateProfileStats();
   });
 };
 
-const BURN_CARD = { name:'Сгорело', rarity:'mythical', isBurn:true };
-function upgradeRollCardHTML(entry){
-  if(entry.isBurn) return `<div class="ph" style="font-size:30px;">💀</div><div class="rn r-mythical">Неудача</div>`;
-  return `${imgOrPlaceholder(entry,'ph')}<div class="rn ${rarityColorClass(entry.rarity)}">${entry.name}</div>`;
-}
-function runUpgradeRoll(success, toItem, onDone){
-  const section = document.getElementById('upgradeRollSection');
-  const track = document.getElementById('upgradeRollTrack');
-  section.classList.add('show');
-  track.style.transition = 'none';
-  track.style.transform = 'translateX(0)';
-  const REEL_LEN = 30;
-  const TAIL_PAD = 8;
-  const strip = [];
-  for(let i=0; i<REEL_LEN-1; i++) strip.push(Math.random()<0.5 ? toItem : BURN_CARD);
-  strip.push(success ? toItem : BURN_CARD);
-  for(let i=0; i<TAIL_PAD; i++) strip.push(Math.random()<0.5 ? toItem : BURN_CARD);
-  track.innerHTML = strip.map((entry, idx) => `<div class="roll-item" data-idx="${idx}">${upgradeRollCardHTML(entry)}</div>`).join('');
-  const itemWidth = 120;
-  const viewportEl = section.querySelector('.roll-viewport');
-  const viewportWidth = viewportEl.clientWidth;
-  const finalOffset = (REEL_LEN - 0.5) * itemWidth - viewportWidth / 2;
-  const ROLL_DURATION = 5;
-  requestAnimationFrame(() => {
-    track.style.transition = `transform ${ROLL_DURATION}s cubic-bezier(0.1, 0.9, 0.12, 1)`;
-    track.style.transform = `translateX(-${finalOffset}px)`;
-  });
-  setTimeout(() => {
-    const last = track.querySelector(`[data-idx="${REEL_LEN-1}"]`);
-    if(last) last.classList.add(success ? 'winner' : 'loser');
-    if(success) celebrateLanding(viewportEl, 'dropSound');
-    onDone();
-  }, ROLL_DURATION*1000 + 100);
-}
-
-/* ---------- 16. Переключение вкладок ---------- */
+/* ---------- 10. Переключение вкладок ---------- */
 document.querySelectorAll('.tab[data-tab]').forEach(tab => {
   tab.onclick = function(){
     document.querySelectorAll('.tab[data-tab]').forEach(t => t.classList.remove('active'));
@@ -1739,13 +2050,12 @@ document.querySelectorAll('.tab[data-tab]').forEach(tab => {
   };
 });
 
-/* ---------- 17. Логотип (переход на кейсы) ---------- */
 document.getElementById('logoLink').addEventListener('click', function() {
   const casesTab = document.querySelector('.tab[data-tab="cases"]');
   if (casesTab) casesTab.click();
 });
 
-/* ---------- 18. Инициализация ---------- */
+/* ---------- 11. Инициализация ---------- */
 loadGameData();
 updateBalanceUI();
 renderCasesGrid();
@@ -1758,8 +2068,9 @@ document.getElementById('detailOddsToggle').onclick = function(){
   t.classList.toggle('show');
   this.textContent = t.classList.contains('show') ? 'скрыть шансы выпадения' : 'показать шансы выпадения';
 };
+drawUpgradeWheel(0, 0);
 if(document.getElementById('panel-profile').classList.contains('active')) updateProfileStats();
-console.log('🍐 Груша-ДРОП – обновлённая версия загружена!');
+console.log('🍐 Груша-ДРОП – финальная версия загружена!');
 </script>
 </body>
 </html>
