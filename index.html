@@ -1,0 +1,1450 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Груша-ДРОП</title>
+<style>
+/* ===================== ОБЩИЕ ПЕРЕМЕННЫЕ ===================== */
+:root{
+  --bg:#0e1320;
+  --panel:#161d30;
+  --panel2:#1c2540;
+  --border:#2a3455;
+  --text:#e8ecf7;
+  --muted:#8a92b2;
+  --accent:#ff7a3d;
+  --accent2:#ffb23d;
+  --gold:#ffcf4d;
+  --common:#9aa3bd;
+  --uncommon:#4caf50;
+  --rare:#2f8fff;
+  --epic:#a24bf0;
+  --legendary:#ffb300;
+  --mythical:#ff3d6b;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{
+  width:100%; min-width:1200px; background:var(--bg); color:var(--text);
+  font-family:'Segoe UI', Arial, sans-serif;
+}
+.wrap{max-width:1200px; margin:0 auto; padding:0 20px;}
+
+/* ===================== ШАПКА ===================== */
+header{
+  background:linear-gradient(180deg,#141a2c,#101526);
+  border-bottom:1px solid var(--border);
+  padding:14px 0;
+}
+.header-inner{display:flex; align-items:center; justify-content:space-between;}
+.logo{display:flex; align-items:center; gap:10px;}
+.logo .mark{font-size:28px;}
+.logo .title{font-size:22px; font-weight:800; letter-spacing:1px;}
+.logo .sub{font-size:11px; color:var(--muted); letter-spacing:2px; margin-top:-2px;}
+.logo img{height:50px; width:auto;}
+
+.tabs{display:flex; gap:6px;}
+.tab{
+  padding:10px 18px; border-radius:8px; cursor:pointer;
+  font-size:13px; font-weight:700; letter-spacing:.5px; color:var(--muted);
+  border:1px solid transparent; user-select:none;
+}
+.tab:hover{color:var(--text);}
+.tab.active{background:var(--panel2); color:var(--accent2); border-color:var(--border);}
+.tab.disabled{opacity:.4; cursor:not-allowed;}
+
+.header-right{display:flex; align-items:center; gap:16px;}
+.balance-box{
+  background:var(--panel2); border:1px solid var(--border); border-radius:10px;
+  padding:8px 14px; display:flex; align-items:center; gap:8px; font-weight:700;
+}
+.balance-box .coin{color:var(--gold);}
+.badge-bonus{
+  background:#2a3d2a; color:#7fdb7f; font-size:11px; font-weight:700;
+  padding:3px 7px; border-radius:6px; border:1px solid #3d5a3d;
+}
+
+/* ===================== ОСНОВНОЙ КОНТЕНТ ===================== */
+main{padding:28px 0 60px;}
+.panel{display:none;}
+.panel.active{display:block;}
+
+/* ===================== КЕЙСЫ: РЕЖИМ ВЫБОРА ===================== */
+.cases-grid{
+  display:grid; grid-template-columns:repeat(3,1fr); gap:24px;
+  margin:0 auto;
+}
+.case-card{
+  background:var(--panel);
+  border:3px solid var(--border);
+  border-radius:20px;
+  padding:20px 20px 30px;
+  text-align:center;
+  cursor:pointer;
+  transition:border .25s, transform .2s, box-shadow .2s;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+}
+.case-card:hover{
+  transform:scale(1.03);
+  box-shadow:0 0 25px rgba(255,178,61,.15);
+}
+.case-card .case-img{
+  width:100%;
+  height:220px;
+  object-fit:cover;
+  border-radius:12px;
+  background:var(--panel2);
+  margin-bottom:16px;
+}
+.case-card .case-img .ph{
+  width:100%; height:100%; display:flex; align-items:center; justify-content:center;
+  font-size:60px; color:var(--muted);
+}
+.case-card h3{
+  font-size:22px;
+  font-weight:700;
+  margin-bottom:4px;
+}
+.case-card .cost{
+  font-size:18px;
+  color:var(--gold);
+  font-weight:700;
+}
+
+/* ===================== РЕЖИМ ДЕТАЛЬНОГО ПРОСМОТРА ===================== */
+.case-detail-view{
+  display:none;
+  flex-direction:column;
+  align-items:center;
+  gap:20px;
+}
+.case-detail-view.show{
+  display:flex;
+}
+.case-detail-view .back-btn{
+  align-self:flex-start;
+  background:var(--panel2);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:8px 16px;
+  color:var(--text);
+  cursor:pointer;
+  font-size:14px;
+  transition:background .2s;
+}
+.case-detail-view .back-btn:hover{
+  background:var(--panel);
+}
+.case-detail-view .case-name{
+  font-size:28px;
+  font-weight:800;
+  text-align:center;
+}
+
+/* Блок с ценой и кнопкой – широкий, по центру */
+.case-detail-view .case-action{
+  background:var(--panel2);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:24px 32px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:16px;
+  width:100%;
+}
+.case-detail-view .price-tag{
+  font-weight:700;
+  font-size:22px;
+  color:var(--gold);
+}
+.case-detail-view .open-btn{
+  background:linear-gradient(180deg,var(--accent2),var(--accent));
+  border:none;
+  color:#241000;
+  font-weight:800;
+  font-size:20px;
+  padding:16px 30px;
+  border-radius:12px;
+  cursor:pointer;
+  letter-spacing:.5px;
+  box-shadow:0 4px 0 #b04c1e;
+  width:100%;
+  transition:transform .1s;
+}
+.case-detail-view .open-btn:active{
+  transform:translateY(3px);
+  box-shadow:0 1px 0 #b04c1e;
+}
+.case-detail-view .open-btn:disabled{
+  opacity:.5;
+  cursor:not-allowed;
+  box-shadow:none;
+}
+.case-detail-view .odds-toggle{
+  font-size:14px;
+  color:var(--muted);
+  cursor:pointer;
+  text-decoration:underline;
+}
+.odds-table{
+  width:100%;
+  margin-top:10px;
+  display:none;
+  border-top:1px solid var(--border);
+  padding-top:12px;
+}
+.odds-table.show{display:block;}
+.odds-row{
+  display:flex;
+  justify-content:space-between;
+  font-size:14px;
+  padding:6px 0;
+  border-bottom:1px dashed var(--border);
+}
+.odds-row .oname{display:flex; align-items:center; gap:8px;}
+.dot{width:10px; height:10px; border-radius:50%; display:inline-block;}
+
+/* Список предметов в кейсе – сетка 10 колонок */
+.inv-section{
+  width:100%;
+  margin-top:10px;
+}
+.inv-section h3{
+  font-size:15px;
+  margin-bottom:12px;
+  color:var(--muted);
+  letter-spacing:1px;
+}
+.inv-grid{
+  display:grid;
+  grid-template-columns:repeat(10, 1fr);
+  gap:8px;
+  max-width:100%;
+}
+.inv-card{
+  background:var(--panel2);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:6px;
+  text-align:center;
+  aspect-ratio:1/1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+}
+.inv-card .rarity-strip{
+  width:100%;
+  height:4px;
+  border-radius:2px;
+  margin-bottom:4px;
+}
+.inv-card img, .inv-card .ph{
+  width:44px;
+  height:44px;
+  border-radius:6px;
+  object-fit:cover;
+  background:#0e1320;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:22px;
+}
+.inv-card .n{display:none;}
+.inv-card .qty{display:none;}
+
+/* ===================== ПРОКРУТКА (РУЛЕТКА) ===================== */
+.roll-section{
+  width:100%;
+  display:none;
+}
+.roll-section.show{display:block;}
+.roll-viewport{
+  position:relative; height:150px; overflow:hidden; border-radius:12px;
+  background:var(--panel2); border:1px solid var(--border);
+}
+.roll-viewport.impact{animation:screen-shake .45s ease;}
+@keyframes screen-shake{
+  0%,100%{transform:translateX(0);}
+  15%{transform:translateX(-8px);}
+  30%{transform:translateX(7px);}
+  45%{transform:translateX(-5px);}
+  60%{transform:translateX(5px);}
+  75%{transform:translateX(-3px);}
+  90%{transform:translateX(2px);}
+}
+.roll-viewport::before, .roll-viewport::after{
+  content:""; position:absolute; top:0; bottom:0; width:80px; z-index:3; pointer-events:none;
+}
+.roll-viewport::before{left:0; background:linear-gradient(90deg, var(--panel2), transparent);}
+.roll-viewport::after{right:0; background:linear-gradient(270deg, var(--panel2), transparent);}
+.roll-pointer{
+  position:absolute; left:50%; top:0; bottom:0; width:3px; background:var(--accent);
+  transform:translateX(-50%); z-index:4; box-shadow:0 0 10px var(--accent);
+}
+.roll-track{position:absolute; top:0; left:0; display:flex; height:100%; will-change:transform;}
+.roll-item{
+  position:relative;
+  width:120px; height:150px; flex-shrink:0; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; gap:8px; border-right:1px solid var(--border);
+}
+.roll-item img, .roll-item .ph{
+  width:64px; height:64px; border-radius:8px; object-fit:cover; background:#0e1320;
+  display:flex; align-items:center; justify-content:center; font-size:26px;
+}
+.roll-item .rn{font-size:10px; text-align:center; padding:0 4px; color:var(--text);}
+.roll-item.winner{z-index:6; animation:winner-pulse 0.9s ease-in-out infinite;}
+.roll-item.winner::before{
+  content:""; position:absolute; inset:-60px; z-index:-1;
+  background:conic-gradient(from 0deg, transparent, rgba(255,207,77,.55), transparent 25%, transparent 60%, rgba(255,122,61,.5), transparent 85%);
+  animation:winner-spin 1.6s linear infinite;
+}
+.roll-item.winner img, .roll-item.winner .ph{box-shadow:0 0 25px rgba(255,207,77,.8);}
+@keyframes winner-pulse{
+  0%,100%{transform:scale(1.08); box-shadow:inset 0 0 20px rgba(255,207,77,.2);}
+  50%{transform:scale(1.28); box-shadow:inset 0 0 40px rgba(255,207,77,.55);}
+}
+@keyframes winner-spin{ to{ transform:rotate(360deg); } }
+.roll-item.loser{animation:loser-glow 1s ease infinite; opacity:.9;}
+@keyframes loser-glow{
+  0%,100%{box-shadow:inset 0 0 20px rgba(255,61,61,.15);}
+  50%{box-shadow:inset 0 0 30px rgba(255,61,61,.45);}
+}
+
+/* ===================== АПГРЕЙД ===================== */
+.upgrade-title{font-size:22px; margin-bottom:20px; text-align:center; font-weight:800; letter-spacing:.5px;}
+.up-selection{
+  display:grid; grid-template-columns:1fr 280px 1fr; gap:20px; align-items:start;
+  margin-bottom:20px;
+}
+.up-card{
+  background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:20px;
+  min-height:200px; display:flex; flex-direction:column; align-items:center; text-align:center;
+}
+.up-card h4{font-size:13px; color:var(--muted); margin-bottom:10px; font-weight:600;}
+.up-preview{display:flex; flex-direction:column; align-items:center; gap:10px; padding:8px 0;}
+.up-preview img, .up-preview .ph{
+  width:90px; height:90px; border-radius:10px; object-fit:cover; background:#0e1320;
+  display:flex; align-items:center; justify-content:center; font-size:34px;
+}
+.up-preview .pn{font-weight:700; font-size:14px;}
+.up-preview .pq{font-size:12px; color:var(--muted);}
+.up-empty{color:var(--muted); font-size:13px; padding:20px 0;}
+.up-middle{
+  background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:20px 16px;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px;
+}
+.chance-dial{text-align:center;}
+.chance-dial .num{font-size:36px; font-weight:800; color:var(--accent2);}
+.chance-dial .lbl{font-size:11px; color:var(--muted); letter-spacing:1px;}
+.exchange-btn{
+  background:linear-gradient(180deg,var(--accent2),var(--accent));
+  border:none; color:#241000; font-weight:800; padding:14px 20px;
+  border-radius:10px; cursor:pointer; font-size:14px; width:100%;
+  box-shadow:0 4px 0 #b04c1e;
+}
+.exchange-btn:active{transform:translateY(3px); box-shadow:0 1px 0 #b04c1e;}
+.exchange-btn:disabled{opacity:.4; cursor:not-allowed; box-shadow:none;}
+.up-inventory-area{
+  display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:10px;
+}
+.up-inv-col{background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:16px;}
+.up-inv-col h4{font-size:13px; color:var(--muted); margin-bottom:10px; font-weight:600;}
+.up-inv-grid{
+  display:grid; grid-template-columns:repeat(4,1fr); gap:8px; max-height:260px; overflow-y:auto;
+}
+.up-inv-item{
+  background:var(--panel2); border:1px solid var(--border); border-radius:8px;
+  padding:6px; text-align:center; cursor:pointer;
+  transition:border .15s, transform .1s;
+}
+.up-inv-item:hover{transform:scale(1.04); border-color:var(--accent2);}
+.up-inv-item.active{border-color:var(--accent); box-shadow:0 0 10px var(--accent);}
+.up-inv-item img, .up-inv-item .ph{
+  width:48px; height:48px; border-radius:6px; object-fit:cover; background:#0e1320;
+  display:flex; align-items:center; justify-content:center; font-size:20px; margin:0 auto 4px;
+}
+.up-inv-item .n{font-size:10px; line-height:1.2; color:var(--text);}
+.up-inv-item .qty{font-size:9px; color:var(--muted);}
+.up-target-grid{
+  display:grid; grid-template-columns:repeat(4,1fr); gap:8px; max-height:260px; overflow-y:auto;
+}
+.up-target-item{
+  background:var(--panel2); border:1px solid var(--border); border-radius:8px;
+  padding:6px; text-align:center; cursor:pointer;
+  transition:border .15s, transform .1s;
+}
+.up-target-item:hover{transform:scale(1.04); border-color:var(--accent2);}
+.up-target-item.active{border-color:var(--accent); box-shadow:0 0 10px var(--accent);}
+.up-target-item img, .up-target-item .ph{
+  width:48px; height:48px; border-radius:6px; object-fit:cover; background:#0e1320;
+  display:flex; align-items:center; justify-content:center; font-size:20px; margin:0 auto 4px;
+}
+.up-target-item .n{font-size:10px; line-height:1.2; color:var(--text);}
+.up-target-item .qty{font-size:9px; color:var(--muted);}
+.up-result-bar{margin-top:16px; text-align:center;}
+.up-result{font-size:13px; color:var(--muted);}
+.up-result.success{color:#7fdb7f; font-weight:700;}
+.up-result.fail{color:#ff6b6b; font-weight:700;}
+
+/* ===================== ПРОФИЛЬ ===================== */
+.profile-container{
+  display:grid; grid-template-columns:200px 1fr; gap:30px; align-items:start;
+}
+.profile-avatar{
+  background:var(--panel); border:1px solid var(--border); border-radius:16px;
+  padding:20px; text-align:center;
+}
+.profile-avatar .avatar-wrap{
+  width:120px; height:120px; border-radius:50%; overflow:hidden;
+  margin:0 auto 12px; border:3px solid var(--accent2); cursor:pointer;
+  background:var(--panel2); display:flex; align-items:center; justify-content:center;
+  font-size:60px; color:var(--muted);
+}
+.profile-avatar .avatar-wrap img{
+  width:100%; height:100%; object-fit:cover;
+}
+.profile-avatar .username{font-size:18px; font-weight:700;}
+.profile-stats{
+  display:grid; grid-template-columns:repeat(3,1fr); gap:14px;
+}
+.stat-card{
+  background:var(--panel); border:1px solid var(--border); border-radius:12px;
+  padding:16px; text-align:center;
+}
+.stat-card .val{font-size:24px; font-weight:800; color:var(--accent2);}
+.stat-card .lbl{font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; margin-top:4px;}
+.profile-coupon{
+  margin-top:20px; background:var(--panel); border:1px solid var(--border); border-radius:12px;
+  padding:16px; display:flex; gap:12px; align-items:center;
+}
+.profile-coupon input{
+  flex:1; background:var(--panel2); border:1px solid var(--border); color:var(--text);
+  padding:8px 12px; border-radius:8px; font-size:14px;
+}
+.profile-coupon button{
+  background:var(--accent2); border:none; color:#241000; font-weight:800;
+  padding:8px 24px; border-radius:8px; cursor:pointer; font-size:14px;
+}
+.profile-coupon button:active{transform:scale(.97);}
+.coupon-message{font-size:12px; color:var(--muted); margin-top:6px;}
+
+/* Инвентарь в профиле */
+.profile-inventory{
+  margin-top:20px;
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:16px;
+}
+.profile-inventory h4{
+  font-size:15px;
+  color:var(--muted);
+  margin-bottom:12px;
+  letter-spacing:1px;
+}
+.inv-list{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+  max-height:300px;
+  overflow-y:auto;
+}
+.inv-item{
+  background:var(--panel2);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:8px;
+  text-align:center;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+.inv-item .inv-img{
+  width:56px;
+  height:56px;
+  border-radius:6px;
+  object-fit:cover;
+  background:#0e1320;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:26px;
+}
+.inv-item .inv-name{
+  font-size:11px;
+  margin-top:4px;
+  line-height:1.2;
+}
+.inv-item .inv-qty{
+  font-size:11px;
+  color:var(--muted);
+}
+.inv-item .sell-btn{
+  background:var(--accent);
+  border:none;
+  color:#fff;
+  font-weight:700;
+  font-size:11px;
+  padding:4px 12px;
+  border-radius:6px;
+  cursor:pointer;
+  margin-top:4px;
+}
+.inv-item .sell-btn:hover{background:var(--accent2);}
+.inv-empty{
+  grid-column:1/-1;
+  color:var(--muted);
+  text-align:center;
+  padding:20px 0;
+}
+
+/* ===================== ПОДВАЛ ===================== */
+footer{
+  border-top:1px solid var(--border); margin-top:40px; padding:20px 0;
+  text-align:center; color:var(--muted); font-size:14px; letter-spacing:1px;
+}
+
+/* ===================== ОБЩИЕ ПОМОЩНИКИ ===================== */
+.r-common{color:var(--common);} .r-uncommon{color:var(--uncommon);}
+.r-rare{color:var(--rare);} .r-epic{color:var(--epic);}
+.r-legendary{color:var(--legendary);} .r-mythical{color:var(--mythical);}
+.bg-common{background:var(--common);} .bg-uncommon{background:var(--uncommon);}
+.bg-rare{background:var(--rare);} .bg-epic{background:var(--epic);}
+.bg-legendary{background:var(--legendary);} .bg-mythical{background:var(--mythical);}
+
+.confetti{
+  position:fixed; top:-10px; width:8px; height:14px; z-index:200; pointer-events:none;
+  border-radius:2px;
+}
+.win-flash{
+  position:fixed; inset:0; z-index:150; pointer-events:none;
+  background:radial-gradient(circle, rgba(255,230,150,.55), rgba(255,230,150,0) 70%);
+  opacity:0;
+}
+
+/* ===================== МОДАЛКА ===================== */
+.modal-overlay{
+  position:fixed; inset:0; background:rgba(5,7,14,.88); z-index:100;
+  display:none; align-items:center; justify-content:center;
+}
+.modal-overlay.show{display:flex;}
+.modal-box{
+  background:var(--panel); border:2px solid var(--gold); border-radius:20px;
+  padding:40px 50px; text-align:center; min-width:360px;
+  box-shadow:0 0 60px rgba(255,207,77,.3);
+  animation:pop .35s ease;
+}
+@keyframes pop{from{transform:scale(.7); opacity:0;} to{transform:scale(1); opacity:1;}}
+.modal-box .mimg{
+  width:140px; height:140px; border-radius:14px; margin:0 auto 18px; object-fit:cover;
+  background:#0e1320; display:flex; align-items:center; justify-content:center; font-size:50px;
+}
+.modal-box .mrare{font-size:12px; letter-spacing:2px; font-weight:700; margin-bottom:6px;}
+.modal-box .mname{font-size:22px; font-weight:800; margin-bottom:6px;}
+.modal-box .mbonus{font-size:13px; color:var(--muted); margin-bottom:22px;}
+.claim-btn{
+  background:linear-gradient(180deg,var(--accent2),var(--accent)); border:none; color:#241000;
+  font-weight:800; padding:12px 34px; border-radius:10px; cursor:pointer; font-size:14px;
+}
+.claim-btn:active{transform:translateY(2px);}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap header-inner">
+    <div class="logo">
+      <img src="grusha-drop.jpg" alt="Груша-ДРОП" id="logoImg" onerror="this.style.display='none'; document.getElementById('logoFallback').style.display='flex';">
+      <div id="logoFallback" style="display:none; align-items:center; gap:10px;">
+        <span class="mark">🍐</span>
+        <div>
+          <div class="title">Груша-ДРОП</div>
+          <div class="sub">CASE BATTLE</div>
+        </div>
+      </div>
+    </div>
+    <div class="tabs" id="tabs">
+      <div class="tab active" data-tab="cases">КЕЙСЫ</div>
+      <div class="tab" data-tab="upgrade">АПГРЕЙД</div>
+      <div class="tab" data-tab="profile">ПРОФИЛЬ</div>
+      <div class="tab disabled">КОНТРАКТЫ</div>
+      <div class="tab disabled">РОЗЫГРЫШИ</div>
+    </div>
+    <div class="header-right">
+      <div class="balance-box">🪙 <span id="balance">100</span> <span class="badge-bonus">+10%</span></div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ===================== ВКЛАДКА КЕЙСЫ ===================== -->
+  <section class="panel active" id="panel-cases">
+    <div id="casesGridContainer" class="cases-grid"></div>
+    <div id="caseDetailContainer" class="case-detail-view">
+      <button class="back-btn" id="backToCasesBtn">← Назад к выбору</button>
+      <div class="case-name" id="detailCaseName">Тимур-КЕЙС</div>
+      <div class="case-action" id="detailCaseAction">
+        <div class="price-tag" id="detailCaseCost">50 🪙</div>
+        <button class="open-btn" id="detailOpenBtn">🎰 ОТКРЫТЬ КЕЙС</button>
+        <span class="odds-toggle" id="detailOddsToggle">показать шансы выпадения</span>
+      </div>
+      <div class="odds-table" id="detailOddsTable"></div>
+      <div class="roll-section" id="detailRollSection">
+        <div class="roll-viewport">
+          <div class="roll-pointer"></div>
+          <div class="roll-track" id="detailRollTrack"></div>
+        </div>
+      </div>
+      <div class="inv-section">
+        <h3>ЧТО ЕСТЬ В КЕЙСЕ</h3>
+        <div class="inv-grid" id="detailContentsGrid"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== ВКЛАДКА АПГРЕЙД ===================== -->
+  <section class="panel" id="panel-upgrade">
+    <div class="upgrade-title">МОДЕРНИЗАЦИЯ 2.0</div>
+    <div class="up-selection">
+      <div class="up-card">
+        <h4>ИСХОДНЫЙ ПРЕДМЕТ (выберите снизу)</h4>
+        <div class="up-preview" id="upFromPreview"><div class="up-empty">Ничего не выбрано</div></div>
+      </div>
+      <div class="up-middle">
+        <div class="chance-dial"><div class="num" id="chanceNum">—</div><div class="lbl">ШАНС УСПЕХА</div></div>
+        <button class="exchange-btn" id="exchangeBtn" disabled>⬆️ ПРОКАЧАТЬ</button>
+      </div>
+      <div class="up-card">
+        <h4>ЦЕЛЕВОЙ ПРЕДМЕТ (выберите снизу)</h4>
+        <div class="up-preview" id="upToPreview"><div class="up-empty">Ничего не выбрано</div></div>
+      </div>
+    </div>
+    <div class="roll-section" id="upgradeRollSection">
+      <div class="roll-viewport">
+        <div class="roll-pointer"></div>
+        <div class="roll-track" id="upgradeRollTrack"></div>
+      </div>
+    </div>
+    <div class="up-result-bar"><div class="up-result" id="upResult">Выберите исходный и целевой предметы, затем нажмите «Прокачать».</div></div>
+    <div class="up-inventory-area">
+      <div class="up-inv-col">
+        <h4>🧰 ВАШ ИНВЕНТАРЬ (кликните для выбора)</h4>
+        <div class="up-inv-grid" id="inventoryGrid"></div>
+      </div>
+      <div class="up-inv-col">
+        <h4>🎯 ДОСТУПНЫЕ ЦЕЛИ (выше редкости)</h4>
+        <div class="up-target-grid" id="targetGrid"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== ПРОФИЛЬ ===================== -->
+  <section class="panel" id="panel-profile">
+    <div class="profile-container">
+      <div class="profile-avatar">
+        <div class="avatar-wrap" id="avatarWrap" title="Нажмите, чтобы загрузить аватарку">
+          <span id="avatarPlaceholder">👤</span>
+          <img id="avatarImg" style="display:none;" alt="avatar">
+        </div>
+        <div class="username">user</div>
+        <div style="font-size:11px; color:var(--muted); margin-top:4px;">кликните на иконку</div>
+        <input type="file" id="avatarInput" accept="image/*" style="display:none;">
+      </div>
+      <div>
+        <div class="profile-stats" id="profileStats">
+          <div class="stat-card"><div class="val" id="statBalance">0</div><div class="lbl">Баланс</div></div>
+          <div class="stat-card"><div class="val" id="statBestDrop">—</div><div class="lbl">Лучший дроп</div></div>
+          <div class="stat-card"><div class="val" id="statCases">0</div><div class="lbl">Открыто кейсов</div></div>
+          <div class="stat-card"><div class="val" id="statItems">0</div><div class="lbl">Предметов в инвентаре</div></div>
+          <div class="stat-card"><div class="val" id="statUpgrades">0</div><div class="lbl">Успешных апгрейдов</div></div>
+          <div class="stat-card"><div class="val" id="statSpent">0</div><div class="lbl">Потрачено монет</div></div>
+          <div class="stat-card"><div class="val" id="statEarned">0</div><div class="lbl">Заработано монет</div></div>
+          <div class="stat-card"><div class="val" id="statDailyBonus">—</div><div class="lbl">Ежедневный бонус</div></div>
+        </div>
+        <div class="profile-coupon">
+          <input type="text" id="couponInput" placeholder="Введите промокод">
+          <button id="couponBtn">Активировать</button>
+        </div>
+        <div id="couponMessage" class="coupon-message"></div>
+
+        <!-- Инвентарь в профиле -->
+        <div class="profile-inventory">
+          <h4>📦 ИНВЕНТАРЬ (продажа предметов)</h4>
+          <div class="inv-list" id="profileInventoryList"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    Твой высокий шанс на большой дроп - <strong>"Груша-ДРОП"</strong>
+  </div>
+</footer>
+
+<!-- ===================== МОДАЛКА ===================== -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-box">
+    <div class="mimg" id="modalImg"></div>
+    <div class="mrare" id="modalRare"></div>
+    <div class="mname" id="modalName"></div>
+    <div class="mbonus" id="modalBonus"></div>
+    <button class="claim-btn" id="claimBtn">ЗАБРАТЬ</button>
+  </div>
+</div>
+
+<audio id="dropSound" src="burmalda.mp3" preload="auto"></audio>
+<audio id="dropSound2" src="burmalda2.mp3" preload="auto"></audio>
+<audio id="dropSound3" src="burmalda3.mp3" preload="auto"></audio>
+<audio id="ruletkaSound" src="ruletka.mp3" preload="auto"></audio>
+
+<script>
+/* =========================================================================
+   ГРУША-ДРОП – ФИНАЛЬНАЯ ВЕРСИЯ (без стартовых предметов, звук рулетки 1 раз)
+   ========================================================================= */
+
+/* ---------- 1. Данные о предметах и кейсах ---------- */
+const RARITY_ORDER = ["common","uncommon","rare","epic","legendary","mythical"];
+const RARITY_LABEL = {
+  common:"ОБЫЧНЫЙ", uncommon:"НЕОБЫЧНЫЙ", rare:"РЕДКИЙ",
+  epic:"ЭПИЧЕСКИЙ", legendary:"ЛЕГЕНДАРНЫЙ", mythical:"МИФИЧЕСКИЙ"
+};
+const RARITY_WEIGHT = { common:1, uncommon:2, rare:3, epic:4, legendary:5, mythical:6 };
+const SELL_PRICES = { common:10, uncommon:25, rare:50, epic:100, legendary:250, mythical:500 };
+
+const ALL_ITEMS = [
+  {id:1,  name:"Обычный Тимур",     rarity:"common",    img:"friend1.jpg",  bonus:"Базовый скин. Ничего особенного, но свой."},
+  {id:2,  name:"Простой Тимур",     rarity:"common",    img:"friend2.jpg",  bonus:"Такой же простой, как понедельник."},
+  {id:3,  name:"Дворовый Тимур",    rarity:"uncommon",  img:"friend3.jpg",  bonus:"Слегка потрёпан, но с характером."},
+  {id:4,  name:"Крутой Тимур",      rarity:"uncommon",  img:"friend4.jpg",  bonus:"+1 к уважению во дворе."},
+  {id:5,  name:"Стильный Тимур",    rarity:"rare",      img:"friend5.jpg",  bonus:"Явно готовился к выходу в люди."},
+  {id:6,  name:"Редкий Тимур",      rarity:"rare",      img:"friend6.jpg",  bonus:"Такого поискать ещё надо."},
+  {id:7,  name:"Легендарный Тимур", rarity:"epic",      img:"friend7.jpg",  bonus:"О нём слагают дворовые легенды."},
+  {id:8,  name:"Мифический Тимур",  rarity:"epic",      img:"friend8.jpg",  bonus:"Существование не подтверждено."},
+  {id:9,  name:"Золотой Тимур",     rarity:"legendary", img:"friend9.jpg",  bonus:"Сияет издалека."},
+  {id:10, name:"Тимур-Эксклюзив",   rarity:"mythical",  img:"friend10.jpg", bonus:"Топ коллекции. Апгрейдить нельзя — только показывать друзьям."},
+  {id:11, name:"Домашний Тимур",    rarity:"common",    img:"friend11.jpg", bonus:"В тапках и с чаем."},
+  {id:12, name:"Сонный Тимур",      rarity:"common",    img:"friend12.jpg", bonus:"Ещё не проснулся, но уже в кейсе."},
+  {id:13, name:"Утренний Тимур",    rarity:"common",    img:"friend13.jpg", bonus:"Бодрость только после кофе."},
+  {id:14, name:"Уличный Тимур",     rarity:"uncommon",  img:"friend14.jpg", bonus:"Знает все дворы в округе."},
+  {id:15, name:"Ночной Тимур",      rarity:"uncommon",  img:"friend15.jpg", bonus:"Появляется только после полуночи."},
+  {id:16, name:"Загадочный Тимур",  rarity:"rare",      img:"friend16.jpg", bonus:"Никто не знает, откуда он взялся."},
+  {id:17, name:"Спортивный Тимур",  rarity:"rare",      img:"friend17.jpg", bonus:"В процессе набора формы."},
+  {id:18, name:"Мем 1", rarity:"common", img:"meme1.jpg", bonus:"Самый тупой мем."},
+  {id:19, name:"Мем 2", rarity:"common", img:"meme2.jpg", bonus:"Угарный."},
+  {id:20, name:"Мем 3", rarity:"uncommon", img:"meme3.jpg", bonus:"Классика."},
+  {id:21, name:"Мем 4", rarity:"uncommon", img:"meme4.jpg", bonus:"Почти легенда."},
+  {id:22, name:"Мем 5", rarity:"rare", img:"meme5.jpg", bonus:"Реально смешной."},
+  {id:23, name:"Мем 6", rarity:"rare", img:"meme6.jpg", bonus:"Редкая находка."},
+  {id:24, name:"Мем 7", rarity:"epic", img:"meme7.jpg", bonus:"Шедевр."},
+  {id:25, name:"Мем 8", rarity:"epic", img:"meme8.jpg", bonus:"Мем года."},
+  {id:26, name:"Мем 9", rarity:"legendary", img:"meme9.jpg", bonus:"Легендарный мем."},
+  {id:27, name:"Мем 10", rarity:"mythical", img:"meme10.jpg", bonus:"Самый крутой мем из всех."},
+  {id:28, name:"Арт 1", rarity:"common", img:"art1.jpg", bonus:"Рисунок от души."},
+  {id:29, name:"Арт 2", rarity:"common", img:"art2.jpg", bonus:"Красота."},
+  {id:30, name:"Арт 3", rarity:"uncommon", img:"art3.jpg", bonus:"Стильно."},
+  {id:31, name:"Арт 4", rarity:"uncommon", img:"art4.jpg", bonus:"Мастерство."},
+  {id:32, name:"Арт 5", rarity:"rare", img:"art5.jpg", bonus:"Шедевр."},
+  {id:33, name:"Арт 6", rarity:"rare", img:"art6.jpg", bonus:"Редкий талант."},
+  {id:34, name:"Арт 7", rarity:"epic", img:"art7.jpg", bonus:"Эпично."},
+  {id:35, name:"Арт 8", rarity:"epic", img:"art8.jpg", bonus:"Гениально."},
+  {id:36, name:"Арт 9", rarity:"legendary", img:"art9.jpg", bonus:"Легенда."},
+  {id:37, name:"Арт 10", rarity:"mythical", img:"art10.jpg", bonus:"Миф."}
+];
+
+const CASES = [
+  {
+    id: 1,
+    name: "Тимур-КЕЙС",
+    cost: 50,
+    img: "timurcase.jpg",
+    sound: "dropSound",
+    items: [
+      {id:1, chance:18}, {id:2, chance:10}, {id:3, chance:8}, {id:4, chance:5},
+      {id:5, chance:4}, {id:6, chance:3}, {id:7, chance:3}, {id:8, chance:2},
+      {id:9, chance:2}, {id:10, chance:1}, {id:11, chance:8}, {id:12, chance:7},
+      {id:13, chance:7}, {id:14, chance:6}, {id:15, chance:6}, {id:16, chance:5},
+      {id:17, chance:5}
+    ]
+  },
+  {
+    id: 2,
+    name: "САМЫЕ АМОРАЛЬНЫЕ МЕМЫ",
+    cost: 499,
+    img: "memcase.jpg",
+    sound: "dropSound2",
+    items: [
+      {id:18, chance:15}, {id:19, chance:14}, {id:20, chance:12}, {id:21, chance:10},
+      {id:22, chance:9}, {id:23, chance:8}, {id:24, chance:7}, {id:25, chance:6},
+      {id:26, chance:5}, {id:27, chance:14}
+    ]
+  },
+  {
+    id: 3,
+    name: "ArtPicaPopa",
+    cost: 199,
+    img: "artcase.jpg",
+    sound: "dropSound3",
+    items: [
+      {id:28, chance:14}, {id:29, chance:13}, {id:30, chance:12}, {id:31, chance:10},
+      {id:32, chance:9}, {id:33, chance:8}, {id:34, chance:7}, {id:35, chance:6},
+      {id:36, chance:5}, {id:37, chance:16}
+    ]
+  }
+];
+
+/* ---------- 2. Состояние (пустой инвентарь) ---------- */
+let balance = 100;
+let inventory = {}; // пустой стартовый инвентарь
+let stats = {
+  totalCasesOpened: 0,
+  bestDropId: null,
+  totalUpgradeSuccess: 0,
+  totalCoinsSpent: 0,
+  totalCoinsEarned: 0,
+  lastDailyBonus: null,
+  usedCoupons: []
+};
+let selectedCaseId = 1;
+
+function loadGameData() {
+  try {
+    const saved = localStorage.getItem('grushaDropData');
+    if (saved) {
+      const data = JSON.parse(saved);
+      balance = data.balance ?? 100;
+      inventory = data.inventory ?? {};
+      stats = data.stats ?? stats;
+      selectedCaseId = data.selectedCaseId ?? 1;
+    }
+  } catch (e) {}
+}
+function saveGameData() {
+  localStorage.setItem('grushaDropData', JSON.stringify({ balance, inventory, stats, selectedCaseId }));
+}
+
+function getCurrentCase() {
+  return CASES.find(c => c.id === selectedCaseId);
+}
+
+function byId(list, id){ return list.find(i => i.id === id); }
+function rarityColorClass(r){ return "r-" + r; }
+function rarityBgClass(r){ return "bg-" + r; }
+function fmtChance(c){ return (c % 1 === 0 ? c : c.toFixed(1)) + "%"; }
+function getRarityIndex(r){ return RARITY_ORDER.indexOf(r); }
+function getRarityWeight(r){ return RARITY_WEIGHT[r] || 0; }
+
+function imgOrPlaceholder(item, cls){
+  return `<img src="${item.img}" class="${cls}" onerror="this.outerHTML='<div class=&quot;${cls==='mimg'?'mimg':'ph'}&quot;>📸</div>'">`;
+}
+
+function updateBalanceUI(){ document.getElementById('balance').textContent = balance; }
+
+/* ---------- 3. Ежедневный бонус ---------- */
+function checkDailyBonus() {
+  const today = new Date().toISOString().slice(0,10);
+  if (stats.lastDailyBonus !== today) {
+    balance += 300;
+    stats.totalCoinsEarned += 300;
+    stats.lastDailyBonus = today;
+    saveGameData();
+    updateBalanceUI();
+    updateProfileStats();
+    const msg = document.getElementById('couponMessage');
+    msg.textContent = '🎁 Ежедневный бонус +300 монет!';
+    msg.style.color = '#7fdb7f';
+    setTimeout(() => { msg.textContent = ''; }, 5000);
+  }
+  const el = document.getElementById('statDailyBonus');
+  if (stats.lastDailyBonus === today) {
+    el.textContent = '✅ Получен сегодня';
+    el.style.color = '#7fdb7f';
+  } else {
+    el.textContent = '⏳ Ожидает';
+    el.style.color = '#ffb23d';
+  }
+}
+
+/* ---------- 4. Промокоды ---------- */
+const COUPONS = {
+  'mishel': 9999,
+  'pozdnyak': 500,
+  'bilet-na-vertoletik': 1488
+};
+function activateCoupon() {
+  const input = document.getElementById('couponInput');
+  const msg = document.getElementById('couponMessage');
+  const code = input.value.trim().toLowerCase();
+  if (!code) { msg.textContent = '❌ Введите промокод'; msg.style.color = '#ff6b6b'; return; }
+  if (stats.usedCoupons.includes(code)) { msg.textContent = '❌ Этот промокод уже использован'; msg.style.color = '#ff6b6b'; return; }
+  if (!(code in COUPONS)) { msg.textContent = '❌ Неверный промокод'; msg.style.color = '#ff6b6b'; return; }
+  const reward = COUPONS[code];
+  balance += reward;
+  stats.totalCoinsEarned += reward;
+  stats.usedCoupons.push(code);
+  saveGameData();
+  updateBalanceUI();
+  updateProfileStats();
+  msg.textContent = `✅ Промокод активирован! +${reward} монет`;
+  msg.style.color = '#7fdb7f';
+  input.value = '';
+}
+
+/* ---------- 5. Рендер кейсов (режим выбора) ---------- */
+function renderCasesGrid() {
+  const grid = document.getElementById('casesGridContainer');
+  grid.innerHTML = CASES.map(c => `
+    <div class="case-card" data-id="${c.id}">
+      ${imgOrPlaceholder({img:c.img, name:c.name}, 'case-img')}
+      <h3>${c.name}</h3>
+      <div class="cost">${c.cost} 🪙</div>
+    </div>
+  `).join('');
+  document.querySelectorAll('.case-card').forEach(el => {
+    el.addEventListener('click', function() {
+      selectedCaseId = Number(this.dataset.id);
+      showDetailView();
+      saveGameData();
+    });
+  });
+}
+
+/* ---------- 6. Переключение между режимами ---------- */
+const gridContainer = document.getElementById('casesGridContainer');
+const detailContainer = document.getElementById('caseDetailContainer');
+
+function showSelectionView() {
+  gridContainer.style.display = 'grid';
+  detailContainer.classList.remove('show');
+  document.getElementById('detailRollSection').classList.remove('show');
+  document.getElementById('detailOpenBtn').disabled = false;
+  document.getElementById('detailCaseAction').style.display = 'flex';
+  // остановить звук рулетки, если он играет
+  const ruletka = document.getElementById('ruletkaSound');
+  ruletka.pause();
+  ruletka.currentTime = 0;
+}
+
+function showDetailView() {
+  gridContainer.style.display = 'none';
+  detailContainer.classList.add('show');
+  renderDetailView();
+}
+
+/* ---------- 7. Детальный режим ---------- */
+function renderDetailView() {
+  const c = getCurrentCase();
+  if (!c) return;
+  document.getElementById('detailCaseName').textContent = c.name;
+  document.getElementById('detailCaseCost').textContent = c.cost + ' 🪙';
+
+  const oddsTable = document.getElementById('detailOddsTable');
+  oddsTable.innerHTML = c.items.map(({id, chance}) => {
+    const item = byId(ALL_ITEMS, id);
+    return `<div class="odds-row">
+      <span class="oname"><span class="dot ${rarityBgClass(item.rarity)}"></span>${item.name}</span>
+      <span class="${rarityColorClass(item.rarity)}">${fmtChance(chance)}</span>
+    </div>`;
+  }).join('');
+  oddsTable.classList.remove('show');
+
+  const grid = document.getElementById('detailContentsGrid');
+  grid.innerHTML = c.items.map(({id, chance}) => {
+    const item = byId(ALL_ITEMS, id);
+    return `<div class="inv-card">
+      <div class="rarity-strip ${rarityBgClass(item.rarity)}"></div>
+      ${imgOrPlaceholder(item,'ph')}
+    </div>`;
+  }).join('');
+
+  document.getElementById('detailRollSection').classList.remove('show');
+  document.getElementById('detailOpenBtn').disabled = false;
+  document.getElementById('detailCaseAction').style.display = 'flex';
+}
+
+/* ---------- 8. Открытие кейса ---------- */
+function weightedRandomItem(caseItems) {
+  const total = caseItems.reduce((s, it) => s + it.chance, 0);
+  let r = Math.random() * total;
+  for (const entry of caseItems) {
+    if (r < entry.chance) {
+      return byId(ALL_ITEMS, entry.id);
+    }
+    r -= entry.chance;
+  }
+  return byId(ALL_ITEMS, caseItems[0].id);
+}
+
+const detailOpenBtn = document.getElementById('detailOpenBtn');
+const detailRollSection = document.getElementById('detailRollSection');
+const detailRollTrack = document.getElementById('detailRollTrack');
+const detailAction = document.getElementById('detailCaseAction');
+
+detailOpenBtn.onclick = function() {
+  const c = getCurrentCase();
+  if (!c) return;
+  if (balance < c.cost) {
+    alert('Недостаточно монет!');
+    return;
+  }
+  const btn = this;
+  btn.disabled = true;
+  balance -= c.cost;
+  stats.totalCoinsSpent += c.cost;
+  stats.totalCasesOpened += 1;
+  const won = weightedRandomItem(c.items);
+  if (!stats.bestDropId || getRarityWeight(won.rarity) > getRarityWeight(byId(ALL_ITEMS, stats.bestDropId).rarity)) {
+    stats.bestDropId = won.id;
+  }
+  saveGameData();
+  updateBalanceUI();
+
+  detailAction.style.display = 'none';
+  detailRollSection.classList.add('show');
+
+  // Запустить звук рулетки (один раз, без loop)
+  const ruletka = document.getElementById('ruletkaSound');
+  ruletka.currentTime = 0;
+  ruletka.play().catch(() => {});
+
+  buildDetailRollStrip(won, c.sound);
+};
+
+function buildDetailRollStrip(won, soundId) {
+  const track = detailRollTrack;
+  track.style.transition = 'none';
+  track.style.transform = 'translateX(0)';
+  const c = getCurrentCase();
+  const items = c.items;
+  const REEL_LEN = 45;
+  const TAIL_PAD = 10;
+  const strip = [];
+  for (let i = 0; i < REEL_LEN - 1; i++) {
+    strip.push(weightedRandomItem(items));
+  }
+  strip.push(won);
+  for (let i = 0; i < TAIL_PAD; i++) {
+    strip.push(weightedRandomItem(items));
+  }
+  track.innerHTML = strip.map((it, idx) => `
+    <div class="roll-item" data-idx="${idx}">
+      ${imgOrPlaceholder(it,'ph')}
+      <div class="rn ${rarityColorClass(it.rarity)}">${it.name}</div>
+    </div>
+  `).join('');
+  const itemWidth = 120;
+  const viewportEl = document.querySelector('.roll-viewport');
+  const viewportWidth = viewportEl.clientWidth;
+  const finalOffset = (REEL_LEN - 0.5) * itemWidth - viewportWidth / 2;
+  const ROLL_DURATION = 7;
+  requestAnimationFrame(() => {
+    track.style.transition = `transform ${ROLL_DURATION}s cubic-bezier(0.09, 0.9, 0.11, 1)`;
+    track.style.transform = `translateX(-${finalOffset}px)`;
+  });
+  setTimeout(() => {
+    const last = track.querySelector(`[data-idx="${REEL_LEN-1}"]`);
+    if(last) last.classList.add('winner');
+    // Звук рулетки остановится сам (т.к. без loop)
+    // Дополнительно можно остановить, но он уже закончится
+    celebrateLanding(viewportEl, soundId);
+    showResultModal(won);
+  }, ROLL_DURATION * 1000 + 100);
+}
+
+function showResultModal(won) {
+  inventory[won.id] = (inventory[won.id] || 0) + 1;
+  saveGameData();
+  document.getElementById('modalImg').innerHTML = imgOrPlaceholder(won,'mimg');
+  const rareEl = document.getElementById('modalRare');
+  rareEl.textContent = RARITY_LABEL[won.rarity];
+  rareEl.className = 'mrare ' + rarityColorClass(won.rarity);
+  document.getElementById('modalName').textContent = won.name;
+  document.getElementById('modalBonus').textContent = won.bonus;
+  document.getElementById('modalOverlay').classList.add('show');
+  launchConfetti();
+  if (document.getElementById('panel-upgrade').classList.contains('active')) renderUpgradeTab();
+  if (document.getElementById('panel-profile').classList.contains('active')) updateProfileStats();
+}
+document.getElementById('claimBtn').onclick = function(){
+  document.getElementById('modalOverlay').classList.remove('show');
+  detailAction.style.display = 'flex';
+  detailRollSection.classList.remove('show');
+  detailOpenBtn.disabled = false;
+  if (document.getElementById('panel-upgrade').classList.contains('active')) renderUpgradeTab();
+  if (document.getElementById('panel-profile').classList.contains('active')) updateProfileStats();
+};
+
+/* ---------- 9. Кнопка "Назад" ---------- */
+document.getElementById('backToCasesBtn').onclick = function() {
+  showSelectionView();
+};
+
+/* ---------- 10. Эффекты ---------- */
+function playDropSound(soundId) {
+  const el = document.getElementById(soundId);
+  if(el) { el.currentTime = 0; el.play().catch(()=>{}); }
+}
+function screenFlash(){
+  const flash = document.createElement('div');
+  flash.className = 'win-flash';
+  document.body.appendChild(flash);
+  flash.animate([{opacity:0},{opacity:1,offset:.15},{opacity:0}], {duration:500, easing:'ease-out'});
+  setTimeout(() => flash.remove(), 520);
+}
+function celebrateLanding(viewportEl, soundId){
+  playDropSound(soundId);
+  screenFlash();
+  if(viewportEl){
+    viewportEl.classList.remove('impact');
+    void viewportEl.offsetWidth;
+    viewportEl.classList.add('impact');
+  }
+}
+function launchConfetti(){
+  const colors = ['#ffcf4d','#ff7a3d','#4caf50','#2f8fff','#a24bf0','#ff3d6b'];
+  for(let i=0; i<60; i++){
+    const c = document.createElement('div');
+    c.className = 'confetti';
+    c.style.left = Math.random()*100 + 'vw';
+    c.style.background = colors[Math.floor(Math.random()*colors.length)];
+    c.style.transform = 'rotate('+Math.random()*360+'deg)';
+    document.body.appendChild(c);
+    const duration = 2200 + Math.random()*1400;
+    const drift = (Math.random()-0.5)*200;
+    c.animate([
+      { transform: c.style.transform + ' translate(0,0)', opacity:1 },
+      { transform: 'rotate('+Math.random()*720+'deg) translate('+drift+'px, 100vh)', opacity:.9 }
+    ], { duration, easing:'cubic-bezier(.2,.6,.4,1)' });
+    setTimeout(() => c.remove(), duration+50);
+  }
+}
+
+/* ---------- 11. Профиль + Инвентарь ---------- */
+function updateProfileStats(){
+  document.getElementById('statBalance').textContent = balance;
+  const best = stats.bestDropId ? byId(ALL_ITEMS, stats.bestDropId) : null;
+  const bestEl = document.getElementById('statBestDrop');
+  if(best){
+    bestEl.textContent = `${best.name} (${RARITY_LABEL[best.rarity]})`;
+    bestEl.style.color = getComputedStyle(document.documentElement).getPropertyValue(`--${best.rarity}`).trim();
+  } else {
+    bestEl.textContent = '—';
+    bestEl.style.color = 'var(--muted)';
+  }
+  document.getElementById('statCases').textContent = stats.totalCasesOpened;
+  const totalItems = Object.values(inventory).reduce((a,b) => a+b, 0);
+  document.getElementById('statItems').textContent = totalItems;
+  document.getElementById('statUpgrades').textContent = stats.totalUpgradeSuccess;
+  document.getElementById('statSpent').textContent = stats.totalCoinsSpent;
+  document.getElementById('statEarned').textContent = stats.totalCoinsEarned;
+  checkDailyBonus();
+
+  // Рендер инвентаря в профиле
+  renderProfileInventory();
+}
+
+function renderProfileInventory() {
+  const container = document.getElementById('profileInventoryList');
+  const entries = Object.entries(inventory).filter(([id, qty]) => qty > 0);
+  if (entries.length === 0) {
+    container.innerHTML = '<div class="inv-empty">Инвентарь пуст</div>';
+    return;
+  }
+  container.innerHTML = entries.map(([id, qty]) => {
+    const item = byId(ALL_ITEMS, Number(id));
+    if (!item) return '';
+    const price = SELL_PRICES[item.rarity] || 0;
+    return `<div class="inv-item">
+      <div class="inv-img">${imgOrPlaceholder(item, 'inv-img')}</div>
+      <div class="inv-name ${rarityColorClass(item.rarity)}">${item.name}</div>
+      <div class="inv-qty">×${qty}</div>
+      <button class="sell-btn" data-id="${item.id}" data-price="${price}">Продать за ${price} 🪙</button>
+    </div>`;
+  }).join('');
+
+  // Обработчики продажи
+  container.querySelectorAll('.sell-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const id = Number(this.dataset.id);
+      const price = Number(this.dataset.price);
+      if (!inventory[id] || inventory[id] <= 0) return;
+      inventory[id] -= 1;
+      if (inventory[id] <= 0) delete inventory[id];
+      balance += price;
+      stats.totalCoinsEarned += price;
+      saveGameData();
+      updateBalanceUI();
+      updateProfileStats();
+      if (document.getElementById('panel-upgrade').classList.contains('active')) renderUpgradeTab();
+      const msg = document.getElementById('couponMessage');
+      msg.textContent = `💰 Продано за ${price} монет!`;
+      msg.style.color = '#7fdb7f';
+      setTimeout(() => { msg.textContent = ''; }, 3000);
+    });
+  });
+}
+
+/* ---------- 12. Аватарка ---------- */
+let avatarDataURL = localStorage.getItem('avatarDataURL') || null;
+const avatarWrap = document.getElementById('avatarWrap');
+const avatarImg = document.getElementById('avatarImg');
+const avatarPlaceholder = document.getElementById('avatarPlaceholder');
+const avatarInput = document.getElementById('avatarInput');
+if (avatarDataURL) {
+  avatarImg.src = avatarDataURL;
+  avatarImg.style.display = 'block';
+  avatarPlaceholder.style.display = 'none';
+}
+avatarWrap.addEventListener('click', () => avatarInput.click());
+avatarInput.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    const dataURL = ev.target.result;
+    localStorage.setItem('avatarDataURL', dataURL);
+    avatarDataURL = dataURL;
+    avatarImg.src = dataURL;
+    avatarImg.style.display = 'block';
+    avatarPlaceholder.style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+});
+
+/* ---------- 13. Апгрейд (без выбора риска) ---------- */
+let selectedFromId = null;
+let selectedToId = null;
+
+function baseChanceForRarity(rarity){
+  const map = { common:70, uncommon:60, rare:50, epic:40, legendary:30, mythical:20 };
+  return map[rarity] || 50;
+}
+function calculateChance(fromRarity, toRarity){
+  const fromIdx = getRarityIndex(fromRarity);
+  const toIdx = getRarityIndex(toRarity);
+  if(toIdx <= fromIdx) return 0;
+  const diff = toIdx - fromIdx;
+  let chance = baseChanceForRarity(fromRarity) - diff * 12;
+  return Math.max(5, Math.min(95, chance));
+}
+
+function renderUpgradeTab(){
+  renderInventoryUpgrade();
+  renderTargets();
+  updatePreview();
+  updateChanceDisplay();
+}
+
+function renderInventoryUpgrade(){
+  const grid = document.getElementById('inventoryGrid');
+  const entries = Object.entries(inventory).filter(([id, qty]) => qty > 0);
+  if(entries.length === 0){
+    grid.innerHTML = '<div class="up-empty" style="grid-column:1/-1;">Инвентарь пуст</div>';
+    return;
+  }
+  grid.innerHTML = entries.map(([id, qty]) => {
+    const item = byId(ALL_ITEMS, Number(id));
+    if(!item) return '';
+    const active = (Number(id) === selectedFromId) ? 'active' : '';
+    return `<div class="up-inv-item ${active}" data-id="${item.id}" onclick="selectFrom(${item.id})">
+      ${imgOrPlaceholder(item,'ph')}
+      <div class="n ${rarityColorClass(item.rarity)}">${item.name}</div>
+      <div class="qty">×${qty}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderTargets(){
+  const grid = document.getElementById('targetGrid');
+  if(!selectedFromId){
+    grid.innerHTML = '<div class="up-empty" style="grid-column:1/-1;">Сначала выберите исходный предмет</div>';
+    return;
+  }
+  const from = byId(ALL_ITEMS, selectedFromId);
+  if(!from){
+    grid.innerHTML = '<div class="up-empty" style="grid-column:1/-1;">Предмет не найден</div>';
+    return;
+  }
+  const fromIdx = getRarityIndex(from.rarity);
+  const targets = ALL_ITEMS.filter(it => getRarityIndex(it.rarity) > fromIdx);
+  if(targets.length === 0){
+    grid.innerHTML = '<div class="up-empty" style="grid-column:1/-1;">Нет предметов выше редкости</div>';
+    return;
+  }
+  targets.sort((a,b) => getRarityIndex(b.rarity) - getRarityIndex(a.rarity));
+  grid.innerHTML = targets.map(item => {
+    const active = (item.id === selectedToId) ? 'active' : '';
+    return `<div class="up-target-item ${active}" data-id="${item.id}" onclick="selectTo(${item.id})">
+      ${imgOrPlaceholder(item,'ph')}
+      <div class="n ${rarityColorClass(item.rarity)}">${item.name}</div>
+      <div class="qty">(есть: ${inventory[item.id]||0})</div>
+    </div>`;
+  }).join('');
+}
+
+function selectFrom(id){
+  if(selectedFromId === id){ selectedFromId = null; selectedToId = null; }
+  else { selectedFromId = id; selectedToId = null; }
+  renderUpgradeTab();
+}
+function selectTo(id){
+  if(selectedToId === id) selectedToId = null;
+  else selectedToId = id;
+  renderUpgradeTab();
+}
+
+function updatePreview(){
+  const fromPreview = document.getElementById('upFromPreview');
+  const toPreview = document.getElementById('upToPreview');
+  const btn = document.getElementById('exchangeBtn');
+  if(selectedFromId){
+    const from = byId(ALL_ITEMS, selectedFromId);
+    if(from){
+      fromPreview.innerHTML = `${imgOrPlaceholder(from,'ph')}<div class="pn ${rarityColorClass(from.rarity)}">${from.name}</div><div class="pq">В наличии: ${inventory[from.id]||0} шт.</div>`;
+    }
+  } else {
+    fromPreview.innerHTML = '<div class="up-empty">Ничего не выбрано</div>';
+  }
+  if(selectedToId){
+    const to = byId(ALL_ITEMS, selectedToId);
+    if(to){
+      toPreview.innerHTML = `${imgOrPlaceholder(to,'ph')}<div class="pn ${rarityColorClass(to.rarity)}">${to.name}</div><div class="pq">Уже есть: ${inventory[to.id]||0} шт.</div>`;
+    }
+  } else {
+    toPreview.innerHTML = '<div class="up-empty">Ничего не выбрано</div>';
+  }
+  const from = selectedFromId ? byId(ALL_ITEMS, selectedFromId) : null;
+  const to = selectedToId ? byId(ALL_ITEMS, selectedToId) : null;
+  const canUpgrade = from && to && (inventory[from.id]||0) > 0 && getRarityIndex(to.rarity) > getRarityIndex(from.rarity);
+  btn.disabled = !canUpgrade;
+}
+
+function updateChanceDisplay(){
+  const el = document.getElementById('chanceNum');
+  if(selectedFromId && selectedToId){
+    const from = byId(ALL_ITEMS, selectedFromId);
+    const to = byId(ALL_ITEMS, selectedToId);
+    if(from && to && getRarityIndex(to.rarity) > getRarityIndex(from.rarity)){
+      el.textContent = calculateChance(from.rarity, to.rarity) + '%';
+    } else {
+      el.textContent = '—';
+    }
+  } else {
+    el.textContent = '—';
+  }
+}
+
+document.getElementById('exchangeBtn').onclick = function(){
+  const from = byId(ALL_ITEMS, selectedFromId);
+  const to = byId(ALL_ITEMS, selectedToId);
+  if(!from || !to) return;
+  if((inventory[from.id]||0) < 1){ alert('У вас нет этого предмета!'); return; }
+  if(getRarityIndex(to.rarity) <= getRarityIndex(from.rarity)){ alert('Цель должна быть выше редкости!'); return; }
+  const chance = calculateChance(from.rarity, to.rarity);
+  const success = Math.random() * 100 < chance;
+  inventory[from.id] = (inventory[from.id] || 0) - 1;
+  if(inventory[from.id] <= 0) delete inventory[from.id];
+  if(success){
+    inventory[to.id] = (inventory[to.id] || 0) + 1;
+    stats.totalUpgradeSuccess += 1;
+  }
+  saveGameData();
+  this.disabled = true;
+  document.getElementById('upResult').textContent = 'Крутим рулетку…';
+  document.getElementById('upResult').className = 'up-result';
+  runUpgradeRoll(success, to, () => {
+    const resultEl = document.getElementById('upResult');
+    if(success){
+      resultEl.textContent = `✅ Успех! Вы получили ${to.name}!`;
+      resultEl.className = 'up-result success';
+      launchConfetti();
+    } else {
+      resultEl.textContent = `❌ Неудача. ${from.name} сгорел. Попробуйте ещё раз.`;
+      resultEl.className = 'up-result fail';
+    }
+    renderUpgradeTab();
+    if(!inventory[from.id]){
+      selectedFromId = null; selectedToId = null;
+      renderUpgradeTab();
+    }
+    this.disabled = false;
+    if(document.getElementById('panel-profile').classList.contains('active')) updateProfileStats();
+  });
+};
+
+const BURN_CARD = { name:'Сгорело', rarity:'mythical', isBurn:true };
+function upgradeRollCardHTML(entry){
+  if(entry.isBurn) return `<div class="ph" style="font-size:30px;">💀</div><div class="rn r-mythical">Неудача</div>`;
+  return `${imgOrPlaceholder(entry,'ph')}<div class="rn ${rarityColorClass(entry.rarity)}">${entry.name}</div>`;
+}
+function runUpgradeRoll(success, toItem, onDone){
+  const section = document.getElementById('upgradeRollSection');
+  const track = document.getElementById('upgradeRollTrack');
+  section.classList.add('show');
+  track.style.transition = 'none';
+  track.style.transform = 'translateX(0)';
+  const REEL_LEN = 30;
+  const TAIL_PAD = 8;
+  const strip = [];
+  for(let i=0; i<REEL_LEN-1; i++) strip.push(Math.random()<0.5 ? toItem : BURN_CARD);
+  strip.push(success ? toItem : BURN_CARD);
+  for(let i=0; i<TAIL_PAD; i++) strip.push(Math.random()<0.5 ? toItem : BURN_CARD);
+  track.innerHTML = strip.map((entry, idx) => `<div class="roll-item" data-idx="${idx}">${upgradeRollCardHTML(entry)}</div>`).join('');
+  const itemWidth = 120;
+  const viewportEl = section.querySelector('.roll-viewport');
+  const viewportWidth = viewportEl.clientWidth;
+  const finalOffset = (REEL_LEN - 0.5) * itemWidth - viewportWidth / 2;
+  const ROLL_DURATION = 5;
+  requestAnimationFrame(() => {
+    track.style.transition = `transform ${ROLL_DURATION}s cubic-bezier(0.1, 0.9, 0.12, 1)`;
+    track.style.transform = `translateX(-${finalOffset}px)`;
+  });
+  setTimeout(() => {
+    const last = track.querySelector(`[data-idx="${REEL_LEN-1}"]`);
+    if(last) last.classList.add(success ? 'winner' : 'loser');
+    if(success) celebrateLanding(viewportEl, 'dropSound');
+    onDone();
+  }, ROLL_DURATION*1000 + 100);
+}
+
+/* ---------- 14. Переключение вкладок ---------- */
+document.querySelectorAll('.tab[data-tab]').forEach(tab => {
+  tab.onclick = function(){
+    document.querySelectorAll('.tab[data-tab]').forEach(t => t.classList.remove('active'));
+    this.classList.add('active');
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('panel-' + this.dataset.tab).classList.add('active');
+    if (this.dataset.tab === 'cases') {
+      showSelectionView();
+      renderCasesGrid();
+    }
+    if (this.dataset.tab === 'upgrade') renderUpgradeTab();
+    if (this.dataset.tab === 'profile') updateProfileStats();
+  };
+});
+
+/* ---------- 15. Инициализация ---------- */
+loadGameData();
+updateBalanceUI();
+renderCasesGrid();
+showSelectionView();
+checkDailyBonus();
+document.getElementById('couponBtn').addEventListener('click', activateCoupon);
+document.getElementById('couponInput').addEventListener('keydown', (e) => { if(e.key === 'Enter') activateCoupon(); });
+document.getElementById('detailOddsToggle').onclick = function(){
+  const t = document.getElementById('detailOddsTable');
+  t.classList.toggle('show');
+  this.textContent = t.classList.contains('show') ? 'скрыть шансы выпадения' : 'показать шансы выпадения';
+};
+if(document.getElementById('panel-profile').classList.contains('active')) updateProfileStats();
+console.log('🍐 Груша-ДРОП – финальный билд загружен!');
+</script>
+</body>
+</html>
