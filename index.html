@@ -108,7 +108,6 @@ main{padding:28px 0 60px;}
   justify-content:center;
 }
 
-/* Блок с кнопкой */
 .case-action{
   display:flex;
   flex-direction:column;
@@ -146,7 +145,6 @@ main{padding:28px 0 60px;}
 }
 .multi-selector select:focus{border-color:var(--accent2);}
 
-/* Рулетка для 1 кейса – появляется вместо кнопки */
 .roll-section{
   width:100%;
   display:none;
@@ -212,7 +210,6 @@ main{padding:28px 0 60px;}
   50%{box-shadow:inset 0 0 30px rgba(255,61,61,.45);}
 }
 
-/* Мульти-рулетки (2-5) – скрыты по умолчанию */
 .multi-roll-container{
   display:flex; flex-wrap:wrap; gap:10px; justify-content:center; width:100%;
   display:none;
@@ -444,7 +441,6 @@ main{padding:28px 0 60px;}
   font-weight:700; padding:4px 12px; border-radius:6px;
   cursor:pointer; font-size:12px; margin-top:4px;
 }
-/* Блок улучшенного предмета */
 .upgraded-item-block{
   background:linear-gradient(135deg, #2a0a4a, #4a1a6a);
   border:2px solid #9b4dff; border-radius:16px; padding:16px;
@@ -671,7 +667,6 @@ footer{
       <div class="case-name" id="detailCaseName">Тимур-КЕЙС</div>
       
       <div class="case-action-wrapper">
-        <!-- Блок с кнопкой -->
         <div class="case-action" id="caseAction">
           <div class="price-tag" id="detailCaseCost">50 🪙</div>
           <div class="multi-selector">
@@ -687,7 +682,6 @@ footer{
           <button class="open-btn" id="detailOpenBtn">🎰 ОТКРЫТЬ</button>
         </div>
         
-        <!-- Рулетка для 1 кейса -->
         <div class="roll-section" id="detailRollSection">
           <div class="roll-viewport">
             <div class="roll-pointer"></div>
@@ -695,7 +689,6 @@ footer{
           </div>
         </div>
         
-        <!-- Мульти-рулетки -->
         <div class="multi-roll-container" id="multiRollContainer"></div>
       </div>
       
@@ -840,8 +833,8 @@ footer{
 
 <script>
 /* =========================================================================
-   ГРУША-ДРОП – ИСПРАВЛЕННАЯ ВЕРСИЯ 3.0
-   РУЛЕТКА ТОЧНО ЗАМЕНЯЕТ КНОПКУ, УЛУЧШЕНИЕ РАБОТАЕТ
+   ГРУША-ДРОП – ИСПРАВЛЕННАЯ ВЕРСИЯ 4.0
+   АВТОМАТИЧЕСКИЙ СБРОС УЛУЧШЕНИЯ ПРИ ЗАГРУЗКЕ
    ========================================================================= */
 
 // ---------- 1. Данные о предметах и кейсах ----------
@@ -923,21 +916,21 @@ const ALL_ITEMS = [
   {id:56, name:"Маньяк", rarity:"epic", img:"skuf4.jpg", bonus:"Инфернальный"},
   {id:57, name:"Бешеная блядота", rarity:"legendary", img:"skuf5.jpg", bonus:"Инфернальная"},
   {id:58, name:"Навязчивые мысли", rarity:"mythical", img:"skuf6.jpg", bonus:"Инфернальные"},
-  {id:59, name:"Артур", rarity:"mythical", img:"mell1.jpg", bonus:"Привет Артур"},
-  {id:60, name:"Я уже красный", rarity:"mythical", img:"mell2.jpg", bonus:"Культурно не получится"},
-  {id:61, name:"Подозревающий", rarity:"mythical", img:"mell3.jpg", bonus:"Прозрел"},
-  {id:62, name:"Мытищи", rarity:"mythical", img:"mell4.jpg", bonus:"Тимур помойся"},
-  {id:63, name:"Омайгад", rarity:"mythical", img:"mell5.jpg", bonus:"Доброта которая не уместилась в сердце"},
-  {id:64, name:"Импульс", rarity:"mythical", img:"mell6.jpg", bonus:"На нахуй"},
-  {id:65, name:"Еба ферзь", rarity:"mythical", img:"mell7.jpg", bonus:"Крутой тип"},
-  {id:66, name:"Ам", rarity:"mythical", img:"mell8.jpg", bonus:"Ам ам ам"},
-  {id:67, name:"Панк", rarity:"mythical", img:"mell9.jpg", bonus:"Горшок сдох"},
-  {id:68, name:"Темный друн", rarity:"mythical", img:"mell10.jpg", bonus:"Вклубе"},
-  {id:69, name:"Задержали", rarity:"mythical", img:"mell11.jpg", bonus:"Обыграл нахуй"},
-  {id:70, name:"Чад", rarity:"mythical", img:"mell12.jpg", bonus:"Уже не торт"},
-  {id:71, name:"Яичко", rarity:"mythical", img:"mell13.jpg", bonus:"Королевское"},
-  {id:72, name:"Ебанутые скулы", rarity:"mythical", img:"mell14.jpg", bonus:"хз"},
-  {id:73, name:"2 смена", rarity:"mythical", img:"mell15.jpg", bonus:"легендарно"},
+  {id:59, name:"Мелл 1", rarity:"mythical", img:"mell1.jpg", bonus:"Меллстрой"},
+  {id:60, name:"Мелл 2", rarity:"mythical", img:"mell2.jpg", bonus:"Меллстрой"},
+  {id:61, name:"Мелл 3", rarity:"mythical", img:"mell3.jpg", bonus:"Меллстрой"},
+  {id:62, name:"Мелл 4", rarity:"mythical", img:"mell4.jpg", bonus:"Меллстрой"},
+  {id:63, name:"Мелл 5", rarity:"mythical", img:"mell5.jpg", bonus:"Меллстрой"},
+  {id:64, name:"Мелл 6", rarity:"mythical", img:"mell6.jpg", bonus:"Меллстрой"},
+  {id:65, name:"Мелл 7", rarity:"mythical", img:"mell7.jpg", bonus:"Меллстрой"},
+  {id:66, name:"Мелл 8", rarity:"mythical", img:"mell8.jpg", bonus:"Меллстрой"},
+  {id:67, name:"Мелл 9", rarity:"mythical", img:"mell9.jpg", bonus:"Меллстрой"},
+  {id:68, name:"Мелл 10", rarity:"mythical", img:"mell10.jpg", bonus:"Меллстрой"},
+  {id:69, name:"Мелл 11", rarity:"mythical", img:"mell11.jpg", bonus:"Меллстрой"},
+  {id:70, name:"Мелл 12", rarity:"mythical", img:"mell12.jpg", bonus:"Меллстрой"},
+  {id:71, name:"Мелл 13", rarity:"mythical", img:"mell13.jpg", bonus:"Меллстрой"},
+  {id:72, name:"Мелл 14", rarity:"mythical", img:"mell14.jpg", bonus:"Меллстрой"},
+  {id:73, name:"Мелл 15", rarity:"mythical", img:"mell15.jpg", bonus:"Меллстрой"},
   {id:74, name:"Якутск", rarity:"mythical", img:"gorod1.jpg", bonus:"Столица Фурри"},
   {id:75, name:"Снежинск", rarity:"mythical", img:"gorod2.jpg", bonus:"Бронзовый пидорас"},
   {id:76, name:"Ростов", rarity:"mythical", img:"gorod3.jpg", bonus:"6 дверей"},
@@ -1119,6 +1112,15 @@ function loadGameData() {
       username = data.username ?? "user";
     }
   } catch (e) {}
+  // АВТОМАТИЧЕСКИЙ СБРОС УЛУЧШЕНИЯ, ЕСЛИ ПРЕДМЕТ УДАЛЁН
+  if (stats.upgradedItem) {
+    const exists = inventory.some(inst => inst.uniqueId === stats.upgradedItem.uniqueId);
+    if (!exists) {
+      stats.upgradedItem = null;
+      // также удалим из stats, если он был сохранён как объект
+      saveGameData();
+    }
+  }
 }
 function saveGameData() {
   localStorage.setItem('grushaDropData', JSON.stringify({
@@ -1312,7 +1314,6 @@ detailOpenBtn.onclick = function() {
   saveGameData();
   updateBalanceUI();
 
-  // Скрываем кнопку
   caseAction.classList.add('hidden');
 
   const items = [];
@@ -1328,7 +1329,6 @@ detailOpenBtn.onclick = function() {
   }
   saveGameData();
 
-  // Если один кейс – стандартная рулетка с хвостом
   if (count === 1) {
     detailRollSection.classList.add('show');
     const won = items[0];
@@ -1377,7 +1377,6 @@ detailOpenBtn.onclick = function() {
       showNextModal();
     }, ROLL_DURATION * 1000 + 200);
   } else {
-    // Несколько кейсов – мульти-рулетки
     multiRollContainer.classList.add('show');
     multiRollContainer.innerHTML = '';
     const viewports = [];
@@ -2225,7 +2224,10 @@ document.querySelectorAll('.tab[data-tab]').forEach(tab => {
       renderCasesGrid();
     }
     if (this.dataset.tab === 'upgrade') renderUpgradeTab();
-    if (this.dataset.tab === 'profile') updateProfileStats();
+    if (this.dataset.tab === 'profile') {
+      // Принудительно обновляем профиль при переходе
+      updateProfileStats();
+    }
   };
 });
 
@@ -2244,10 +2246,7 @@ document.getElementById('couponBtn').addEventListener('click', activateCoupon);
 document.getElementById('couponInput').addEventListener('keydown', (e) => { if(e.key === 'Enter') activateCoupon(); });
 drawUpgradeWheel(0, 0);
 if(document.getElementById('panel-profile').classList.contains('active')) updateProfileStats();
-console.log('🍐 Груша-ДРОП – версия 3.0 загружена!');
-
-// ---------- 13. КОМАНДА ДЛЯ ПРИНУДИТЕЛЬНОГО СБРОСА УЛУЧШЕНИЯ ----------
-console.log('Если улучшение не появляется, выполните в консоли: stats.upgradedItem = null; localStorage.removeItem("grushaDropData"); location.reload();');
+console.log('🍐 Груша-ДРОП – версия 4.0 с автоматическим сбросом улучшения загружена!');
 </script>
 </body>
 </html>
