@@ -663,6 +663,8 @@ body.auth-locked>header,body.auth-locked>main,body.auth-locked>footer,body.auth-
 <audio id="case13Sound" src="case13sound.mp3" preload="auto"></audio>
 <audio id="case14Sound" src="case14sound.mp3" preload="auto"></audio>
 <audio id="ruletkaSound" src="ruletka.mp3" preload="auto"></audio>
+<audio id="upgradeRuletkaSound" src="ruletka.mp3" preload="auto"></audio>
+<audio id="upgradeWinSound" src="burmalda.mp3" preload="auto"></audio>
 
 <script>
 // =============================================================================
@@ -2453,6 +2455,9 @@ $('detailOpenBtn').onclick=async function(){
     if(count===1){
       $('detailRollSection').classList.add('show');const track=$('detailRollTrack'),won=openResults[0].item;track.style.transition='none';track.style.transform='translateX(0)';const strip=[];for(let i=0;i<29;i++)strip.push(weightedRandomItem(c.items));strip.push(won);for(let i=0;i<12;i++)strip.push(weightedRandomItem(c.items));track.innerHTML=strip.map((it,idx)=>`<div class="roll-item" data-idx="${idx}">${imgOrPlaceholder(it,'ph')}<div class="rn">${escapeHtml(it.name)}</div></div>`).join('');const itemWidth=120,vw=document.querySelector('.roll-viewport').clientWidth,finalOffset=(29.5)*itemWidth-vw/2,ROLL_DURATION=3,ruletka=$('ruletkaSound');ruletka.currentTime=0;ruletka.play().catch(()=>{});requestAnimationFrame(()=>{track.style.transition=`transform ${ROLL_DURATION}s cubic-bezier(.22,.61,.36,1)`;track.style.transform=`translateX(-${finalOffset}px)`;});setTimeout(()=>{ruletka.pause();ruletka.currentTime=0;const last=track.querySelector('[data-idx="29"]');if(last)last.classList.add('winner');document.querySelector('.roll-viewport').classList.add('impact');playDropSound(c.sound);screenFlash();showNextModal();},3200);
     }else{
+      // Для мульти-открытия оба массива должны ссылаться на одни и те же записи.
+      // Иначе после индивидуальной продажи openResults продолжает содержать уже проданный pending_id.
+      openResults=multiResultEntries;
       $('multiRollContainer').classList.add('show');const container=$('multiRollContainer');container.innerHTML='';const viewports=[];for(let i=0;i<count;i++){const vp=document.createElement('div');vp.className='roll-viewport';vp.style.cssText='flex:1 1 180px;min-width:150px;height:120px;';const pointer=document.createElement('div');pointer.className='roll-pointer';vp.appendChild(pointer);const track=document.createElement('div');track.className='roll-track';vp.appendChild(track);container.appendChild(vp);viewports.push({viewport:vp,track,won:openResults[i].item});}
       const ruletka=$('ruletkaSound');ruletka.currentTime=0;ruletka.play().catch(()=>{});viewports.forEach((vp,idx)=>{const strip=[];for(let i=0;i<29;i++)strip.push(weightedRandomItem(c.items));strip.push(vp.won);for(let i=0;i<10;i++)strip.push(weightedRandomItem(c.items));vp.track.innerHTML=strip.map((it,idx2)=>`<div class="roll-item" data-idx="${idx2}" style="width:80px;height:120px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border-right:1px solid #2a3455;">${imgOrPlaceholder(it,'ph')}<div class="rn" style="font-size:8px;text-align:center;padding:0 2px;">${escapeHtml(it.name)}</div></div>`).join('');const vw=vp.viewport.clientWidth||200,fo=29.5*80-vw/2;vp.track.style.transition='none';vp.track.style.transform='translateX(0)';setTimeout(()=>{vp.track.style.transition='transform 3s cubic-bezier(.22,.61,.36,1)';vp.track.style.transform=`translateX(-${fo}px)`;},idx*100);});setTimeout(()=>{ruletka.pause();ruletka.currentTime=0;viewports.forEach(v=>{const it=v.track.querySelector('[data-idx="29"]');if(it)it.classList.add('winner');v.viewport.classList.add('impact');playDropSound(c.sound);});screenFlash();showMultiResultModal();},3300);
     }
@@ -2522,29 +2527,34 @@ function showMultiResultModal(){
 
 async function sellOneMultiResult(index){
   const entry=multiResultEntries[index];
-  if(!entry || entry.status==='sold')return;
+  if(!entry || entry.status!=='pending')return;
   const card=$('multiResultGrid').querySelector(`[data-result-index="${index}"]`);
   const btn=card?.querySelector('[data-result-sell]');
   try{
     if(btn)btn.disabled=true;
     if(DEMO_MODE){
       game.balance+=getItemPrice(entry.item);
+      game.stats.totalCoinsEarned=(game.stats.totalCoinsEarned||0)+getItemPrice(entry.item);
       updateBalanceUI();
     }else{
-      const {error}=await sb.rpc('sell_pending_drop',{pending_id:entry.pendingId});
+      const {data,error}=await sb.rpc('sell_pending_drop',{pending_id:entry.pendingId});
       if(error)throw error;
+      if(data?.balance!=null)game.balance=Number(data.balance);
     }
     entry.status='sold';
-    openResults=openResults.filter(x=>x!==entry);
+    openResults=multiResultEntries.filter(x=>x.status==='pending');
     if(!DEMO_MODE)await refreshMyState();
     if(openResults.length===0){finishCaseOpening();return;}
     showMultiResultModal();
-  }catch(e){alert(e.message||'Не удалось продать предмет.');if(btn)btn.disabled=false;}
+  }catch(e){
+    if(btn)btn.disabled=false;
+    alert(e.message||'Не удалось продать предмет.');
+  }
 }
 
 async function claimAllMultiResults(){
-  if(!openResults.length)return;
-  const items=openResults.slice();
+  const items=multiResultEntries.filter(entry=>entry.status==='pending');
+  if(!items.length){finishCaseOpening();return;}
   try{
     $('multiClaimAllBtn').disabled=true;$('multiSellAllBtn').disabled=true;
     if(DEMO_MODE){
@@ -2556,28 +2566,46 @@ async function claimAllMultiResults(){
       }
     }
     items.forEach(entry=>entry.status='claimed');
+    openResults=[];
     finishCaseOpening();
-  }catch(e){alert(e.message||'Не удалось забрать все предметы.');$('multiClaimAllBtn').disabled=false;$('multiSellAllBtn').disabled=false;}
+  }catch(e){
+    // Если сервер сообщил, что pending уже обработан, синхронизируем состояние
+    // и закрываем окно вместо блокирующей ошибки поверх результата.
+    console.warn('claim all',e);
+    if(!DEMO_MODE)await refreshMyState().catch(()=>{});
+    openResults=multiResultEntries.filter(entry=>entry.status==='pending');
+    $('multiClaimAllBtn').disabled=false;$('multiSellAllBtn').disabled=false;
+    showMultiResultModal();
+  }
 }
 
 async function sellAllMultiResults(){
-  if(!openResults.length)return;
-  const items=openResults.slice();
+  const items=multiResultEntries.filter(entry=>entry.status==='pending');
+  if(!items.length){finishCaseOpening();return;}
   try{
     $('multiClaimAllBtn').disabled=true;$('multiSellAllBtn').disabled=true;
     if(DEMO_MODE){
-      game.balance+=items.reduce((sum,entry)=>sum+getItemPrice(entry.item),0);
+      const total=items.reduce((sum,entry)=>sum+getItemPrice(entry.item),0);
+      game.balance+=total;
+      game.stats.totalCoinsEarned=(game.stats.totalCoinsEarned||0)+total;
       updateBalanceUI();
     }else{
       for(const entry of items){
-        const {error}=await sb.rpc('sell_pending_drop',{pending_id:entry.pendingId});
+        const {data,error}=await sb.rpc('sell_pending_drop',{pending_id:entry.pendingId});
         if(error)throw error;
+        if(data?.balance!=null)game.balance=Number(data.balance);
       }
     }
     items.forEach(entry=>entry.status='sold');
     openResults=[];
     finishCaseOpening();
-  }catch(e){alert(e.message||'Не удалось продать все предметы.');$('multiClaimAllBtn').disabled=false;$('multiSellAllBtn').disabled=false;}
+  }catch(e){
+    console.warn('sell all',e);
+    if(!DEMO_MODE)await refreshMyState().catch(()=>{});
+    openResults=multiResultEntries.filter(entry=>entry.status==='pending');
+    $('multiClaimAllBtn').disabled=false;$('multiSellAllBtn').disabled=false;
+    showMultiResultModal();
+  }
 }
 
 $('multiClaimAllBtn').onclick=claimAllMultiResults;
@@ -2700,12 +2728,20 @@ const exchange=replaceWithClone('exchangeBtn');exchange.addEventListener('click'
     const success=data?.success===true || data?.success==='true' || data?.success===1;
     const serverStop = Number(data?.stop_angle);
     const stopAngle = Number.isFinite(serverStop) ? serverStop : pickVisualStopAngle(chance,success);
+
+    // Звук рулетки играет ровно во время вращения. На успешном результате
+    // после остановки запускается отдельный звук победы.
+    const upgradeRouletteSound=$('upgradeRuletkaSound');
+    const upgradeWinSound=$('upgradeWinSound');
+    if(upgradeRouletteSound){upgradeRouletteSound.pause();upgradeRouletteSound.currentTime=0;upgradeRouletteSound.play().catch(()=>{});}
     await animateUpgradeWheel(chance,success,stopAngle,5);
+    if(upgradeRouletteSound){upgradeRouletteSound.pause();upgradeRouletteSound.currentTime=0;}
 
     if(success){
       result.textContent=`🎉 Успех! ${byId(ALL_ITEMS,targetId).name} добавлен в инвентарь.`;
       result.className='up-result success';
       wheel.classList.add('wheel-win-active');
+      if(upgradeWinSound){upgradeWinSound.pause();upgradeWinSound.currentTime=0;upgradeWinSound.play().catch(()=>{});}
       $('winBurst').classList.add('show');
       launchConfetti(45);
     }else{
