@@ -201,6 +201,18 @@ main{padding:28px 0 60px;}
 .upgraded-item-block .upg-menu .dropdown div{padding:6px 16px; color:var(--text); cursor:pointer; font-size:13px; font-weight:400;}
 .upgraded-item-block .upg-menu .dropdown div:hover{background:var(--panel);}
 .upgraded-item-block .upg-menu .dropdown div.danger{color:#ff6b6b;}
+.upgraded-item-block .upg-menu .dropdown #changeUpgradeColorBtn{font-weight:700;}
+.upgrade-color-palette{display:none;grid-template-columns:repeat(4,22px);gap:7px;padding:8px 12px 10px;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin:5px 0;}
+.upgrade-color-palette.show{display:grid;}
+.upgrade-color-palette .color-swatch{width:22px;height:22px;border-radius:50%;border:2px solid rgba(255,255,255,.45);box-shadow:0 1px 5px rgba(0,0,0,.45);cursor:pointer;padding:0;transition:transform .12s,border-color .12s;}
+.upgrade-color-palette .color-swatch:hover{transform:scale(1.12);border-color:#fff;}
+.upgrade-color-palette .color-swatch.selected{border-color:#fff;box-shadow:0 0 0 2px var(--panel2),0 0 0 4px #fff,0 2px 8px rgba(0,0,0,.55);}
+.upgraded-item-block[data-upgrade-color]{border-color:var(--upgrade-color);box-shadow:0 0 24px color-mix(in srgb,var(--upgrade-color) 50%,transparent),0 0 50px color-mix(in srgb,var(--upgrade-color) 18%,transparent);}
+.upgraded-item-block[data-upgrade-color] .upg-price{color:var(--upgrade-color);}
+.public-upgraded[data-upgrade-color]{border-color:var(--upgrade-color);box-shadow:0 0 18px color-mix(in srgb,var(--upgrade-color) 35%,transparent);}
+.lb-online-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#42e878;box-shadow:0 0 7px rgba(66,232,120,.8);margin-right:7px;vertical-align:1px;}
+.lb-offline-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#59627b;margin-right:7px;vertical-align:1px;opacity:.7;}
+
 .profile-stats{display:grid; grid-template-columns:repeat(3,1fr); gap:14px;}
 .stat-card{background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:16px; text-align:center;}
 .stat-card .val{font-size:24px; font-weight:800; color:var(--accent2);}
@@ -499,6 +511,17 @@ body.auth-locked>header,body.auth-locked>main,body.auth-locked>footer,body.auth-
           <div class="upg-menu" id="upgMenu">
             ⋮
             <div class="dropdown" id="upgDropdown">
+              <div id="changeUpgradeColorBtn">🎨 Изменить цвет</div>
+              <div class="upgrade-color-palette" id="upgradeColorPalette" aria-label="Палитра цвета">
+                <button type="button" class="color-swatch" data-color="#2f8fff" style="background:#2f8fff" title="Синий"></button>
+                <button type="button" class="color-swatch" data-color="#7c4dff" style="background:#7c4dff" title="Фиолетовый"></button>
+                <button type="button" class="color-swatch" data-color="#00c2ff" style="background:#00c2ff" title="Голубой"></button>
+                <button type="button" class="color-swatch" data-color="#00d084" style="background:#00d084" title="Зелёный"></button>
+                <button type="button" class="color-swatch" data-color="#ffcf4d" style="background:#ffcf4d" title="Золотой"></button>
+                <button type="button" class="color-swatch" data-color="#ff7a3d" style="background:#ff7a3d" title="Оранжевый"></button>
+                <button type="button" class="color-swatch" data-color="#ff4f81" style="background:#ff4f81" title="Розовый"></button>
+                <button type="button" class="color-swatch" data-color="#ff3d6b" style="background:#ff3d6b" title="Красный"></button>
+              </div>
               <div class="danger" id="removeUpgradeBtn">Снять улучшение</div>
             </div>
           </div>
@@ -529,7 +552,7 @@ body.auth-locked>header,body.auth-locked>main,body.auth-locked>footer,body.auth-
           <div class="stat-card"><div class="val" id="statRank">—</div><div class="lbl">Ранг</div></div>
         </div>
         <div class="profile-coupon">
-          <input type="text" id="couponInput" placeholder="Введите промокод">
+          <input type="text" id="couponInput" placeholder="Введите промокод (zhilet: раз в час)">
           <button id="couponBtn">Активировать</button>
         </div>
         <div id="couponMessage" class="coupon-message"></div>
@@ -993,6 +1016,7 @@ let game = {
     couponGoldaUses: 0,
     upgradedItemId: null,
     upgradedInventoryId: null,
+    upgradedColor: '#2f8fff',
     xp: 0,
     achievements: [],
     unlockedCases: []
@@ -2187,6 +2211,7 @@ function applyServerState(bundle){
       const row=(bundle.inventory||[]).find(x=>Number(x.item_id)===legacyId);
       return row?row.id:null;
     })(),
+    upgradedColor:(/^#[0-9a-f]{6}$/i.test(String(s.upgraded_color||''))?String(s.upgraded_color):'#2f8fff'),
     xp:Number(s.xp||0),
     achievements:(bundle.achievements||[]).map(x=>x.achievement_id),
     unlockedCases:Array.isArray(s.unlocked_cases)?s.unlocked_cases.map(Number):[]
@@ -2252,10 +2277,15 @@ async function renderLeaderboard(){
   list.innerHTML='<div style="color:var(--muted);padding:10px;text-align:center;">Загрузка...</div>';
   const {data,error}=await sb.rpc('get_leaderboard');
   if(error){list.innerHTML='<div style="color:#ff6b6b;padding:10px;text-align:center;">Не удалось загрузить рейтинг.</div>';return;}
-  list.innerHTML=(data||[]).map((r,i)=>`<div class="lb-entry ${r.user_id===currentUser.id?'current-user':''}" data-user-id="${r.user_id}">
-      <span class="rank-num">${i+1}</span><span class="lb-username">${escapeHtml(r.username)}</span>
+  const presence=onlineChannel?onlineChannel.presenceState():{};
+  const onlineIds=new Set(Object.keys(presence).map(String));
+  list.innerHTML=(data||[]).map((r,i)=>{
+    const online=onlineIds.has(String(r.user_id));
+    return `<div class="lb-entry ${r.user_id===currentUser.id?'current-user':''}" data-user-id="${r.user_id}">
+      <span class="rank-num">${i+1}</span><span class="lb-username"><span class="${online?'lb-online-dot':'lb-offline-dot'}" title="${online?'Онлайн':'Не в сети'}"></span>${escapeHtml(r.username)}</span>
       <span class="lb-rank-icon">${r.rank_icon}</span><span class="lb-xp">${Number(r.xp)} XP</span>
-    </div>`).join('') || '<div style="color:var(--muted);padding:10px;text-align:center;">Пока нет игроков.</div>';
+    </div>`;
+  }).join('') || '<div style="color:var(--muted);padding:10px;text-align:center;">Пока нет игроков.</div>';
   list.querySelectorAll('.lb-entry').forEach(el=>el.addEventListener('click',()=>openPublicProfile(el.dataset.userId)));
 }
 
@@ -2269,6 +2299,11 @@ async function openPublicProfile(userId){
   switchTab('public-profile');
   const {data,error}=await sb.rpc('get_public_profile',{target_user_id:userId});
   if(error){$('publicName').textContent='Ошибка';$('publicInventory').innerHTML='<div class="inv-empty">Не удалось загрузить профиль.</div>';return;}
+  // Цвет запрашиваем отдельным RPC, чтобы он работал даже со старой версией get_public_profile.
+  try{
+    const {data:upgradeColor}=await sb.rpc('get_public_upgrade_color',{target_user_id:userId});
+    if(data && typeof data==='object'){data.state={...(data.state||{}),upgraded_color:upgradeColor||data.state?.upgraded_color||'#2f8fff'};}
+  }catch(_){/* старый backend: оставляем стандартный синий */}
   renderPublicProfile(data);
 }
 function renderPublicProfile(d){
@@ -2281,7 +2316,12 @@ function renderPublicProfile(d){
   const av=$('publicAvatar'); av.innerHTML=p.avatar_url?`<img src="${escapeHtml(p.avatar_url)}" alt="avatar">`:'<span>👤</span>';
   const up=itemBy(s.upgraded_item_id);
   $('publicUpgradedSection').style.display=up?'block':'none';
-  if(up){$('publicUpgradedImg').src=up.img;$('publicUpgradedName').textContent=up.name;$('publicUpgradedPrice').textContent=`Цена: ${getItemPrice(up)} 🪙`;}
+  if(up){
+    const color=(/^#[0-9a-f]{6}$/i.test(String(s.upgraded_color||''))?String(s.upgraded_color):'#2f8fff');
+    const pub=$('publicUpgradedSection').querySelector('.public-upgraded');
+    if(pub){pub.dataset.upgradeColor=color;pub.style.setProperty('--upgrade-color',color);}
+    $('publicUpgradedImg').src=up.img;$('publicUpgradedName').textContent=up.name;$('publicUpgradedPrice').textContent=`Цена: ${getItemPrice(up)} 🪙`;
+  }
   const inv=$('publicInventory'); inv.innerHTML=(d.inventory||[]).map(inst=>{const it=itemBy(inst.item_id);return it?`<div class="inv-card">${imgOrPlaceholder(it,'ph')}<div class="inv-price">${getItemPrice(it)} 🪙</div></div>`:''}).join('')||'<div class="inv-empty">Инвентарь пуст</div>';
   const achIds=new Set((d.achievements||[]).map(String)); $('publicAchievements').innerHTML=ACHIEVEMENTS.map(a=>`<div style="background:${achIds.has(String(a.id))?'var(--panel2)':'var(--panel)'};border:1px solid ${achIds.has(String(a.id))?'var(--accent2)':'var(--border)'};border-radius:8px;padding:6px;text-align:center;opacity:${achIds.has(String(a.id))?1:.5};"><div style="font-size:22px;">${achIds.has(String(a.id))?'🏅':'🔒'}</div><div style="font-size:10px;font-weight:700;">${escapeHtml(a.name)}</div></div>`).join('');
 }
@@ -2312,7 +2352,15 @@ async function updateProfileStats(){
   const prog=getRankProgress(game.stats.xp); $('profileRankProgress').style.width=(prog.progress*100)+'%'; $('profileRankNext').textContent=prog.nextXp!==null?`До следующего ранга: ${prog.remaining} XP`:'Максимальный ранг достигнут!';
   renderUpgradedBlock(); renderProfileInventory(); renderAchievements();
 }
-function renderUpgradedBlock(){const block=$('upgradedItemBlock'),item=getUpgradedItem(); if(item){block.style.display='block';$('upgImg').src=item.img;$('upgName').textContent=item.name;$('upgPrice').textContent=`⭐ Улучшенный • цена: ${getItemPrice(item)} 🪙`;}else block.style.display='none';}
+function renderUpgradedBlock(){
+  const block=$('upgradedItemBlock'),item=getUpgradedItem();
+  if(item){
+    const color=(/^#[0-9a-f]{6}$/i.test(String(game.stats.upgradedColor||''))?game.stats.upgradedColor:'#2f8fff');
+    block.style.display='block'; block.dataset.upgradeColor=color; block.style.setProperty('--upgrade-color',color);
+    $('upgImg').src=item.img; $('upgName').textContent=item.name; $('upgPrice').textContent=`⭐ Улучшенный • цена: ${getItemPrice(item)} 🪙`;
+    document.querySelectorAll('#upgradeColorPalette .color-swatch').forEach(x=>x.classList.toggle('selected',x.dataset.color.toLowerCase()===color.toLowerCase()));
+  }else{block.style.display='none';delete block.dataset.upgradeColor;}
+}
 function renderProfileInventory(){
   const container=document.getElementById('profileInventoryList');
   const groups=getAllItemsGrouped();
@@ -2350,6 +2398,8 @@ function renderProfileInventory(){
       btn.disabled=true;
       const {error}=await sb.rpc('set_upgraded_item',{inventory_id:btn.dataset.improve});
       if(error)throw error;
+      const colorResult=await sb.rpc('set_upgrade_color',{new_color:'#2f8fff'});
+      if(colorResult.error)throw colorResult.error;
       await refreshMyState();
     }catch(e){
       alert(e.message||'Не удалось установить улучшение.');
@@ -2569,7 +2619,25 @@ function replaceWithClone(id){const old=$(id);const clone=old.cloneNode(true);ol
 const sellAllBtn=replaceWithClone('sellAllBtn');sellAllBtn.addEventListener('click',async()=>{if(!game.inventory.length){alert('Инвентарь пуст!');return;}if(!confirm('Продать все предметы?'))return;try{sellAllBtn.disabled=true;const {error}=await sb.rpc('sell_all_inventory');if(error)throw error;await refreshMyState();}catch(e){alert(e.message||'Не удалось продать инвентарь.');}finally{sellAllBtn.disabled=false;}});
 const usernameSave=replaceWithClone('usernameSaveBtn');usernameSave.addEventListener('click',async()=>{const name=$('usernameInput').value.trim();if(!name){alert('Введите никнейм');return;}try{usernameSave.disabled=true;const {error}=await sb.rpc('update_my_profile',{new_username:name,new_avatar_url:null});if(error)throw error;$('usernameInput').value='';await refreshMyState();}catch(e){alert(e.message||'Не удалось изменить никнейм.');}finally{usernameSave.disabled=false;}});
 const couponBtn=replaceWithClone('couponBtn');couponBtn.addEventListener('click',activateCouponOnline);const couponInput=replaceWithClone('couponInput');couponInput.addEventListener('keydown',e=>{if(e.key==='Enter')activateCouponOnline();});
-async function activateCouponOnline(){const input=$('couponInput'),msg=$('couponMessage'),code=input.value.trim().toLowerCase();if(!code){msg.textContent='❌ Введите промокод';msg.style.color='#ff6b6b';return;}try{const {data,error}=await sb.rpc('activate_coupon',{coupon_code:code});if(error)throw error;msg.textContent=`✅ Промокод активирован! +${Number(data.reward)} монет`;msg.style.color='#7fdb7f';input.value='';await refreshMyState();}catch(e){msg.textContent='❌ '+(e.message||'Неверный промокод');msg.style.color='#ff6b6b';}}
+async function activateCouponOnline(){
+  const input=$('couponInput'),msg=$('couponMessage'),code=input.value.trim().toLowerCase();
+  if(!code){msg.textContent='❌ Введите промокод';msg.style.color='#ff6b6b';return;}
+  try{
+    if(code==='zhilet'){
+      const {data,error}=await sb.rpc('activate_zhilet_coupon');
+      if(error)throw error;
+      if(data?.ok===false){
+        const mins=Math.floor(Number(data.remaining_seconds||0)/60),secs=Number(data.remaining_seconds||0)%60;
+        msg.textContent=`⏳ Zhilet уже использован. Снова можно через ${mins}м ${String(secs).padStart(2,'0')}с.`;
+        msg.style.color='#ffb23d';
+        return;
+      }
+      msg.textContent='✅ Zhilet активирован! +100500 монет';msg.style.color='#7fdb7f';input.value='';await refreshMyState();return;
+    }
+    const {data,error}=await sb.rpc('activate_coupon',{coupon_code:code});
+    if(error)throw error;msg.textContent=`✅ Промокод активирован! +${Number(data.reward)} монет`;msg.style.color='#7fdb7f';input.value='';await refreshMyState();
+  }catch(e){msg.textContent='❌ '+(e.message||'Неверный промокод');msg.style.color='#ff6b6b';}
+}
 const avatarWrapClone=replaceWithClone('avatarWrap');const avatarInputClone=replaceWithClone('avatarInput');avatarWrapClone.addEventListener('click',()=>avatarInputClone.click());avatarInputClone.addEventListener('change',async e=>{const file=e.target.files?.[0];if(!file||!currentUser)return;try{const ext=(file.name.split('.').pop()||'jpg').toLowerCase();const path=`${currentUser.id}/avatar.${ext}`;const {error:upErr}=await sb.storage.from('avatars').upload(path,file,{upsert:true,contentType:file.type});if(upErr)throw upErr;const {data}=sb.storage.from('avatars').getPublicUrl(path);const {error:pErr}=await sb.rpc('update_my_profile',{new_username:null,new_avatar_url:data.publicUrl});if(pErr)throw pErr;await refreshMyState();}catch(err){alert(err.message||'Не удалось загрузить аватар.');}finally{avatarInputClone.value='';}});
 // Remove the legacy local listeners from the menu/button before wiring the server-backed versions.
 const upgMenu=replaceWithClone('upgMenu');
@@ -2593,6 +2661,25 @@ removeUpgradeBtn.addEventListener('click',async e=>{
     finally{removeUpgradeBtn.disabled=false;}
   },()=>{});
 });
+
+// Выбор цвета улучшенного предмета. Цвет хранится на сервере и виден в публичном профиле.
+const changeUpgradeColorBtn=replaceWithClone('changeUpgradeColorBtn');
+const upgradeColorPalette=$('upgradeColorPalette');
+changeUpgradeColorBtn.addEventListener('click',e=>{e.stopPropagation();upgradeColorPalette.classList.toggle('show');});
+upgradeColorPalette.querySelectorAll('.color-swatch').forEach(btn=>btn.addEventListener('click',async e=>{
+  e.stopPropagation();
+  const color=btn.dataset.color;
+  if(!/^#[0-9a-f]{6}$/i.test(color)||!game.stats.upgradedItemId)return;
+  try{
+    btn.disabled=true;
+    const {error}=await sb.rpc('set_upgrade_color',{new_color:color});
+    if(error)throw error;
+    game.stats.upgradedColor=color;
+    upgradeColorPalette.classList.remove('show');
+    await refreshMyState();
+  }catch(err){alert(err.message||'Не удалось изменить цвет улучшения.');}
+  finally{btn.disabled=false;}
+}));
 
 // Server-backed upgrade button with animated roulette.
 const exchange=replaceWithClone('exchangeBtn');exchange.addEventListener('click',async()=>{
