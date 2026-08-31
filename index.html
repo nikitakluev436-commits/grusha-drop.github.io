@@ -2499,28 +2499,42 @@ function finishCaseOpening(){
   refreshMyState().catch(console.error);
 }
 
-function showMultiResultModal(){
+function isAlreadyProcessedError(error){
+  const msg=String(error?.message||error||'').toLowerCase();
+  return msg.includes('предмет уже обработан') || msg.includes('уже обработан') || msg.includes('already processed');
+}
+
+function updateMultiResultView(message=''){
   if(!multiResultEntries.length){finishCaseOpening();return;}
   const grid=$('multiResultGrid');
   const items=multiResultEntries.slice();
   const columns=Math.min(items.length,5);
   grid.style.setProperty('--result-count',String(columns));
-  const remaining=items.filter(x=>x.status!=='sold').length;
-  $('multiResultSubtitle').textContent=`Выпало предметов: ${items.length}. Осталось забрать: ${remaining}.`;
+  const remaining=items.filter(x=>x.status==='pending').length;
+  const processed=items.length-remaining;
+  $('multiResultSubtitle').textContent=message || `Выпало предметов: ${items.length}. Осталось обработать: ${remaining}.`;
   grid.innerHTML=items.map((entry,idx)=>{
     const item=entry.item;
     const price=getItemPrice(item);
+    const processedState=entry.status!=='pending';
     const sold=entry.status==='sold';
-    return `<div class="multi-result-card ${sold?'sold':''}" data-result-index="${idx}" data-pending-id="${escapeHtml(entry.pendingId||'')}">
+    const claimed=entry.status==='claimed';
+    const label=sold?'✓ Продано':claimed?'✓ Забрано':'Продать';
+    return `<div class="multi-result-card ${processedState?'sold':''}" data-result-index="${idx}" data-pending-id="${escapeHtml(entry.pendingId||'')}">
       ${imgOrPlaceholder(item,'result-img')}
       <div class="result-name ${rarityColorClass(item.rarity)}">${escapeHtml(item.name)}</div>
       <div class="result-price">💰 ${price} 🪙</div>
-      <button class="result-sell" type="button" data-result-sell="${idx}" ${sold?'disabled':''}>${sold?'✓ Продано':'Продать'}</button>
+      <button class="result-sell" type="button" data-result-sell="${idx}" ${processedState?'disabled':''}>${label}</button>
     </div>`;
   }).join('');
   grid.querySelectorAll('[data-result-sell]').forEach(btn=>btn.addEventListener('click',()=>sellOneMultiResult(Number(btn.dataset.resultSell))));
   $('multiSellAllBtn').disabled=remaining===0;
   $('multiClaimAllBtn').disabled=remaining===0;
+}
+
+function showMultiResultModal(message=''){
+  if(!multiResultEntries.length){finishCaseOpening();return;}
+  updateMultiResultView(message);
   $('multiResultOverlay').classList.add('show');
   launchConfetti(35);
 }
@@ -2533,22 +2547,24 @@ async function sellOneMultiResult(index){
   try{
     if(btn)btn.disabled=true;
     if(DEMO_MODE){
-      game.balance+=getItemPrice(entry.item);
-      game.stats.totalCoinsEarned=(game.stats.totalCoinsEarned||0)+getItemPrice(entry.item);
+      const value=getItemPrice(entry.item);
+      game.balance+=value;
+      game.stats.totalCoinsEarned=(game.stats.totalCoinsEarned||0)+value;
       updateBalanceUI();
     }else{
       const {data,error}=await sb.rpc('sell_pending_drop',{pending_id:entry.pendingId});
-      if(error)throw error;
+      if(error && !isAlreadyProcessedError(error))throw error;
       if(data?.balance!=null)game.balance=Number(data.balance);
     }
     entry.status='sold';
     openResults=multiResultEntries.filter(x=>x.status==='pending');
     if(!DEMO_MODE)await refreshMyState();
-    if(openResults.length===0){finishCaseOpening();return;}
-    showMultiResultModal();
+    if(!openResults.length){finishCaseOpening();return;}
+    updateMultiResultView();
   }catch(e){
     if(btn)btn.disabled=false;
-    alert(e.message||'Не удалось продать предмет.');
+    updateMultiResultView('❌ Не удалось обработать один предмет. Остальные можно обработать отдельно.');
+    console.error('sell one multi result',e);
   }
 }
 
@@ -2557,25 +2573,48 @@ async function claimAllMultiResults(){
   if(!items.length){finishCaseOpening();return;}
   try{
     $('multiClaimAllBtn').disabled=true;$('multiSellAllBtn').disabled=true;
+    let failed=0;
     if(DEMO_MODE){
       items.forEach(entry=>addItemInstance(entry.item.id));
+      items.forEach(entry=>entry.status='claimed');
     }else{
       for(const entry of items){
-        const {error}=await sb.rpc('claim_pending_drop',{pending_id:entry.pendingId});
-        if(error)throw error;
+        try{
+          const {error}=await sb.rpc('claim_pending_drop',{pending_id:entry.pendingId});
+          if(error){
+            // This can happen after an interrupted previous batch. Treat it as already completed,
+            // because repeating the same pending ID must never block the whole result window.
+            if(isAlreadyProcessedError(error)){
+              entry.status='claimed';
+            }else{
+              failed++;
+              continue;
+            }
+          }else{
+            entry.status='claimed';
+          }
+        }catch(e){
+          if(isAlreadyProcessedError(e)) entry.status='claimed';
+          else failed++;
+        }
       }
+      await refreshMyState().catch(()=>{});
     }
-    items.forEach(entry=>entry.status='claimed');
-    openResults=[];
-    finishCaseOpening();
-  }catch(e){
-    // Если сервер сообщил, что pending уже обработан, синхронизируем состояние
-    // и закрываем окно вместо блокирующей ошибки поверх результата.
-    console.warn('claim all',e);
-    if(!DEMO_MODE)await refreshMyState().catch(()=>{});
     openResults=multiResultEntries.filter(entry=>entry.status==='pending');
+    if(openResults.length===0){
+      finishCaseOpening();
+      return;
+    }
+    const msg=failed>0
+      ? `⚠️ Не удалось обработать ${failed} предмет(ов). Остальные остаются доступными.`
+      : `Осталось обработать: ${openResults.length}.`;
+    updateMultiResultView(msg);
     $('multiClaimAllBtn').disabled=false;$('multiSellAllBtn').disabled=false;
-    showMultiResultModal();
+  }catch(e){
+    console.error('claim all',e);
+    openResults=multiResultEntries.filter(entry=>entry.status==='pending');
+    updateMultiResultView('❌ Не удалось выполнить массовый подбор. Обработанные предметы сохранены, повторная попытка безопасна.');
+    $('multiClaimAllBtn').disabled=false;$('multiSellAllBtn').disabled=false;
   }
 }
 
@@ -2584,27 +2623,50 @@ async function sellAllMultiResults(){
   if(!items.length){finishCaseOpening();return;}
   try{
     $('multiClaimAllBtn').disabled=true;$('multiSellAllBtn').disabled=true;
+    let failed=0;
     if(DEMO_MODE){
       const total=items.reduce((sum,entry)=>sum+getItemPrice(entry.item),0);
       game.balance+=total;
       game.stats.totalCoinsEarned=(game.stats.totalCoinsEarned||0)+total;
       updateBalanceUI();
+      items.forEach(entry=>entry.status='sold');
     }else{
       for(const entry of items){
-        const {data,error}=await sb.rpc('sell_pending_drop',{pending_id:entry.pendingId});
-        if(error)throw error;
-        if(data?.balance!=null)game.balance=Number(data.balance);
+        try{
+          const {data,error}=await sb.rpc('sell_pending_drop',{pending_id:entry.pendingId});
+          if(error){
+            if(isAlreadyProcessedError(error)){
+              entry.status='sold';
+            }else{
+              failed++;
+              continue;
+            }
+          }else{
+            entry.status='sold';
+          }
+          if(data?.balance!=null)game.balance=Number(data.balance);
+        }catch(e){
+          if(isAlreadyProcessedError(e)) entry.status='sold';
+          else failed++;
+        }
       }
+      await refreshMyState().catch(()=>{});
     }
-    items.forEach(entry=>entry.status='sold');
-    openResults=[];
-    finishCaseOpening();
-  }catch(e){
-    console.warn('sell all',e);
-    if(!DEMO_MODE)await refreshMyState().catch(()=>{});
     openResults=multiResultEntries.filter(entry=>entry.status==='pending');
+    if(openResults.length===0){
+      finishCaseOpening();
+      return;
+    }
+    const msg=failed>0
+      ? `⚠️ Не удалось обработать ${failed} предмет(ов). Остальные остаются доступными.`
+      : `Осталось обработать: ${openResults.length}.`;
+    updateMultiResultView(msg);
     $('multiClaimAllBtn').disabled=false;$('multiSellAllBtn').disabled=false;
-    showMultiResultModal();
+  }catch(e){
+    console.error('sell all',e);
+    openResults=multiResultEntries.filter(entry=>entry.status==='pending');
+    updateMultiResultView('❌ Не удалось выполнить массовую продажу. Обработанные предметы сохранены, повторная попытка безопасна.');
+    $('multiClaimAllBtn').disabled=false;$('multiSellAllBtn').disabled=false;
   }
 }
 
