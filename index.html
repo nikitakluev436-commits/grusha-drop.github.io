@@ -113,7 +113,7 @@ main{padding:28px 0 60px;}
 .inv-card .inv-price{font-size:9px; color:var(--gold); margin-top:2px;}
 .inv-card .price-tag{position:absolute; bottom:2px; right:2px; font-size:8px; background:rgba(0,0,0,.6); padding:0 4px; border-radius:4px; color:#fff;}
 .upgrade-title{font-size:22px; margin-bottom:20px; text-align:center; font-weight:800; letter-spacing:.5px;}
- .up-selection{display:grid; grid-template-columns:minmax(0,1fr) 420px minmax(0,1fr); gap:24px; align-items:start; margin-bottom:20px;}
+ .up-selection{display:grid; grid-template-columns:minmax(0,1fr) 315px minmax(0,1fr); gap:20px; align-items:start; margin-bottom:18px;}
 .up-card{background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:20px; min-height:200px; display:flex; flex-direction:column; align-items:center; text-align:center;}
 .up-card h4{font-size:13px; color:var(--muted); margin-bottom:10px; font-weight:600;}
 .up-preview{display:flex; flex-direction:column; align-items:center; gap:6px; padding:8px 0; width:100%;}
@@ -122,22 +122,22 @@ main{padding:28px 0 60px;}
 .up-preview .up-item .up-item-name{flex:1; text-align:left;}
 .up-preview .up-item .up-item-price{color:var(--gold);}
 .up-preview .up-total{margin-top:8px; font-size:14px; color:var(--gold); border-top:1px solid var(--border); padding-top:8px; width:100%;}
-.up-preview .ph{width:90px; height:90px; border-radius:10px; object-fit:cover; background:#0e1320; display:flex; align-items:center; justify-content:center; font-size:34px;}
+.up-preview .ph{width:90px; height:90px; border-radius:10px; object-fit:cover; background:#0e1320; display:flex; align-items:center; justify-content:center; font-size:32px;}
 .up-preview .pn{font-weight:700; font-size:14px;}
 .up-preview .pq{font-size:12px; color:var(--muted);}
 .up-preview .price{font-size:13px; color:var(--gold); font-weight:700;}
 .up-empty{color:var(--muted); font-size:13px; padding:20px 0;}
-.up-middle{background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:18px 18px 22px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; min-height:520px;}
-.upgrade-wheel-container{position:relative;width:330px;height:330px;max-width:100%;margin:0 auto;border-radius:50%;padding:8px;background:radial-gradient(circle at 50% 35%,rgba(255,255,255,.05),transparent 40%),#10172a;box-shadow:0 18px 42px rgba(0,0,0,.34),0 0 42px rgba(47,143,255,.08);overflow:visible;flex:0 0 auto;}
-.wheel-rotor{position:absolute;inset:8px;border-radius:50%;transform:none!important;transform-origin:50% 50%;will-change:auto;}
+.up-middle{background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:16px 14px 18px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; min-height:395px;}
+.upgrade-wheel-container{position:relative;width:270px;height:270px;max-width:100%;margin:0 auto;border-radius:50%;padding:7px;background:radial-gradient(circle at 50% 35%,rgba(255,255,255,.05),transparent 40%),#10172a;box-shadow:0 18px 42px rgba(0,0,0,.34),0 0 42px rgba(47,143,255,.08);overflow:visible;flex:0 0 auto;}
+.wheel-rotor{position:absolute;inset:7px;border-radius:50%;transform:none!important;transform-origin:50% 50%;will-change:auto;}
 .wheel-rotor canvas{display:block;width:100%;height:100%;border-radius:50%;background:transparent;}
 .upgrade-wheel-container::after{content:"";position:absolute;inset:8px;border-radius:50%;box-shadow:inset 0 0 0 2px rgba(255,255,255,.08),inset 0 0 24px rgba(0,0,0,.35),0 0 0 1px rgba(0,0,0,.45);pointer-events:none;z-index:2;}
-.wheel-pointer{position:absolute;inset:0;border-radius:50%;transform:rotate(0deg);transform-origin:50% 50%;will-change:transform;z-index:8;pointer-events:none;}
-.wheel-pointer::before{content:"";position:absolute;left:50%;top:-5px;transform:translateX(-50%);width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;border-top:27px solid #ffd257;filter:drop-shadow(0 4px 7px rgba(0,0,0,.72));}
-.wheel-pointer::after{content:"";position:absolute;left:50%;top:50%;width:8px;height:8px;border-radius:50%;background:#fff6c7;transform:translate(-50%,-50%);box-shadow:0 0 8px rgba(255,255,255,.85),0 0 14px rgba(255,210,87,.85);}
-.wheel-center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:45%;height:45%;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:radial-gradient(circle at 50% 28%,#1a243e 0%,#0d1320 68%,#090d17 100%);border:2px solid rgba(255,255,255,.08);box-shadow:0 12px 28px rgba(0,0,0,.42),inset 0 0 28px rgba(0,0,0,.34),inset 0 2px 0 rgba(255,255,255,.04);z-index:5;pointer-events:none;overflow:hidden;padding:8px;}
-.wheel-chance{position:static;transform:none;font-family:'Segoe UI Black','Arial Black',Impact,sans-serif;font-size:44px;line-height:.95;font-weight:900;letter-spacing:-1.5px;color:#fff;white-space:nowrap;font-variant-numeric:tabular-nums;text-align:center;display:block;text-shadow:0 1px 0 rgba(255,255,255,.35),0 2px 0 rgba(0,0,0,.95),0 4px 0 rgba(0,0,0,.74),0 7px 9px rgba(0,0,0,.62);}
-.wheel-caption{position:static;transform:none;margin-top:8px;font-family:'Segoe UI Semibold','Segoe UI',Arial,sans-serif;font-size:10px;line-height:1;color:#a5b0cd;text-transform:uppercase;letter-spacing:1.4px;text-align:center;white-space:nowrap;text-shadow:0 2px 6px rgba(0,0,0,.55);}
+.wheel-pointer{position:absolute;inset:7px;border-radius:50%;transform:rotate(0deg);transform-origin:50% 50%;will-change:transform;z-index:8;pointer-events:none;}
+.wheel-pointer::before{content:"";position:absolute;left:50%;top:-3px;transform:translateX(-50%);width:0;height:0;border-left:11px solid transparent;border-right:11px solid transparent;border-top:22px solid #ffd257;filter:drop-shadow(0 4px 7px rgba(0,0,0,.72));}
+.wheel-pointer::after{content:"";position:absolute;left:50%;top:50%;width:7px;height:7px;border-radius:50%;background:#fff6c7;transform:translate(-50%,-50%);box-shadow:0 0 8px rgba(255,255,255,.85),0 0 14px rgba(255,210,87,.85);}
+.wheel-center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:46%;height:46%;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:radial-gradient(circle at 50% 28%,#1a243e 0%,#0d1320 68%,#090d17 100%);border:2px solid rgba(255,255,255,.08);box-shadow:0 12px 28px rgba(0,0,0,.42),inset 0 0 28px rgba(0,0,0,.34),inset 0 2px 0 rgba(255,255,255,.04);z-index:5;pointer-events:none;overflow:hidden;padding:8px;}
+.wheel-chance{position:static;transform:none;font-family:'Segoe UI Black','Arial Black',Impact,sans-serif;font-size:34px;line-height:.95;font-weight:900;letter-spacing:-1.5px;color:#fff;white-space:nowrap;font-variant-numeric:tabular-nums;text-align:center;display:block;text-shadow:0 1px 0 rgba(255,255,255,.35),0 2px 0 rgba(0,0,0,.95),0 4px 0 rgba(0,0,0,.74),0 7px 9px rgba(0,0,0,.62);}
+.wheel-caption{position:static;transform:none;margin-top:6px;font-family:'Segoe UI Semibold','Segoe UI',Arial,sans-serif;font-size:9px;line-height:1;color:#a5b0cd;text-transform:uppercase;letter-spacing:1.4px;text-align:center;white-space:nowrap;text-shadow:0 2px 6px rgba(0,0,0,.55);}
 .upgrade-wheel-container.wheel-success{box-shadow:0 18px 50px rgba(0,0,0,.28),0 0 70px rgba(57,255,20,.28);}
 .upgrade-wheel-container.wheel-fail{box-shadow:0 18px 50px rgba(0,0,0,.28),0 0 70px rgba(255,49,49,.18);}
 .upgrade-wheel-container.wheel-win-active{animation:wheelWinPulse .5s ease-in-out 4;}
@@ -150,13 +150,13 @@ main{padding:28px 0 60px;}
 .win-burst{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(.3);font-size:36px;font-weight:900;letter-spacing:1px;color:#fff;text-shadow:0 2px 4px rgba(0,0,0,.85),0 0 18px rgba(0,0,0,.6);opacity:0;pointer-events:none;z-index:9;white-space:nowrap;}
 .win-burst.show{animation:winBurstPop 1.4s cubic-bezier(.2,.8,.3,1.2) forwards;}
 @keyframes winBurstPop{0%{opacity:0;transform:translate(-50%,-50%) scale(.2) rotate(-8deg);}15%{opacity:1;transform:translate(-50%,-50%) scale(1.2) rotate(3deg);}30%{transform:translate(-50%,-50%) scale(1) rotate(0deg);}75%{opacity:1;transform:translate(-50%,-50%) scale(1) rotate(0deg);}100%{opacity:0;transform:translate(-50%,-50%) scale(1.12) rotate(0deg);}}
-.exchange-btn{background:linear-gradient(180deg,var(--accent2),var(--accent)); border:none; color:#241000; font-weight:800; padding:14px 20px; border-radius:10px; cursor:pointer; font-size:14px; width:100%; max-width:280px; box-shadow:0 4px 0 #b04c1e;}
+.exchange-btn{background:linear-gradient(180deg,var(--accent2),var(--accent)); border:none; color:#241000; font-weight:800; padding:12px 18px; border-radius:10px; cursor:pointer; font-size:14px; width:100%; max-width:250px; box-shadow:0 4px 0 #b04c1e;}
 .exchange-btn:active{transform:translateY(3px); box-shadow:0 1px 0 #b04c1e;}
 .exchange-btn:disabled{opacity:.4; cursor:not-allowed; box-shadow:none;}
 .up-inventory-area{display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:10px;}
 .up-inv-col{background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:16px;}
 .up-inv-col h4{font-size:13px; color:var(--muted); margin-bottom:10px; font-weight:600;}
-.up-inv-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:8px; max-height:260px; overflow-y:auto; scrollbar-width:none; -ms-overflow-style:none;}
+.up-inv-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:8px; max-height:240px; overflow-y:auto; scrollbar-width:none; -ms-overflow-style:none;}
 .up-inv-grid::-webkit-scrollbar{width:0; height:0; display:none;}
 .up-inv-item{background:var(--panel2); border:1px solid var(--border); border-radius:8px; padding:6px; text-align:center; cursor:pointer; transition:border .15s, transform .1s;}
 .up-inv-item:hover{transform:scale(1.04); border-color:var(--accent2);}
@@ -165,7 +165,7 @@ main{padding:28px 0 60px;}
 .up-inv-item .n{font-size:10px; line-height:1.2; color:var(--text);}
 .up-inv-item .qty{font-size:9px; color:var(--muted);}
 .up-inv-item .price{font-size:9px; color:var(--gold);}
-.up-target-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:8px; max-height:260px; overflow-y:auto; scrollbar-width:none; -ms-overflow-style:none;}
+.up-target-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:8px; max-height:240px; overflow-y:auto; scrollbar-width:none; -ms-overflow-style:none;}
 .up-target-grid::-webkit-scrollbar{width:0; height:0; display:none;}
 .up-target-item{background:var(--panel2); border:1px solid var(--border); border-radius:8px; padding:6px; text-align:center; cursor:pointer; transition:border .15s, transform .1s;}
 .up-target-item:hover{transform:scale(1.04); border-color:var(--accent2);}
@@ -308,14 +308,14 @@ body.auth-locked>header,body.auth-locked>main,body.auth-locked>footer,body.auth-
 @media(max-width:900px){.public-stats{grid-template-columns:repeat(2,1fr)}.public-inventory{grid-template-columns:repeat(3,1fr)}.public-profile-head{align-items:flex-start}.online-badge{display:none}}
 
 @media(max-width:1300px){
-  .up-selection{grid-template-columns:minmax(0,1fr) 390px minmax(0,1fr);}
-  .upgrade-wheel-container{width:310px;height:310px;}
-  .wheel-chance{font-size:42px;}
+  .up-selection{grid-template-columns:minmax(0,1fr) 315px minmax(0,1fr);}
+  .upgrade-wheel-container{width:270px;height:270px;}
+  .wheel-chance{font-size:32px;}
 }
 @media(max-width:1050px){
   .up-selection{grid-template-columns:1fr;}
   .up-middle{min-height:0;}
-  .upgrade-wheel-container{width:330px;height:330px;max-width:90vw;}
+  .upgrade-wheel-container{width:290px;height:290px;max-width:90vw;}
 }
 </style>
 </head>
@@ -963,6 +963,7 @@ let game = {
     usedCoupons: [],
     couponGoldaUses: 0,
     upgradedItemId: null,
+    upgradedInventoryId: null,
     xp: 0,
     achievements: [],
     unlockedCases: []
@@ -1031,11 +1032,16 @@ function isItemUpgradable(itemId) {
   const price = getItemPrice(item);
   return price >= 50000 && game.stats.upgradedItemId == null;
 }
-function getUpgradedItem() {
-  if (game.stats.upgradedItemId === null) return null;
-  const item = byId(ALL_ITEMS, game.stats.upgradedItemId);
-  if (!item || getItemPrice(item) < 50000) { game.stats.upgradedItemId = null; return null; }
-  return item;
+function getUpgradedItem(){
+  const iid=game.stats.upgradedInventoryId||null;
+  if(iid){
+    const inst=game.inventory.find(x=>String(x.uniqueId)===String(iid));
+    const exact=inst?byId(ALL_ITEMS,Number(inst.itemId)):null;
+    if(exact && getItemPrice(exact)>=50000) return exact;
+  }
+  const itemId=game.stats.upgradedItemId==null?null:Number(game.stats.upgradedItemId);
+  const item=itemId==null?null:byId(ALL_ITEMS,itemId);
+  return item && getItemPrice(item)>=50000 ? item : null;
 }
 function updateBalanceUI(){ document.getElementById('balance').textContent = game.balance; }
 
@@ -1539,7 +1545,7 @@ function renderUpgradedBlock() {
   }
 }
 
-function renderProfileInventory() {
+function renderProfileInventoryLegacy() {
   const container = document.getElementById('profileInventoryList');
   const groups = getAllItemsGrouped();
   if (Object.keys(groups).length === 0) {
@@ -1767,6 +1773,27 @@ function drawUpgradeWheel(chance){
   for(let i=0;i<36;i++){const a=i/36*tau-Math.PI/2,outer=radius+12,inner=radius+5;ctx.beginPath();ctx.moveTo(cx+inner*Math.cos(a),cy+inner*Math.sin(a));ctx.lineTo(cx+outer*Math.cos(a),cy+outer*Math.sin(a));ctx.strokeStyle=i%3===0?'rgba(255,255,255,.15)':'rgba(255,255,255,.05)';ctx.lineWidth=i%3===0?2.2:1.2;ctx.stroke();}
   ctx.beginPath();ctx.arc(cx,cy,radius-arcWidth-6,0,tau);ctx.fillStyle='#0d1320';ctx.fill();ctx.strokeStyle='rgba(255,255,255,.10)';ctx.lineWidth=2.5;ctx.stroke();ctx.restore();$('upgradeChanceText').textContent=`${safeChance.toFixed(1)}%`;
 }
+function secureRandom01(){
+  if(window.crypto && crypto.getRandomValues){
+    const a=new Uint32Array(1);
+    crypto.getRandomValues(a);
+    return a[0]/4294967296;
+  }
+  return Math.random();
+}
+function pickVisualStopAngle(chance,success){
+  const greenSize=Math.max(0,Math.min(95,Number(chance)||0))*3.6;
+  const margin=Math.min(2, Math.max(.25, greenSize/8));
+  if(success){
+    const lo=margin, hi=Math.max(margin+0.01,greenSize-margin);
+    return lo + secureRandom01()*(hi-lo);
+  }
+  const redSize=360-greenSize;
+  const lo=greenSize+margin, hi=Math.max(lo+0.01,360-margin);
+  if(redSize<=margin*2) return greenSize+redSize/2;
+  return lo + secureRandom01()*(hi-lo);
+}
+
 function normalizeDeg(deg){return ((deg%360)+360)%360;}
 function animateUpgradeWheel(chance, success, stopAngleDeg, spins=6){
   if(isWheelSpinning)return Promise.resolve();
@@ -1852,17 +1879,68 @@ function isItemUnlockedForUpgrade(itemId){
 }
 
 function renderUpgradeTab(){
-  const inv=document.getElementById('inventoryGrid'),targets=document.getElementById('targetGrid'); if(!inv||!targets)return;
+  const inv=document.getElementById('inventoryGrid'), targets=document.getElementById('targetGrid');
+  if(!inv||!targets)return;
+
+  // A showcased item is still in the inventory, but it is not selectable as a roulette source.
+  const showcaseId=game.stats.upgradedInventoryId?String(game.stats.upgradedInventoryId):null;
   const total=getUpgradeSourceTotal();
-  if(selectedUpgradeTargetId!==null && !isItemUnlockedForUpgrade(selectedUpgradeTargetId)){selectedUpgradeTargetId=null;}
-  const showcasedId=game.stats.upgradedItemId==null?null:Number(game.stats.upgradedItemId);
-  const sourceInventory=game.inventory.filter(inst=>showcasedId===null || Number(inst.itemId)!==showcasedId);
-  inv.innerHTML=sourceInventory.length?sourceInventory.map(inst=>{const item=byId(ALL_ITEMS,inst.itemId);if(!item)return '';const active=selectedUpgradeInstances.some(x=>x.uniqueId===inst.uniqueId);return `<div class="up-inv-item ${active?'active':''}" data-unique="${inst.uniqueId}">${imgOrPlaceholder(item,'ph')}<div class="n">${escapeHtml(item.name)}</div><div class="qty">${getItemPrice(item)} 🪙</div></div>`;}).join(''):'<div class="up-empty">Нет доступных исходных предметов</div>';
-  inv.querySelectorAll('.up-inv-item').forEach(el=>el.addEventListener('click',()=>{const uid=el.dataset.unique;const i=selectedUpgradeInstances.findIndex(x=>x.uniqueId===uid);if(i>=0)selectedUpgradeInstances.splice(i,1);else{const inst=game.inventory.find(x=>x.uniqueId===uid);if(inst)selectedUpgradeInstances.push(inst);}selectedUpgradeTargetId=null;$('upResult').textContent='Выберите исходные и целевой предметы, затем нажмите «Прокачать».';$('upResult').className='up-result';renderUpgradeTab();}));
-  targets.innerHTML=total?ALL_ITEMS.filter(item=>getItemPrice(item)>total && Number(item.id)!==showcasedId && isItemUnlockedForUpgrade(item.id)).map(item=>`<div class="up-target-item ${selectedUpgradeTargetId===item.id?'active':''}" data-id="${item.id}">${imgOrPlaceholder(item,'ph')}<div class="n">${escapeHtml(item.name)}</div><div class="price">${getItemPrice(item)} 🪙</div></div>`).join(''):'<div class="up-empty">Сначала выберите исходные предметы</div>';
-  targets.querySelectorAll('.up-target-item').forEach(el=>el.addEventListener('click',()=>{selectedUpgradeTargetId=Number(el.dataset.id);renderUpgradeTab();}));
-  renderUpgradePreviews();drawUpgradeWheel(getUpgradeChance());if(wheelPointer)wheelPointer.style.transform=`rotate(${wheelArrowAngle}deg)`;
-  document.getElementById('exchangeBtn').disabled=!(selectedUpgradeInstances.length&&selectedUpgradeTargetId!==null&&getUpgradeChance()>0&&!upgradeBusy);
+
+  if(selectedUpgradeTargetId!==null && !isItemUnlockedForUpgrade(selectedUpgradeTargetId)){
+    selectedUpgradeTargetId=null;
+  }
+
+  const sourceInventory=game.inventory.filter(inst=>String(inst.uniqueId)!==showcaseId);
+  inv.innerHTML=sourceInventory.length
+    ? sourceInventory.map(inst=>{
+        const item=byId(ALL_ITEMS,Number(inst.itemId)); if(!item)return '';
+        const active=selectedUpgradeInstances.some(x=>String(x.uniqueId)===String(inst.uniqueId));
+        return `<div class="up-inv-item ${active?'active':''}" data-unique="${escapeHtml(inst.uniqueId)}">
+          ${imgOrPlaceholder(item,'ph')}
+          <div class="n">${escapeHtml(item.name)}</div>
+          <div class="qty">${getItemPrice(item)} 🪙</div>
+        </div>`;
+      }).join('')
+    : '<div class="up-empty">Нет доступных исходных предметов</div>';
+
+  inv.querySelectorAll('.up-inv-item').forEach(el=>el.addEventListener('click',()=>{
+    const uid=el.dataset.unique;
+    const i=selectedUpgradeInstances.findIndex(x=>String(x.uniqueId)===String(uid));
+    if(i>=0) selectedUpgradeInstances.splice(i,1);
+    else{
+      const inst=game.inventory.find(x=>String(x.uniqueId)===String(uid));
+      if(inst) selectedUpgradeInstances.push(inst);
+    }
+    selectedUpgradeTargetId=null;
+    $('upResult').textContent='Выберите исходные и целевой предметы, затем нажмите «Прокачать».';
+    $('upResult').className='up-result';
+    renderUpgradeTab();
+  }));
+
+  const targetHtml=total
+    ? ALL_ITEMS
+        .filter(item=>getItemPrice(item)>total && Number(item.id)!==(game.stats.upgradedItemId==null?null:Number(game.stats.upgradedItemId)) && isItemUnlockedForUpgrade(item.id))
+        .map(item=>`<div class="up-target-item ${selectedUpgradeTargetId===item.id?'active':''}" data-id="${item.id}">
+          ${imgOrPlaceholder(item,'ph')}
+          <div class="n">${escapeHtml(item.name)}</div>
+          <div class="price">${getItemPrice(item)} 🪙</div>
+        </div>`).join('')
+    : '<div class="up-empty">Сначала выберите исходные предметы</div>';
+  targets.innerHTML=targetHtml||'<div class="up-empty">Нет доступных целей по текущему рангу.</div>';
+  targets.querySelectorAll('.up-target-item').forEach(el=>el.addEventListener('click',()=>{
+    selectedUpgradeTargetId=Number(el.dataset.id);
+    renderUpgradeTab();
+  }));
+
+  renderUpgradePreviews();
+  drawUpgradeWheel(getUpgradeChance());
+  if(wheelPointer) wheelPointer.style.transform=`rotate(${wheelArrowAngle}deg)`;
+  document.getElementById('exchangeBtn').disabled=!(
+    selectedUpgradeInstances.length &&
+    selectedUpgradeTargetId!==null &&
+    getUpgradeChance()>0 &&
+    !upgradeBusy
+  );
 }
 // Legacy client-only upgrade handler removed; the server-backed handler below is authoritative.
 
@@ -2006,10 +2084,23 @@ function applyServerState(bundle){
     usedCoupons:Array.isArray(s.used_coupons)?s.used_coupons:[],
     couponGoldaUses:Number(s.coupon_golda_uses||0),
     upgradedItemId:(()=>{
+      const showcaseInstance = s.upgraded_inventory_id || null;
+      if (showcaseInstance) {
+        const row=(bundle.inventory||[]).find(x=>String(x.id)===String(showcaseInstance));
+        const item=row?byId(ALL_ITEMS,Number(row.item_id)):null;
+        if(item && getItemPrice(item)>=50000) return Number(item.id);
+      }
       const legacyId=s.upgraded_item_id==null?null:Number(s.upgraded_item_id);
       const legacyItem=legacyId==null?null:byId(ALL_ITEMS,legacyId);
       const existsInInventory=(bundle.inventory||[]).some(x=>Number(x.item_id)===legacyId);
       return (legacyItem && getItemPrice(legacyItem)>=50000 && existsInInventory) ? legacyId : null;
+    })(),
+    upgradedInventoryId:(()=>{
+      const exact=s.upgraded_inventory_id||null;
+      if(exact && (bundle.inventory||[]).some(x=>String(x.id)===String(exact))) return exact;
+      const legacyId=s.upgraded_item_id==null?null:Number(s.upgraded_item_id);
+      const row=(bundle.inventory||[]).find(x=>Number(x.item_id)===legacyId);
+      return row?row.id:null;
     })(),
     xp:Number(s.xp||0),
     achievements:(bundle.achievements||[]).map(x=>x.achievement_id),
@@ -2137,30 +2228,58 @@ async function updateProfileStats(){
 }
 function renderUpgradedBlock(){const block=$('upgradedItemBlock'),item=getUpgradedItem(); if(item){block.style.display='block';$('upgImg').src=item.img;$('upgName').textContent=item.name;$('upgPrice').textContent=`⭐ Улучшенный • цена: ${getItemPrice(item)} 🪙`;}else block.style.display='none';}
 function renderProfileInventory(){
-  const container=$('profileInventoryList');
+  const container=document.getElementById('profileInventoryList');
   const groups=getAllItemsGrouped();
-  if(!Object.keys(groups).length){container.innerHTML='<div class="inv-empty">Инвентарь пуст</div>';return;}
-  container.innerHTML=Object.entries(groups).map(([id,instances])=>{
-    const item=byId(ALL_ITEMS,Number(id)); if(!item)return '';
-    const price=getItemPrice(item), first=instances[0];
-    const isCurrent=game.stats.upgradedItemId!==null && Number(game.stats.upgradedItemId)===Number(item.id);
-    const canImprove=price>=50000;
-    const improve=canImprove?(isCurrent?'<button class="sell-btn improve-btn" disabled style="opacity:.6;cursor:default;background:#2f8fff;box-shadow:none;">✓ Улучшено</button>':`<button class="sell-btn improve-btn" data-improve="${first.uniqueId}" style="background:#2f8fff;">⭐ Улучшить</button>`):'';
-    return `<div class="inv-item ${isCurrent?'is-upgraded':''}">
+  if(!Object.keys(groups).length){
+    container.innerHTML='<div class="inv-empty">Инвентарь пуст</div>';
+    return;
+  }
+  const showcaseId=game.stats.upgradedInventoryId?String(game.stats.upgradedInventoryId):null;
+  container.innerHTML=Object.entries(groups).map(([itemId,instances])=>{
+    const item=byId(ALL_ITEMS,parseInt(itemId,10));
+    if(!item)return '';
+    const price=getItemPrice(item);
+    const eligible=price>=50000;
+    const shownInstance=instances.find(inst=>String(inst.uniqueId)===showcaseId)||null;
+    const isShowcase=!!shownInstance;
+    const buttons=eligible
+      ? (isShowcase
+          ? `<button class="sell-btn improve-btn" disabled>✓ Улучшено</button>`
+          : `<button class="sell-btn improve-btn" data-improve="${instances[0].uniqueId}">⭐ Улучшить</button>`)
+      : '';
+    return `<div class="inv-item ${isShowcase?'is-upgraded':''}">
       <div class="inv-img">${imgOrPlaceholder(item,'inv-img')}</div>
-      <div class="inv-name">${escapeHtml(item.name)}</div>
+      <div class="inv-name ${rarityColorClass(item.rarity)}">${escapeHtml(item.name)}</div>
       <div class="inv-qty">×${instances.length}</div>
       <div class="inv-price">Цена: ${price} 🪙</div>
-      <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:5px;">${improve}<button class="sell-btn" data-unique="${first.uniqueId}">Продать 1</button></div>
+      <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:5px;">
+        ${buttons}
+        <button class="sell-btn" data-unique="${instances[0].uniqueId}">Продать 1</button>
+      </div>
     </div>`;
   }).join('');
+
   container.querySelectorAll('[data-improve]').forEach(btn=>btn.addEventListener('click',async()=>{
-    try{btn.disabled=true;const {error}=await sb.rpc('set_upgraded_item',{inventory_id:btn.dataset.improve});if(error)throw error;await refreshMyState();}
-    catch(e){alert(e.message||'Не удалось установить улучшение.');btn.disabled=false;}
+    try{
+      btn.disabled=true;
+      const {error}=await sb.rpc('set_upgraded_item',{inventory_id:btn.dataset.improve});
+      if(error)throw error;
+      await refreshMyState();
+    }catch(e){
+      alert(e.message||'Не удалось установить улучшение.');
+      btn.disabled=false;
+    }
   }));
   container.querySelectorAll('.sell-btn[data-unique]').forEach(btn=>btn.addEventListener('click',async()=>{
-    try{btn.disabled=true;const {error}=await sb.rpc('sell_inventory_item',{inventory_id:btn.dataset.unique});if(error)throw error;await refreshMyState();}
-    catch(e){alert(e.message||'Не удалось продать предмет.');btn.disabled=false;}
+    try{
+      btn.disabled=true;
+      const {error}=await sb.rpc('sell_inventory_item',{inventory_id:btn.dataset.unique});
+      if(error)throw error;
+      await refreshMyState();
+    }catch(e){
+      alert(e.message||'Не удалось продать предмет.');
+      btn.disabled=false;
+    }
   }));
 }
 function renderAchievements(){const c=$('achievementsList'), ids=new Set(game.stats.achievements);c.innerHTML=ACHIEVEMENTS.map(a=>`<div style="background:${ids.has(a.id)?'var(--panel2)':'var(--panel)'};border:1px solid ${ids.has(a.id)?'var(--accent2)':'var(--border)'};border-radius:8px;padding:6px;text-align:center;opacity:${ids.has(a.id)?1:.5};"><div style="font-size:24px;">${ids.has(a.id)?'🏅':'🔒'}</div><div style="font-size:11px;font-weight:700;">${escapeHtml(a.name)}</div><div style="font-size:9px;color:var(--muted);">${escapeHtml(a.desc)}</div><div style="font-size:9px;color:var(--gold);">+${a.xpReward} XP</div></div>`).join('');}
@@ -2221,6 +2340,7 @@ removeUpgradeBtn.addEventListener('click',async e=>{
       const {error}=await sb.rpc('remove_upgraded_item');
       if(error)throw error;
       game.stats.upgradedItemId=null;
+      game.stats.upgradedInventoryId=null;
       await refreshMyState();
     }catch(err){alert(err.message||'Не удалось снять улучшение.');}
     finally{removeUpgradeBtn.disabled=false;}
@@ -2243,7 +2363,7 @@ const exchange=replaceWithClone('exchangeBtn');exchange.addEventListener('click'
     if(error)throw error;
     const chance=Number(data?.chance ?? localChance);
     const success=data?.success===true || data?.success==='true' || data?.success===1;
-    const stopAngle=Number(data?.stop_angle ?? (success ? Math.random()*chance*3.6 : chance*3.6 + Math.random()*(360-chance*3.6)));
+    const stopAngle=pickVisualStopAngle(chance,success);
     await animateUpgradeWheel(chance,success,stopAngle,5);
 
     if(success){
@@ -2258,6 +2378,7 @@ const exchange=replaceWithClone('exchangeBtn');exchange.addEventListener('click'
     }
     selectedUpgradeInstances=[];
     selectedUpgradeTargetId=null;
+    wheelPointer && (wheelPointer.style.transform=`rotate(${wheelArrowAngle}deg)`);
     await refreshMyState();
     setTimeout(()=>{wheel.classList.remove('wheel-win-active');$('winBurst').classList.remove('show');},2200);
   }catch(e){
