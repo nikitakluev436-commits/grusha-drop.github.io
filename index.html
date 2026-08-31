@@ -300,7 +300,7 @@ footer{border-top:1px solid var(--border); margin-top:40px; padding:20px 0; text
 .public-section{margin-top:16px;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px;}
 .public-section h4{font-size:14px;color:var(--muted);letter-spacing:1px;margin-bottom:10px;}
 .public-inventory{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;max-height:360px;overflow-y:auto;}
-.public-upgraded{display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,#2a0a4a,#4a1a6a);border:2px solid #9b4dff;border-radius:12px;padding:12px;}
+.public-upgraded{display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,#071a3a,#0c3575);border:2px solid #2f8fff;border-radius:12px;padding:12px;box-shadow:0 0 24px rgba(47,143,255,.28);}
 .public-upgraded img{width:64px;height:64px;object-fit:cover;border-radius:8px;background:#0e1320;}
 .public-upgraded .n{font-weight:800;font-size:15px;}.public-upgraded .p{color:var(--gold);font-size:12px;margin-top:4px;}
 .public-back{display:inline-flex;align-items:center;gap:8px;background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:8px 14px;border-radius:8px;cursor:pointer;margin-bottom:14px;}
@@ -1236,9 +1236,7 @@ function updateMultiOpenPrice() {
   const count = Math.max(1, parseInt(document.getElementById('multiSelect').value, 10) || 1);
   const total = c.cost * count;
   const priceTag = document.getElementById('detailCaseCost');
-  priceTag.textContent = count > 1
-    ? `${c.cost} 🪙 × ${count} = ${total} 🪙`
-    : `${c.cost} 🪙`;
+  priceTag.textContent = `${total} 🪙`;
 }
 document.getElementById('multiSelect').addEventListener('change', updateMultiOpenPrice);
 
@@ -1770,9 +1768,35 @@ function drawUpgradeWheel(chance){
   ctx.beginPath();ctx.arc(cx,cy,radius-arcWidth-6,0,tau);ctx.fillStyle='#0d1320';ctx.fill();ctx.strokeStyle='rgba(255,255,255,.10)';ctx.lineWidth=2.5;ctx.stroke();ctx.restore();$('upgradeChanceText').textContent=`${safeChance.toFixed(1)}%`;
 }
 function normalizeDeg(deg){return ((deg%360)+360)%360;}
-function animateUpgradeWheel(chance,success,spins=6){
-  if(isWheelSpinning)return Promise.resolve();isWheelSpinning=true;const safeChance=Math.max(0,Math.min(95,Number(chance)||0));const greenSize=safeChance*3.6;const finalAngle=success?greenSize/2:greenSize+(360-greenSize)/2;const start=Number(wheelArrowAngle||0);let delta=normalizeDeg(finalAngle-(start%360));if(delta<35)delta+=360;const end=start+spins*360+delta;const duration=3600,started=performance.now(),wheel=$('upgradeWheelContainer');wheel.classList.remove('wheel-success','wheel-fail');
-  return new Promise(resolve=>{function frame(now){const t=Math.min(1,(now-started)/duration),eased=1-Math.pow(1-t,3),angle=start+(end-start)*eased;wheelArrowAngle=angle;if(wheelPointer)wheelPointer.style.transform=`rotate(${angle}deg)`;if(t<1){requestAnimationFrame(frame);return;}wheelArrowAngle=end;if(wheelPointer)wheelPointer.style.transform=`rotate(${end}deg)`;isWheelSpinning=false;wheel.classList.add(success?'wheel-success':'wheel-fail');resolve();}requestAnimationFrame(frame);});
+function animateUpgradeWheel(chance, success, stopAngleDeg, spins=6){
+  if(isWheelSpinning)return Promise.resolve();
+  isWheelSpinning=true;
+  const safeChance=Math.max(0,Math.min(95,Number(chance)||0));
+  const stopAngle=normalizeDeg(Number(stopAngleDeg));
+  const start=Number(wheelArrowAngle||0);
+  let delta=normalizeDeg(stopAngle-normalizeDeg(start));
+  if(delta<20) delta+=360;
+  const end=start+spins*360+delta;
+  const duration=3200;
+  const started=performance.now();
+  const wheel=$('upgradeWheelContainer');
+  wheel.classList.remove('wheel-success','wheel-fail','wheel-win-active');
+  return new Promise(resolve=>{
+    function frame(now){
+      const t=Math.min(1,(now-started)/duration);
+      const eased=1-Math.pow(1-t,3);
+      const angle=start+(end-start)*eased;
+      wheelArrowAngle=angle;
+      if(wheelPointer)wheelPointer.style.transform=`rotate(${angle}deg)`;
+      if(t<1){requestAnimationFrame(frame);return;}
+      wheelArrowAngle=end;
+      if(wheelPointer)wheelPointer.style.transform=`rotate(${end}deg)`;
+      isWheelSpinning=false;
+      wheel.classList.add(success?'wheel-success':'wheel-fail');
+      resolve();
+    }
+    requestAnimationFrame(frame);
+  });
 }
 
 
@@ -1821,14 +1845,21 @@ function renderUpgradePreviews(){
   const target=selectedUpgradeTargetId==null?null:byId(ALL_ITEMS,selectedUpgradeTargetId);
   to.innerHTML=target?`${imgOrPlaceholder(target,'ph')}<div class="pn">${target.name}</div><div class="price">${getItemPrice(target)} 🪙</div><div class="pq">Шанс: ${getUpgradeChance().toFixed(1)}%</div>`:'<div class="up-empty">Ничего не выбрано</div>';
 }
+function isItemUnlockedForUpgrade(itemId){
+  const containingCases = CASES.filter(c => c.items.some(entry => Number(entry.id) === Number(itemId)));
+  if (!containingCases.length) return true;
+  return containingCases.some(c => isCaseUnlocked(c));
+}
+
 function renderUpgradeTab(){
   const inv=document.getElementById('inventoryGrid'),targets=document.getElementById('targetGrid'); if(!inv||!targets)return;
   const total=getUpgradeSourceTotal();
+  if(selectedUpgradeTargetId!==null && !isItemUnlockedForUpgrade(selectedUpgradeTargetId)){selectedUpgradeTargetId=null;}
   const showcasedId=game.stats.upgradedItemId==null?null:Number(game.stats.upgradedItemId);
   const sourceInventory=game.inventory.filter(inst=>showcasedId===null || Number(inst.itemId)!==showcasedId);
   inv.innerHTML=sourceInventory.length?sourceInventory.map(inst=>{const item=byId(ALL_ITEMS,inst.itemId);if(!item)return '';const active=selectedUpgradeInstances.some(x=>x.uniqueId===inst.uniqueId);return `<div class="up-inv-item ${active?'active':''}" data-unique="${inst.uniqueId}">${imgOrPlaceholder(item,'ph')}<div class="n">${escapeHtml(item.name)}</div><div class="qty">${getItemPrice(item)} 🪙</div></div>`;}).join(''):'<div class="up-empty">Нет доступных исходных предметов</div>';
   inv.querySelectorAll('.up-inv-item').forEach(el=>el.addEventListener('click',()=>{const uid=el.dataset.unique;const i=selectedUpgradeInstances.findIndex(x=>x.uniqueId===uid);if(i>=0)selectedUpgradeInstances.splice(i,1);else{const inst=game.inventory.find(x=>x.uniqueId===uid);if(inst)selectedUpgradeInstances.push(inst);}selectedUpgradeTargetId=null;$('upResult').textContent='Выберите исходные и целевой предметы, затем нажмите «Прокачать».';$('upResult').className='up-result';renderUpgradeTab();}));
-  targets.innerHTML=total?ALL_ITEMS.filter(item=>getItemPrice(item)>total && Number(item.id)!==showcasedId).map(item=>`<div class="up-target-item ${selectedUpgradeTargetId===item.id?'active':''}" data-id="${item.id}">${imgOrPlaceholder(item,'ph')}<div class="n">${escapeHtml(item.name)}</div><div class="price">${getItemPrice(item)} 🪙</div></div>`).join(''):'<div class="up-empty">Сначала выберите исходные предметы</div>';
+  targets.innerHTML=total?ALL_ITEMS.filter(item=>getItemPrice(item)>total && Number(item.id)!==showcasedId && isItemUnlockedForUpgrade(item.id)).map(item=>`<div class="up-target-item ${selectedUpgradeTargetId===item.id?'active':''}" data-id="${item.id}">${imgOrPlaceholder(item,'ph')}<div class="n">${escapeHtml(item.name)}</div><div class="price">${getItemPrice(item)} 🪙</div></div>`).join(''):'<div class="up-empty">Сначала выберите исходные предметы</div>';
   targets.querySelectorAll('.up-target-item').forEach(el=>el.addEventListener('click',()=>{selectedUpgradeTargetId=Number(el.dataset.id);renderUpgradeTab();}));
   renderUpgradePreviews();drawUpgradeWheel(getUpgradeChance());if(wheelPointer)wheelPointer.style.transform=`rotate(${wheelArrowAngle}deg)`;
   document.getElementById('exchangeBtn').disabled=!(selectedUpgradeInstances.length&&selectedUpgradeTargetId!==null&&getUpgradeChance()>0&&!upgradeBusy);
@@ -2212,7 +2243,8 @@ const exchange=replaceWithClone('exchangeBtn');exchange.addEventListener('click'
     if(error)throw error;
     const chance=Number(data?.chance ?? localChance);
     const success=data?.success===true || data?.success==='true' || data?.success===1;
-    await animateUpgradeWheel(chance,success,5);
+    const stopAngle=Number(data?.stop_angle ?? (success ? Math.random()*chance*3.6 : chance*3.6 + Math.random()*(360-chance*3.6)));
+    await animateUpgradeWheel(chance,success,stopAngle,5);
 
     if(success){
       result.textContent=`🎉 Успех! ${byId(ALL_ITEMS,targetId).name} добавлен в инвентарь.`;
