@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <title>Груша-ДРОП</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-/* ========== СТИЛИ (без изменений) ========== */
+/* ========== СТИЛИ (полная версия) ========== */
 :root{
   --bg:#0e1320; --panel:#161d30; --panel2:#1c2540; --border:#2a3455;
   --text:#e8ecf7; --muted:#8a92b2; --accent:#ff7a3d; --accent2:#ffb23d;
@@ -30,16 +31,37 @@ header{background:linear-gradient(180deg,#141a2c,#101526); border-bottom:1px sol
 .balance-box{background:var(--panel2); border:1px solid var(--border); border-radius:10px; padding:8px 14px; display:flex; align-items:center; gap:8px; font-weight:700;}
 .balance-box .coin{color:var(--gold);}
 .badge-bonus{background:#2a3d2a; color:#7fdb7f; font-size:11px; font-weight:700; padding:3px 7px; border-radius:6px; border:1px solid #3d5a3d;}
+.header-rank{display:flex; align-items:center; gap:6px; background:var(--panel2); padding:4px 12px 4px 6px; border-radius:20px; border:1px solid var(--border); cursor:pointer; position:relative;}
+.header-rank .rank-icon{font-size:22px; line-height:1;}
+.header-rank .rank-name{font-size:13px; font-weight:700; color:var(--text);}
+.header-rank .rank-xp{font-size:11px; color:var(--muted);}
+.header-rank .rank-progress{position:absolute; bottom:-6px; left:10%; width:80%; height:4px; background:var(--panel); border-radius:2px; overflow:hidden;}
+.header-rank .rank-progress .fill{height:100%; background:linear-gradient(90deg,var(--accent2),var(--accent)); border-radius:2px; transition:width .3s;}
 main{padding:28px 0 60px;}
 .panel{display:none;}
 .panel.active{display:block;}
-.cases-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:24px; margin:0 auto;}
-.case-card{background:var(--panel); border:3px solid var(--border); border-radius:20px; padding:20px 20px 30px; text-align:center; cursor:pointer; transition:border .25s, transform .2s, box-shadow .2s; display:flex; flex-direction:column; align-items:center; justify-content:flex-start;}
-.case-card:hover{transform:scale(1.03); box-shadow:0 0 25px rgba(255,178,61,.15);}
-.case-card .case-img{width:100%; height:220px; object-fit:cover; border-radius:12px; background:var(--panel2); margin-bottom:16px;}
+.cases-layout{display:flex; gap:24px;}
+.cases-grid-wrap{flex:3;}
+.leaderboard-wrap{flex:1; background:var(--panel); border:1px solid var(--border); border-radius:16px; padding:16px; max-height:700px; overflow-y:auto;}
+.leaderboard-wrap h3{color:var(--muted); font-size:14px; letter-spacing:1px; margin-bottom:12px; border-bottom:1px solid var(--border); padding-bottom:8px;}
+.leaderboard-wrap .lb-entry{display:flex; align-items:center; gap:8px; padding:6px 8px; border-radius:6px; margin-bottom:4px; cursor:pointer; transition:background .15s;}
+.leaderboard-wrap .lb-entry:hover{background:var(--panel2);}
+.leaderboard-wrap .lb-entry .rank-num{width:24px; font-weight:700; color:var(--muted);}
+.leaderboard-wrap .lb-entry .lb-username{flex:1; font-weight:600;}
+.leaderboard-wrap .lb-entry .lb-rank-icon{font-size:18px;}
+.leaderboard-wrap .lb-entry .lb-xp{font-size:12px; color:var(--gold);}
+.leaderboard-wrap .lb-entry .lb-level{font-size:11px; color:var(--muted);}
+.leaderboard-wrap .lb-entry.current-user{background:var(--panel2); border-left:3px solid var(--accent2);}
+.cases-grid{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:16px; margin:0 auto;}
+.case-card{background:var(--panel); border:3px solid var(--border); border-radius:16px; padding:14px 14px 20px; text-align:center; cursor:pointer; transition:border .25s, transform .2s, box-shadow .2s; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; position:relative;}
+.case-card:hover:not(.locked){transform:scale(1.03); box-shadow:0 0 25px rgba(255,178,61,.15);}
+.case-card.locked{opacity:.5; cursor:not-allowed; filter:grayscale(.8);}
+.case-card.locked .lock-icon{position:absolute; top:16px; right:16px; font-size:28px; color:#fff; text-shadow:0 0 10px #000;}
+.case-card .case-img{width:100%; height:165px; object-fit:cover; border-radius:12px; background:var(--panel2); margin-bottom:16px;}
 .case-card .case-img .ph{width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-size:60px; color:var(--muted);}
-.case-card h3{font-size:22px; font-weight:700; margin-bottom:4px;}
-.case-card .cost{font-size:18px; color:var(--gold); font-weight:700;}
+.case-card h3{font-size:17px; font-weight:700; margin-bottom:4px;}
+.case-card .cost{font-size:16px; color:var(--gold); font-weight:700;}
+.case-card .rank-req{font-size:12px; color:var(--muted); margin-top:6px;}
 .case-detail-view{display:none; flex-direction:column; align-items:center; gap:20px;}
 .case-detail-view.show{display:flex;}
 .case-detail-view .back-btn{align-self:flex-start; background:var(--panel2); border:1px solid var(--border); border-radius:8px; padding:8px 16px; color:var(--text); cursor:pointer; font-size:14px; transition:background .2s;}
@@ -85,12 +107,11 @@ main{padding:28px 0 60px;}
 .inv-section{width:100%; margin-top:10px;}
 .inv-section h3{font-size:15px; margin-bottom:12px; color:var(--muted); letter-spacing:1px;}
 .inv-grid{display:grid; grid-template-columns:repeat(10,1fr); gap:8px; max-width:100%;}
-.inv-card{background:var(--panel2); border:1px solid var(--border); border-radius:8px; padding:6px; text-align:center; aspect-ratio:1/1; display:flex; flex-direction:column; align-items:center; justify-content:center;}
+.inv-card{background:var(--panel2); border:1px solid var(--border); border-radius:8px; padding:6px; text-align:center; aspect-ratio:1/1; display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative;}
 .inv-card .rarity-strip{width:100%; height:4px; border-radius:2px; margin-bottom:4px;}
 .inv-card img,.inv-card .ph{width:44px; height:44px; border-radius:6px; object-fit:cover; background:#0e1320; display:flex; align-items:center; justify-content:center; font-size:22px;}
-.inv-card .n{display:none;}
-.inv-card .qty{display:none;}
 .inv-card .inv-price{font-size:9px; color:var(--gold); margin-top:2px;}
+.inv-card .price-tag{position:absolute; bottom:2px; right:2px; font-size:8px; background:rgba(0,0,0,.6); padding:0 4px; border-radius:4px; color:#fff;}
 .upgrade-title{font-size:22px; margin-bottom:20px; text-align:center; font-weight:800; letter-spacing:.5px;}
 .up-selection{display:grid; grid-template-columns:1fr 280px 1fr; gap:20px; align-items:start; margin-bottom:20px;}
 .up-card{background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:20px; min-height:200px; display:flex; flex-direction:column; align-items:center; text-align:center;}
@@ -202,6 +223,8 @@ footer{border-top:1px solid var(--border); margin-top:40px; padding:20px 0; text
 .bg-common{background:var(--common);} .bg-uncommon{background:var(--uncommon);}
 .bg-rare{background:var(--rare);} .bg-epic{background:var(--epic);}
 .bg-legendary{background:var(--legendary);} .bg-mythical{background:var(--mythical);}
+.price-low{background:#4caf50;} .price-mid{background:#ffcf4d;}
+.price-high{background:#ff8a3d;} .price-top{background:#ff3d3d;}
 .confetti{position:fixed; top:-10px; width:8px; height:14px; z-index:200; pointer-events:none; border-radius:2px;}
 .win-flash{position:fixed; inset:0; z-index:150; pointer-events:none; background:radial-gradient(circle, rgba(255,230,150,.55), rgba(255,230,150,0) 70%); opacity:0;}
 .modal-overlay{position:fixed; inset:0; background:rgba(5,7,14,.88); z-index:100; display:none; align-items:center; justify-content:center;}
@@ -222,9 +245,79 @@ footer{border-top:1px solid var(--border); margin-top:40px; padding:20px 0; text
 .modal-box.confirm-box .btn-confirm{background:linear-gradient(180deg,var(--accent2),var(--accent)); border:none; color:#241000; font-weight:800; padding:10px 28px; border-radius:8px; cursor:pointer; font-size:14px;}
 .modal-box.confirm-box .btn-cancel{background:var(--panel2); border:1px solid var(--border); color:var(--text); font-weight:700; padding:10px 28px; border-radius:8px; cursor:pointer; font-size:14px;}
 .modal-box.confirm-box .btn-cancel:hover{background:var(--panel);}
+.notification-container{position:fixed; bottom:20px; left:20px; z-index:300; display:flex; flex-direction:column; gap:8px; max-width:350px;}
+.notification{background:var(--panel2); border-left:4px solid var(--accent2); padding:12px 16px; border-radius:8px; box-shadow:0 4px 20px rgba(0,0,0,.6); animation:slideIn .4s ease; display:flex; align-items:center; gap:10px; font-size:14px;}
+.notification .n-icon{font-size:24px;}
+.notification .n-text{flex:1;}
+.notification .n-text strong{color:var(--accent2);}
+.notification .n-close{cursor:pointer; opacity:.6; font-size:18px; padding:0 4px;}
+.notification .n-close:hover{opacity:1;}
+@keyframes slideIn{from{transform:translateX(-100%); opacity:0;} to{transform:translateX(0); opacity:1;}}
+
+/* ========== SUPABASE / AUTH ========== */
+.auth-screen{position:fixed;inset:0;z-index:1000;background:radial-gradient(circle at 50% 15%,#202b49 0%,var(--bg) 55%);display:flex;align-items:center;justify-content:center;padding:24px;}
+.auth-screen.hidden{display:none;}
+.auth-card{width:min(460px,100%);background:rgba(22,29,48,.96);border:1px solid var(--border);border-radius:20px;padding:34px;box-shadow:0 30px 80px rgba(0,0,0,.45);text-align:center;}
+.auth-logo{display:flex;flex-direction:column;align-items:center;gap:8px;margin-bottom:22px;}
+.auth-logo img{width:100px;height:100px;object-fit:contain;border-radius:24px;}
+.auth-logo .auth-fallback{font-size:72px;line-height:1;}
+.auth-logo .title{font-size:28px;font-weight:900;letter-spacing:1px;}
+.auth-logo .sub{font-size:11px;color:var(--muted);letter-spacing:3px;}
+.auth-title{font-size:18px;font-weight:800;margin-bottom:16px;}
+.auth-form{display:flex;flex-direction:column;gap:10px;text-align:left;}
+.auth-form input{width:100%;background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:12px 14px;border-radius:10px;font-size:14px;outline:none;}
+.auth-form input:focus{border-color:var(--accent2);}
+.auth-submit{background:linear-gradient(180deg,var(--accent2),var(--accent));border:none;color:#241000;font-weight:900;padding:12px 16px;border-radius:10px;cursor:pointer;font-size:14px;margin-top:4px;}
+.auth-submit:disabled{opacity:.5;cursor:not-allowed;}
+.auth-switch{margin-top:14px;color:var(--muted);font-size:13px;text-align:center;}
+.auth-link{color:var(--accent2);font-weight:700;cursor:pointer;}
+.auth-message{min-height:20px;color:#ff6b6b;font-size:12px;text-align:center;margin-top:10px;}
+.auth-message.ok{color:#7fdb7f;}
+.auth-note{font-size:11px;color:var(--muted);line-height:1.5;margin-top:12px;text-align:center;}
+.online-badge{display:flex;align-items:center;gap:7px;background:var(--panel2);border:1px solid var(--border);border-radius:20px;padding:7px 11px;color:var(--muted);font-size:11px;font-weight:700;white-space:nowrap;}
+.online-dot{width:8px;height:8px;border-radius:50%;background:#56e56b;box-shadow:0 0 10px rgba(86,229,107,.8);}
+.public-profile-wrap{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:20px;}
+.public-profile-head{display:flex;align-items:center;gap:20px;margin-bottom:18px;}
+.public-avatar{width:110px;height:110px;border-radius:50%;overflow:hidden;border:3px solid var(--accent2);background:var(--panel2);display:flex;align-items:center;justify-content:center;font-size:52px;flex:0 0 auto;}
+.public-avatar img{width:100%;height:100%;object-fit:cover;}
+.public-name{font-size:28px;font-weight:900;}
+.public-rank{color:var(--muted);font-size:13px;margin-top:5px;}
+.public-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px;}
+.public-stat{background:var(--panel2);border:1px solid var(--border);border-radius:12px;padding:12px;text-align:center;}
+.public-stat .v{font-size:20px;font-weight:800;color:var(--accent2);}
+.public-stat .l{font-size:10px;color:var(--muted);margin-top:3px;text-transform:uppercase;}
+.public-section{margin-top:16px;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px;}
+.public-section h4{font-size:14px;color:var(--muted);letter-spacing:1px;margin-bottom:10px;}
+.public-inventory{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;max-height:360px;overflow-y:auto;}
+.public-upgraded{display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,#2a0a4a,#4a1a6a);border:2px solid #9b4dff;border-radius:12px;padding:12px;}
+.public-upgraded img{width:64px;height:64px;object-fit:cover;border-radius:8px;background:#0e1320;}
+.public-upgraded .n{font-weight:800;font-size:15px;}.public-upgraded .p{color:var(--gold);font-size:12px;margin-top:4px;}
+.public-back{display:inline-flex;align-items:center;gap:8px;background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:8px 14px;border-radius:8px;cursor:pointer;margin-bottom:14px;}
+body.auth-locked>header,body.auth-locked>main,body.auth-locked>footer,body.auth-locked>.modal-overlay,body.auth-locked>.notification-container{display:none!important;}
+@media(max-width:900px){.public-stats{grid-template-columns:repeat(2,1fr)}.public-inventory{grid-template-columns:repeat(3,1fr)}.public-profile-head{align-items:flex-start}.online-badge{display:none}}
+
 </style>
 </head>
 <body>
+
+
+<div class="auth-screen" id="authScreen">
+  <div class="auth-card">
+    <div class="auth-logo"><img src="grusha-drop.jpg" alt="Груша-ДРОП" onerror="this.style.display='none';this.nextElementSibling.style.display='block';"><div class="auth-fallback" style="display:none;">🍐</div><div class="title">Груша-ДРОП</div><div class="sub">CASE BATTLE</div></div>
+    <div class="auth-title" id="authTitle">ВХОД В АККАУНТ</div>
+    <form class="auth-form" id="authForm">
+      <input id="authUsername" type="text" maxlength="20" placeholder="Никнейм" autocomplete="nickname" style="display:none;">
+      <input id="authEmail" type="email" placeholder="Email" autocomplete="email" required>
+      <input id="authPassword" type="password" placeholder="Пароль" autocomplete="current-password" required>
+      <input id="authPassword2" type="password" placeholder="Повторите пароль" autocomplete="new-password" style="display:none;">
+      <button class="auth-submit" id="authSubmit" type="submit">ВОЙТИ</button>
+    </form>
+    <div class="auth-switch"><span id="authSwitchText">Нет аккаунта?</span> <span class="auth-link" id="authSwitch">ЗАРЕГИСТРИРОВАТЬСЯ</span></div>
+    <div class="auth-switch" id="authForgotWrap"><span class="auth-link" id="authForgot">Забыли пароль?</span></div>
+    <div class="auth-message" id="authMessage"></div>
+    <div class="auth-note">Аккаунт сохраняет баланс, инвентарь, XP и профиль на всех устройствах.</div>
+  </div>
+</div>
 
 <header>
   <div class="wrap header-inner">
@@ -235,6 +328,7 @@ footer{border-top:1px solid var(--border); margin-top:40px; padding:20px 0; text
         <div><div class="title">Груша-ДРОП</div><div class="sub">CASE BATTLE</div></div>
       </div>
     </div>
+    <div class="online-badge" id="onlineBadge"><span class="online-dot"></span><span><span id="onlineCount">0</span> онлайн</span></div>
     <div class="tabs" id="tabs">
       <div class="tab active" data-tab="cases">КЕЙСЫ</div>
       <div class="tab" data-tab="upgrade">АПГРЕЙД</div>
@@ -243,6 +337,12 @@ footer{border-top:1px solid var(--border); margin-top:40px; padding:20px 0; text
       <div class="tab disabled">РОЗЫГРЫШИ</div>
     </div>
     <div class="header-right">
+      <div class="header-rank" id="headerRank">
+        <span class="rank-icon" id="headerRankIcon">🥉</span>
+        <span class="rank-name" id="headerRankName">Новичок бля</span>
+        <span class="rank-xp" id="headerRankXp">0 XP</span>
+        <div class="rank-progress"><div class="fill" id="headerRankProgress" style="width:0%"></div></div>
+      </div>
       <div class="balance-box">🪙 <span id="balance">100</span> <span class="badge-bonus">+10%</span></div>
     </div>
   </div>
@@ -251,36 +351,44 @@ footer{border-top:1px solid var(--border); margin-top:40px; padding:20px 0; text
 <main class="wrap">
   <!-- ===== КЕЙСЫ ===== -->
   <section class="panel active" id="panel-cases">
-    <div id="casesGridContainer" class="cases-grid"></div>
-    <div id="caseDetailContainer" class="case-detail-view">
-      <button class="back-btn" id="backToCasesBtn">← Назад к выбору</button>
-      <div class="case-name" id="detailCaseName">Тимур-КЕЙС</div>
-      <div class="case-action-wrapper">
-        <div class="case-action" id="caseAction">
-          <div class="price-tag" id="detailCaseCost">50 🪙</div>
-          <div class="multi-selector">
-            <label style="color:var(--muted);">Количество:</label>
-            <select id="multiSelect">
-              <option value="1">1</option>
-              <option value="2">2</option>
-              <option value="3">3</option>
-              <option value="4">4</option>
-              <option value="5">5</option>
-            </select>
+    <div class="cases-layout">
+      <div class="cases-grid-wrap">
+        <div id="casesGridContainer" class="cases-grid"></div>
+        <div id="caseDetailContainer" class="case-detail-view">
+          <button class="back-btn" id="backToCasesBtn">← Назад к выбору</button>
+          <div class="case-name" id="detailCaseName">Тимур-КЕЙС</div>
+          <div class="case-action-wrapper">
+            <div class="case-action" id="caseAction">
+              <div class="price-tag" id="detailCaseCost">50 🪙</div>
+              <div class="multi-selector">
+                <label style="color:var(--muted);">Количество:</label>
+                <select id="multiSelect">
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                </select>
+              </div>
+              <button class="open-btn" id="detailOpenBtn">🎰 ОТКРЫТЬ</button>
+            </div>
+            <div class="roll-section" id="detailRollSection">
+              <div class="roll-viewport">
+                <div class="roll-pointer"></div>
+                <div class="roll-track" id="detailRollTrack"></div>
+              </div>
+            </div>
+            <div class="multi-roll-container" id="multiRollContainer"></div>
           </div>
-          <button class="open-btn" id="detailOpenBtn">🎰 ОТКРЫТЬ</button>
-        </div>
-        <div class="roll-section" id="detailRollSection">
-          <div class="roll-viewport">
-            <div class="roll-pointer"></div>
-            <div class="roll-track" id="detailRollTrack"></div>
+          <div class="inv-section">
+            <h3>ЧТО ЕСТЬ В КЕЙСЕ</h3>
+            <div class="inv-grid" id="detailContentsGrid"></div>
           </div>
         </div>
-        <div class="multi-roll-container" id="multiRollContainer"></div>
       </div>
-      <div class="inv-section">
-        <h3>ЧТО ЕСТЬ В КЕЙСЕ</h3>
-        <div class="inv-grid" id="detailContentsGrid"></div>
+      <div class="leaderboard-wrap" id="leaderboardWrap">
+        <h3>🏆 ТАБЛИЦА ЛИДЕРОВ</h3>
+        <div id="leaderboardList"></div>
       </div>
     </div>
   </section>
@@ -330,7 +438,7 @@ footer{border-top:1px solid var(--border); margin-top:40px; padding:20px 0; text
           </div>
           <div class="username" id="usernameDisplay">user</div>
           <input class="username-input" id="usernameInput" type="text" placeholder="Новый никнейм" maxlength="20">
-          <button class="username-save" id="usernameSaveBtn">Сохранить</button>
+          <button class="username-save" id="usernameSaveBtn">Сохранить</button><button class="username-save" id="logoutBtn" style="background:var(--panel2);color:var(--text);border:1px solid var(--border);">Выйти</button>
           <div style="font-size:11px; color:var(--muted); margin-top:8px;">кликните на иконку для аватарки</div>
           <input type="file" id="avatarInput" accept="image/*" style="display:none;">
         </div>
@@ -349,6 +457,17 @@ footer{border-top:1px solid var(--border); margin-top:40px; padding:20px 0; text
             </div>
           </div>
         </div>
+        <!-- Прогресс ранга в профиле -->
+        <div style="width:100%; background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:12px; text-align:center;">
+          <div style="display:flex; justify-content:space-between; font-size:13px; color:var(--muted);">
+            <span id="profileRankName">Новичок бля</span>
+            <span id="profileRankXp">0 XP</span>
+          </div>
+          <div style="width:100%; height:8px; background:var(--panel2); border-radius:4px; margin-top:6px; overflow:hidden;">
+            <div id="profileRankProgress" style="height:100%; background:linear-gradient(90deg,var(--accent2),var(--accent)); border-radius:4px; width:0%; transition:width .3s;"></div>
+          </div>
+          <div style="font-size:11px; color:var(--muted); margin-top:4px;" id="profileRankNext">До следующего ранга: 200 XP</div>
+        </div>
       </div>
       <div>
         <div class="profile-stats" id="profileStats">
@@ -360,12 +479,19 @@ footer{border-top:1px solid var(--border); margin-top:40px; padding:20px 0; text
           <div class="stat-card"><div class="val" id="statSpent">0</div><div class="lbl">Потрачено монет</div></div>
           <div class="stat-card"><div class="val" id="statEarned">0</div><div class="lbl">Заработано монет</div></div>
           <div class="stat-card"><div class="val" id="statDailyBonus">—</div><div class="lbl">Ежедневный бонус</div></div>
+          <div class="stat-card"><div class="val" id="statXp">0</div><div class="lbl">Опыт (XP)</div></div>
+          <div class="stat-card"><div class="val" id="statRank">—</div><div class="lbl">Ранг</div></div>
         </div>
         <div class="profile-coupon">
           <input type="text" id="couponInput" placeholder="Введите промокод">
           <button id="couponBtn">Активировать</button>
         </div>
         <div id="couponMessage" class="coupon-message"></div>
+        <!-- Достижения -->
+        <div class="profile-inventory" style="margin-top:12px;">
+          <h4>🏅 ДОСТИЖЕНИЯ</h4>
+          <div id="achievementsList" style="display:grid; grid-template-columns:repeat(4,1fr); gap:8px; max-height:300px; overflow-y:auto; padding:4px 0;"></div>
+        </div>
         <div class="profile-inventory">
           <div class="inv-header">
             <h4>📦 ИНВЕНТАРЬ</h4>
@@ -376,6 +502,38 @@ footer{border-top:1px solid var(--border); margin-top:40px; padding:20px 0; text
       </div>
     </div>
   </section>
+
+  <!-- ===== ПУБЛИЧНЫЙ ПРОФИЛЬ ===== -->
+  <section class="panel" id="panel-public-profile">
+    <button class="public-back" id="publicProfileBack">← Назад</button>
+    <div class="public-profile-wrap">
+      <div class="public-profile-head">
+        <div class="public-avatar" id="publicAvatar"><span>👤</span></div>
+        <div><div class="public-name" id="publicName">—</div><div class="public-rank" id="publicRank">—</div></div>
+      </div>
+      <div class="public-stats">
+        <div class="public-stat"><div class="v" id="publicBalance">0</div><div class="l">Баланс</div></div>
+        <div class="public-stat"><div class="v" id="publicXp">0</div><div class="l">XP</div></div>
+        <div class="public-stat"><div class="v" id="publicCases">0</div><div class="l">Кейсов</div></div>
+        <div class="public-stat"><div class="v" id="publicItems">0</div><div class="l">Предметов</div></div>
+        <div class="public-stat"><div class="v" id="publicUpgrades">0</div><div class="l">Апгрейдов</div></div>
+        <div class="public-stat"><div class="v" id="publicEarned">0</div><div class="l">Заработано</div></div>
+      </div>
+      <div class="public-section" id="publicUpgradedSection" style="display:none;">
+        <h4>⭐ УЛУЧШЕННЫЙ ПРЕДМЕТ</h4>
+        <div class="public-upgraded"><img id="publicUpgradedImg" src="" alt=""><div><div class="n" id="publicUpgradedName">—</div><div class="p" id="publicUpgradedPrice">—</div></div></div>
+      </div>
+      <div class="public-section">
+        <h4>📦 ИНВЕНТАРЬ</h4>
+        <div class="public-inventory" id="publicInventory"></div>
+      </div>
+      <div class="public-section">
+        <h4>🏅 ДОСТИЖЕНИЯ</h4>
+        <div id="publicAchievements" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;"></div>
+      </div>
+    </div>
+  </section>
+
 </main>
 
 <footer>
@@ -407,6 +565,9 @@ footer{border-top:1px solid var(--border); margin-top:40px; padding:20px 0; text
   </div>
 </div>
 
+<!-- Контейнер уведомлений -->
+<div class="notification-container" id="notificationContainer"></div>
+
 <!-- Аудио -->
 <audio id="dropSound" src="burmalda.mp3" preload="auto"></audio>
 <audio id="dropSound2" src="burmalda2.mp3" preload="auto"></audio>
@@ -415,39 +576,56 @@ footer{border-top:1px solid var(--border); margin-top:40px; padding:20px 0; text
 <audio id="soundsku" src="soundsku.mp3" preload="auto"></audio>
 <audio id="mellsound" src="mellsound.mp3" preload="auto"></audio>
 <audio id="gorodsound" src="gorodsound.mp3" preload="auto"></audio>
+<audio id="case9Sound" src="case9sound.mp3" preload="auto"></audio>
+<audio id="case10Sound" src="case10sound.mp3" preload="auto"></audio>
+<audio id="case11Sound" src="case11sound.mp3" preload="auto"></audio>
+<audio id="case12Sound" src="case12sound.mp3" preload="auto"></audio>
+<audio id="case13Sound" src="case13sound.mp3" preload="auto"></audio>
+<audio id="case14Sound" src="case14sound.mp3" preload="auto"></audio>
 <audio id="ruletkaSound" src="ruletka.mp3" preload="auto"></audio>
 
 <script>
-/* =========================================================================
-   ГРУША-ДРОП – УПРОЩЁННАЯ ЛОГИКА УЛУЧШЕНИЯ (храним только itemId)
-   ========================================================================= */
+// =============================================================================
+//  ПОЛНАЯ ЛОГИКА ГРУША-ДРОП (ВСЕ ФУНКЦИИ ВОССТАНОВЛЕНЫ)
+// =============================================================================
 
-// ---------- 1. Данные о предметах и кейсах ----------
+// ---------- 1. DataManager (подготовка к Supabase) ----------
+const DataManager = {
+  load() {
+    try {
+      const raw = localStorage.getItem('grushaDropData');
+      if (raw) return JSON.parse(raw);
+    } catch (e) { console.warn('Ошибка загрузки данных', e); }
+    return null;
+  },
+  save(data) {
+    localStorage.setItem('grushaDropData', JSON.stringify(data));
+  }
+};
+
+// ---------- 2. Данные о предметах и кейсах ----------
 const RARITY_ORDER = ["common","uncommon","rare","epic","legendary","mythical"];
 const RARITY_LABEL = {
-  common:"ОБЫЧНЫЙ", uncommon:"НЕОБЫЧНЫЙ", rare:"РЕДКИЙ",
-  epic:"ЭПИЧЕСКИЙ", legendary:"ЛЕГЕНДАРНЫЙ", mythical:"МИФИЧЕСКИЙ"
+  common:"", uncommon:"", rare:"", epic:"", legendary:"", mythical:""
 };
-const RARITY_WEIGHT = { common:1, uncommon:2, rare:3, epic:4, legendary:5, mythical:6 };
 const BASE_SELL_PRICES = { common:10, uncommon:25, rare:50, epic:100, legendary:250, mythical:500 };
 
 const ITEM_PRICES = {
-  18: 50, 19: 50, 20: 100, 21: 100, 22: 200, 23: 200, 24: 400, 25: 400, 26: 800, 27: 1600,
-  28: 30, 29: 30, 30: 60, 31: 60, 32: 120, 33: 120, 34: 240, 35: 240, 36: 480, 37: 960,
-  38: 5000, 39: 6000, 40: 7000, 41: 8000, 42: 9000, 43: 10000,
-  44: 12000, 45: 14000, 46: 16000, 47: 18000,
-  53: 200, 54: 300, 55: 400, 56: 500, 57: 600, 58: 800,
-  59: 15000, 60: 18000, 61: 22000, 62: 25000, 63: 28000, 64: 32000,
-  65: 35000, 66: 38000, 67: 40000, 68: 42000, 69: 45000, 70: 48000,
-  71: 50000, 72: 70000, 73: 99000,
-  74: 4700, 75: 2900, 76: 3150, 77: 700, 78: 1500, 79: 5000, 80: 4000
+  18:50,19:50,20:100,21:100,22:200,23:200,24:400,25:400,26:800,27:1600,
+  28:30,29:30,30:60,31:60,32:120,33:120,34:240,35:240,36:480,37:960,
+  38:5000,39:6000,40:7000,41:8000,42:9000,43:10000,
+  44:12000,45:14000,46:16000,47:18000,
+  53:200,54:300,55:400,56:500,57:600,58:800,
+  59:15000,60:18000,61:22000,62:25000,63:28000,64:32000,
+  65:35000,66:38000,67:40000,68:42000,69:45000,70:48000,
+  71:50000,72:70000,73:99000,
+  74:4700,75:2900,76:3150,77:700,78:1500,79:5000,80:4000
 };
 function getItemPrice(item) {
   if (ITEM_PRICES[item.id] !== undefined) return ITEM_PRICES[item.id];
   return BASE_SELL_PRICES[item.rarity] || 0;
 }
 
-// ВАШИ ОРИГИНАЛЬНЫЕ НАЗВАНИЯ ДЛЯ МЕЛЛСТРОЕВ (возвращены)
 const ALL_ITEMS = [
   {id:1,  name:"Банки Тимура",     rarity:"common",    img:"friend1.jpg",  bonus:"Капец у меня банки были"},
   {id:2,  name:"Бурмалдат Тимур",     rarity:"common",    img:"friend2.jpg",  bonus:"Слушает саундтрек из Хойки"},
@@ -502,7 +680,6 @@ const ALL_ITEMS = [
   {id:56, name:"Маньяк", rarity:"epic", img:"skuf4.jpg", bonus:"Инфернальный"},
   {id:57, name:"Бешеная блядота", rarity:"legendary", img:"skuf5.jpg", bonus:"Инфернальная"},
   {id:58, name:"Навязчивые мысли", rarity:"mythical", img:"skuf6.jpg", bonus:"Инфернальные"},
-  // ваши оригинальные названия для меллстроев
   {id:59, name:"Артур", rarity:"mythical", img:"mell1.jpg", bonus:"Привет Артур"},
   {id:60, name:"Я уже красный", rarity:"mythical", img:"mell2.jpg", bonus:"Культурно не получится"},
   {id:61, name:"Подозревающий", rarity:"mythical", img:"mell3.jpg", bonus:"Прозрел"},
@@ -527,145 +704,295 @@ const ALL_ITEMS = [
   {id:80, name:"Омск", rarity:"mythical", img:"gorod7.jpg", bonus:"Просто бомба"}
 ];
 
+// ---------- КЕЙСЫ (1-8 старые, 9-14 новые) ----------
+const PREVIEW_NEW_CASES_LOCKED = false;
 const CASES = [
-  // ... (кейсы 1-8, как в предыдущей версии)
   {
-    id: 1,
-    name: "Тимур-КЕЙС",
-    cost: 50,
-    img: "timurcase.jpg",
-    sound: "dropSound",
-    items: [
-      {id:1, chance:10}, {id:2, chance:8}, {id:3, chance:12}, {id:4, chance:10},
-      {id:5, chance:10}, {id:6, chance:8}, {id:7, chance:8}, {id:8, chance:6},
-      {id:9, chance:5}, {id:10, chance:3}, {id:11, chance:8}, {id:12, chance:6},
-      {id:13, chance:4}, {id:14, chance:4}, {id:15, chance:3}, {id:16, chance:3},
-      {id:17, chance:2}
+    id:1, name:"Тимур-КЕЙС", cost:50, img:"timurcase.jpg", sound:"dropSound",
+    items:[{id:1,chance:10},{id:2,chance:8},{id:3,chance:12},{id:4,chance:10},{id:5,chance:10},{id:6,chance:8},{id:7,chance:8},{id:8,chance:6},{id:9,chance:5},{id:10,chance:3},{id:11,chance:8},{id:12,chance:6},{id:13,chance:4},{id:14,chance:4},{id:15,chance:3},{id:16,chance:3},{id:17,chance:2}]
+  },
+  {
+    id:2, name:"САМЫЕ АМОРАЛЬНЫЕ МЕМЫ", cost:499, img:"memcase.jpg", sound:"dropSound2",
+    items:[{id:18,chance:3},{id:19,chance:3},{id:20,chance:5},{id:21,chance:5},{id:22,chance:8},{id:23,chance:8},{id:24,chance:12},{id:25,chance:12},{id:26,chance:20},{id:27,chance:24}]
+  },
+  {
+    id:3, name:"ArtPicaPopa", cost:199, img:"artcase.jpg", sound:"dropSound3",
+    items:[{id:28,chance:6},{id:29,chance:6},{id:30,chance:10},{id:31,chance:10},{id:32,chance:14},{id:33,chance:14},{id:34,chance:16},{id:35,chance:16},{id:36,chance:4},{id:37,chance:4}]
+  },
+  {
+    id:4, name:"Груша-ГРУП", cost:12000, img:"groupcase.jpg", sound:"soundg",
+    items:[{id:38,chance:12},{id:39,chance:12},{id:40,chance:12},{id:41,chance:12},{id:42,chance:12},{id:43,chance:10},{id:44,chance:10},{id:45,chance:8},{id:46,chance:6},{id:47,chance:6}]
+  },
+  {
+    id:5, name:"Инфернальный Груша-ГРУП", cost:399, img:"skufcase.jpg", sound:"soundsku",
+    items:[{id:53,chance:15},{id:54,chance:15},{id:55,chance:15},{id:56,chance:15},{id:57,chance:20},{id:58,chance:20}]
+  },
+  {
+    id:6, name:"Дорогой", cost:3000, img:"golda.jpg", sound:"soundg",
+    items:[{id:10,chance:12},{id:27,chance:12},{id:37,chance:12},{id:58,chance:12},{id:38,chance:12},{id:39,chance:12},{id:40,chance:12},{id:41,chance:12},{id:47,chance:4}]
+  },
+  {
+    id:7, name:"Меллстрой", cost:50000, img:"mellcase.jpg", sound:"mellsound",
+    items:[{id:59,chance:6},{id:60,chance:6},{id:61,chance:6},{id:62,chance:6},{id:63,chance:6},{id:64,chance:6},{id:65,chance:6},{id:66,chance:6},{id:67,chance:6},{id:68,chance:6},{id:69,chance:6},{id:70,chance:6},{id:71,chance:6},{id:72,chance:4},{id:73,chance:4}]
+  },
+  {
+    id:8, name:"Города", cost:1699, img:"gorodcase.jpg", sound:"gorodsound",
+    items:[{id:74,chance:14},{id:75,chance:14},{id:76,chance:14},{id:77,chance:14},{id:78,chance:14},{id:79,chance:15},{id:80,chance:15}]
+  },
+  {
+    id:9, name:"Инциденты", cost:4500, img:"case9.jpg", sound:"case9Sound", rankReq:"Начинающая груша",
+    items:[{id:901,chance:30},{id:902,chance:24},{id:903,chance:18},{id:904,chance:12},{id:905,chance:8},{id:906,chance:5},{id:907,chance:3}]
+  },
+  {
+    id:10, name:"Самые НЕСМЕШНЫЕ мемы", cost:12000, img:"case10.jpg", sound:"case10Sound", rankReq:"Опытный лудик",
+    items:[{id:1001,chance:20},{id:1002,chance:17},{id:1003,chance:14},{id:1004,chance:11},{id:1005,chance:9},{id:1006,chance:7},{id:1007,chance:6},{id:1008,chance:5},{id:1009,chance:4},{id:1010,chance:3},{id:1011,chance:2.5},{id:1012,chance:0.5}]
+  },
+  {
+    id:11, name:"Самые СТАРЫЕ мемы", cost:18000, img:"case11.jpg", sound:"case11Sound", rankReq:"Опытный лудик",
+    items:[{id:1101,chance:17},{id:1102,chance:15},{id:1103,chance:13},{id:1104,chance:11},{id:1105,chance:9},{id:1106,chance:8},{id:1107,chance:7},{id:1108,chance:6},{id:1109,chance:5},{id:1110,chance:3.5},{id:1111,chance:2.5},{id:1112,chance:2},{id:1113,chance:1},{id:1114,chance:0.5}]
+  },
+  {
+    id:12, name:"Луксмакс Таблица", cost:42000, img:"case12.jpg", sound:"case12Sound", rankReq:"True бурмалда",
+    items:[{id:1201,chance:32},{id:1202,chance:24},{id:1203,chance:16},{id:1204,chance:10},{id:1205,chance:7},{id:1206,chance:5},{id:1207,chance:6}]
+  },
+  {
+    id:13, name:"Дилдаки Мишель", cost:110000, img:"case13.jpg", sound:"case13Sound", rankReq:"ХАКЕР БУРМАЛДЫ",
+    items:[
+      {id:1301,chance:22},{id:1302,chance:16},{id:1303,chance:13},{id:1304,chance:10},
+      {id:1305,chance:8},{id:1306,chance:7},{id:1307,chance:6},{id:1308,chance:5},
+      {id:1309,chance:4},{id:1310,chance:3},{id:1311,chance:3},{id:1312,chance:2},
+      {id:1313,chance:1},{id:1314,chance:0.7},{id:1315,chance:0.3}
     ]
   },
   {
-    id: 2,
-    name: "САМЫЕ АМОРАЛЬНЫЕ МЕМЫ",
-    cost: 499,
-    img: "memcase.jpg",
-    sound: "dropSound2",
-    items: [
-      {id:18, chance:3}, {id:19, chance:3}, {id:20, chance:5}, {id:21, chance:5},
-      {id:22, chance:8}, {id:23, chance:8}, {id:24, chance:12}, {id:25, chance:12},
-      {id:26, chance:20}, {id:27, chance:24}
-    ]
-  },
-  {
-    id: 3,
-    name: "ArtPicaPopa",
-    cost: 199,
-    img: "artcase.jpg",
-    sound: "dropSound3",
-    items: [
-      {id:28, chance:6}, {id:29, chance:6}, {id:30, chance:10}, {id:31, chance:10},
-      {id:32, chance:14}, {id:33, chance:14}, {id:34, chance:16}, {id:35, chance:16},
-      {id:36, chance:4}, {id:37, chance:4}
-    ]
-  },
-  {
-    id: 4,
-    name: "Груша-ГРУП",
-    cost: 12000,
-    img: "groupcase.jpg",
-    sound: "soundg",
-    items: [
-      {id:38, chance:12}, {id:39, chance:12}, {id:40, chance:12}, {id:41, chance:12},
-      {id:42, chance:12}, {id:43, chance:10}, {id:44, chance:10}, {id:45, chance:8},
-      {id:46, chance:6}, {id:47, chance:6}
-    ]
-  },
-  {
-    id: 5,
-    name: "Инфернальный Груша-ГРУП",
-    cost: 399,
-    img: "skufcase.jpg",
-    sound: "soundsku",
-    items: [
-      {id:53, chance:15}, {id:54, chance:15}, {id:55, chance:15},
-      {id:56, chance:15}, {id:57, chance:20}, {id:58, chance:20}
-    ]
-  },
-  {
-    id: 6,
-    name: "Дорогой",
-    cost: 3000,
-    img: "golda.jpg",
-    sound: "soundg",
-    items: [
-      {id:10, chance:12}, {id:27, chance:12}, {id:37, chance:12},
-      {id:58, chance:12}, {id:38, chance:12}, {id:39, chance:12},
-      {id:40, chance:12}, {id:41, chance:12}, {id:47, chance:4}
-    ]
-  },
-  {
-    id: 7,
-    name: "Меллстрой",
-    cost: 50000,
-    img: "mellcase.jpg",
-    sound: "mellsound",
-    items: [
-      {id:59, chance:6}, {id:60, chance:6}, {id:61, chance:6}, {id:62, chance:6},
-      {id:63, chance:6}, {id:64, chance:6}, {id:65, chance:6}, {id:66, chance:6},
-      {id:67, chance:6}, {id:68, chance:6}, {id:69, chance:6}, {id:70, chance:6},
-      {id:71, chance:6}, {id:72, chance:4}, {id:73, chance:4}
-    ]
-  },
-  {
-    id: 8,
-    name: "Города",
-    cost: 1699,
-    img: "gorodcase.jpg",
-    sound: "gorodsound",
-    items: [
-      {id:74, chance:14}, {id:75, chance:14}, {id:76, chance:14},
-      {id:77, chance:14}, {id:78, chance:14}, {id:79, chance:15},
-      {id:80, chance:15}
+    id:14, name:"ЮСПИКИ", cost:250000, img:"case14.jpg", sound:"case14Sound", rankReq:"ХАКЕР БУРМАЛДЫ",
+    items:[
+      {id:1401,chance:30},{id:1402,chance:24},{id:1403,chance:18},
+      {id:1404,chance:12},{id:1405,chance:8},{id:1406,chance:5},{id:1407,chance:3}
     ]
   }
 ];
 
-// ---------- 2. Состояние ----------
-let balance = 100;
-let inventory = [];
-let stats = {
-  totalCasesOpened: 0,
-  bestDropId: null,
-  totalUpgradeSuccess: 0,
-  totalCoinsSpent: 0,
-  totalCoinsEarned: 0,
-  lastDailyBonus: null,
-  usedCoupons: [],
-  couponGoldaUses: 0,
-  upgradedItemId: null  // ТОЛЬКО ID ПРЕДМЕТА (число)
-};
-let selectedCaseId = 1;
-let username = "user";
-let pendingItem = null;
-let selectedFromUniqueIds = [];
-let selectedToId = null;
+// ============================================================
+// ✏️ РЕДАКТИРОВАНИЕ ПРЕДМЕТОВ НОВЫХ КЕЙСОВ
+// Здесь вручную меняются НАЗВАНИЕ, ОПИСАНИЕ и ЦЕНА каждого предмета.
+// Формат: [ID предмета]: { name: "...", bonus: "...", price: число }
+// ID строятся так: кейс 9 -> 901..907, кейс 10 -> 1001..1012 и т.д.
+// Картинки НЕ нужно прописывать здесь: они берутся автоматически.
+// Например 1204 автоматически использует case124.jpg
+// ============================================================
+const NEW_CASE_ITEMS = {
+  // ---------- КЕЙС 9: Инциденты ----------
+  901:{name:"Блокировка Акка Артема", bonus:"Бывает", price:1500},
+  902:{name:"У меня 12 тысяч на карте", bonus:"Сами знаете", price:2200},
+  903:{name:"Видео звонок", bonus:"300 кг назад", price:3200},
+  904:{name:"Визер шторм на платном серве", bonus:"докс сват страшно", price:4300},
+  905:{name:"Великий суд груши груп", bonus:"сука покажите уже", price:6000},
+  906:{name:"Тимур на птичках", bonus:"Секретное фото", price:8500},
+  907:{name:"Удаление базового", bonus:"Самле страшное", price:12000},
 
-// ---------- 3. Вспомогательные функции ----------
+  // ---------- КЕЙС 10: Самые НЕСМЕШНЫЕ мемы ----------
+  1001:{name:"Дива", bonus:"пиздец", price:2500},
+  1002:{name:"Солнечный?", bonus:"блядота", price:3500},
+  1003:{name:"Даже писька на морозе", bonus:"норм если не слушать", price:5000},
+  1004:{name:"Окак", bonus:"Окак ха ха ха", price:7000},
+  1005:{name:"Тихо не спеша", bonus:"твоя мать сдохнет", price:9500},
+  1006:{name:"Да ты шуешь", bonus:"нет", price:12500},
+  1007:{name:"Танец новки", bonus:"культ тоже хуйня", price:16500},
+  1008:{name:"Толик бля", bonus:"Зафорсили суки", price:22000},
+  1009:{name:"Дастин Лукас", bonus:"Уилл Майк ми", price:28000},
+  1010:{name:"67", bonus:"я бы убивал", price:36000},
+  1011:{name:"Тун тун тун", bonus:"Пиздун", price:45000},
+  1012:{name:"Чозабретта", bonus:"прости пожалуйста", price:60000},
+
+  // ---------- КЕЙС 11: Самые СТАРЫЕ мемы ----------
+  1101:{name:"да ты че", bonus:"бляяя", price:3500},
+  1102:{name:"это елка это я", bonus:"сегодня 1 января", price:5000},
+  1103:{name:"слайм на чилле", bonus:"на расслобоуни", price:7000},
+  1104:{name:"Абобус", bonus:"амогус", price:9500},
+  1105:{name:"Шлепа", bonus:"Когда дети в подвале", price:12500},
+  1106:{name:"Шампунь Жумайсынба", bonus:"Скажи перхоти", price:16000},
+  1107:{name:"Тульский пряник", bonus:"Прикормка", price:21000},
+  1108:{name:"Мшк Фреде", bonus:"бу", price:28000},
+  1109:{name:"Анонимус", bonus:"е анонимус у", price:36000},
+  1110:{name:"Снюсоед", bonus:"Под одеялом", price:47000},
+  1111:{name:"Кит ты маму мав", bonus:"Мав", price:60000},
+  1112:{name:"ты был прав", bonus:"я всегда буду злодеем", price:75000},
+  1113:{name:"Нюхай", bonus:"бебру", price:95000},
+  1114:{name:"скала", bonus:"без слов", price:125000},
+
+  // ---------- КЕЙС 12: Луксмакс Таблица ----------
+  1201:{name:"sub3", bonus:"", price:15000},
+  1202:{name:"sub5", bonus:"", price:22000},
+  1203:{name:"ltn", bonus:"", price:30000},
+  1204:{name:"mtn", bonus:"", price:42000},
+  1205:{name:"htn", bonus:"", price:60000},
+  1206:{name:"chad", bonus:"", price:85000},
+  1207:{name:"True Adam", bonus:"", price:120000},
+
+  // ---------- КЕЙС 13: Дилдаки Мишель (15 предметов) ----------
+  1301:{name:"Обычный дилдак", bonus:"как в пещере", price:20000},
+  1302:{name:"Розовый дилдак", bonus:"все такой же обычный", price:30000},
+  1303:{name:"Вибро дилдак", bonus:"для яиц", price:45000},
+  1304:{name:"Конский дилдо", bonus:"хорошо сидит", price:60000},
+  1305:{name:"Минималистичный дилдак", bonus:"аккуратно", price:80000},
+  1306:{name:"Круговой дилдак", bonus:"для большой жопы", price:105000},
+  1307:{name:"Черный дилдо", bonus:"для блэк босса", price:135000},
+  1308:{name:"Необычный дилдо", bonus:"новый", price:175000},
+  1309:{name:"мини дрэгон", bonus:"неплохой", price:225000},
+  1310:{name:"Цветок дилдо", bonus:"Как трек моргена", price:300000},
+  1311:{name:"Дилдо с помпой", bonus:"надувать", price:400000},
+  1312:{name:"Радужный дилдо", bonus:"лгбт", price:550000},
+  1313:{name:"Рука Тимура", bonus:"Все для мишель", price:750000},
+  1314:{name:"Тентакля", bonus:"В пещеру влезет", price:1000000},
+  1315:{name:"БЭД ДРЭГОН", bonus:"для самых больших жоп", price:1500000},
+
+  // ---------- КЕЙС 14: ЮСПИКИ (7 предметов) ----------
+  1401:{name:"юспик нуба", bonus:"дальше меньше", price:50000},
+  1402:{name:"юспик револьвер", bonus:"кольт", price:70000},
+  1403:{name:"мульти юспик", bonus:"а в чем разница", price:100000},
+  1404:{name:"ГОР юспик", bonus:"снафф", price:140000},
+  1405:{name:"кружка юспик", bonus:"для майонеза", price:570000},
+  1406:{name:"Лего юспик", bonus:"почти портальная пушка", price:2500000},
+  1407:{name:"ТОТ САМЫЙ ЮСПИК", bonus:"ДЛЯ ТИМУРА", price:3250000}
+  // предметы 1408-1415 удалены
+};
+
+for (const [itemIdText, itemData] of Object.entries(NEW_CASE_ITEMS)) {
+  const itemId = Number(itemIdText);
+  const caseId = Math.floor(itemId / 100);
+  const itemNumber = itemId % 100;
+  ALL_ITEMS.push({
+    id:itemId,
+    name:itemData.name,
+    rarity:"common",
+    img:`case${caseId}${itemNumber}.jpg`,
+    bonus:itemData.bonus
+  });
+  ITEM_PRICES[itemId] = itemData.price;
+}
+
+// ---------- 3. Ранги и достижения ----------
+const RANKS = [
+  { name:"Новичок бля", icon:"🥉", xpRequired:0 },
+  { name:"Начинающая груша", icon:"🥈", xpRequired:500 },
+  { name:"Опытный лудик", icon:"🥉", xpRequired:1500 },
+  { name:"True бурмалда", icon:"🥇", xpRequired:4000 },
+  { name:"ХАКЕР БУРМАЛДЫ", icon:"👑", xpRequired:10000 }
+];
+
+const ACHIEVEMENTS = [
+  { id:"first_case", name:"Первый шаг", desc:"Открыть 1 кейс", xpReward:30, check: s => s.stats.totalCasesOpened >= 1 },
+  { id:"ten_cases", name:"Начинающий лудик", desc:"Открыть 10 кейсов", xpReward:60, check: s => s.stats.totalCasesOpened >= 10 },
+  { id:"fifty_cases", name:"Заядлый игрок", desc:"Открыть 50 кейсов", xpReward:120, check: s => s.stats.totalCasesOpened >= 50 },
+  { id:"twohundred_cases", name:"Кейс-маньяк", desc:"Открыть 200 кейсов", xpReward:250, check: s => s.stats.totalCasesOpened >= 200 },
+  { id:"fivehundred_cases", name:"Король кейсов", desc:"Открыть 500 кейсов", xpReward:450, check: s => s.stats.totalCasesOpened >= 500 },
+  { id:"thousand_cases", name:"Легенда казино", desc:"Открыть 1000 кейсов", xpReward:700, check: s => s.stats.totalCasesOpened >= 1000 },
+  { id:"first_sell", name:"Первый заработок", desc:"Продать на 1000 монет", xpReward:30, check: s => (s.stats.totalCoinsEarned || 0) >= 1000 },
+  { id:"tenk_sell", name:"Торговец", desc:"Продать на 10000 монет", xpReward:60, check: s => (s.stats.totalCoinsEarned || 0) >= 10000 },
+  { id:"fiftyk_sell", name:"Купец", desc:"Продать на 50000 монет", xpReward:120, check: s => (s.stats.totalCoinsEarned || 0) >= 50000 },
+  { id:"twofiftyk_sell", name:"Магнат", desc:"Продать на 250000 монет", xpReward:250, check: s => (s.stats.totalCoinsEarned || 0) >= 250000 },
+  { id:"million_sell", name:"Олигарх", desc:"Продать на 1000000 монет", xpReward:450, check: s => (s.stats.totalCoinsEarned || 0) >= 1000000 },
+  { id:"first_upgrade", name:"Первый апгрейд", desc:"1 успешный апгрейд", xpReward:40, check: s => (s.stats.totalUpgradeSuccess || 0) >= 1 },
+  { id:"ten_upgrades", name:"Серийный апгрейдер", desc:"10 успешных апгрейдов", xpReward:100, check: s => (s.stats.totalUpgradeSuccess || 0) >= 10 },
+  { id:"fifty_upgrades", name:"Мастер апгрейда", desc:"50 успешных апгрейдов", xpReward:250, check: s => (s.stats.totalUpgradeSuccess || 0) >= 50 },
+  { id:"hundred_upgrades", name:"Гуру апгрейда", desc:"100 успешных апгрейдов", xpReward:450, check: s => (s.stats.totalUpgradeSuccess || 0) >= 100 },
+  { id:"million_balance", name:"Первый миллион", desc:"Баланс 1000000", xpReward:350, check: s => (s.balance || 0) >= 1000000 },
+  { id:"fifty_items", name:"Коллекционер", desc:"50 предметов в инвентаре", xpReward:120, check: s => (s.inventory ? s.inventory.length : 0) >= 50 },
+  { id:"twohundred_items", name:"Легендарный коллекционер", desc:"200 предметов в инвентаре", xpReward:350, check: s => (s.inventory ? s.inventory.length : 0) >= 200 },
+  { id:"hacker_rank", name:"Ранговый прорыв", desc:"Получить ХАКЕР БУРМАЛДЫ", xpReward:500, check: s => getCurrentRank(s.stats.xp).name === "ХАКЕР БУРМАЛДЫ" },
+  { id:"all_cases", name:"Всё в одном", desc:"Открыть все 14 кейсов", xpReward:600, check: s => { let cnt=0; for (let c of CASES) if (s.unlockedCases && s.unlockedCases.includes(c.id)) cnt++; return cnt >= 14; } }
+];
+
+function getCurrentRank(xp) {
+  let rank = RANKS[0];
+  for (let r of RANKS) {
+    if (xp >= r.xpRequired) rank = r;
+  }
+  return rank;
+}
+function getRankProgress(xp) {
+  const current = getCurrentRank(xp);
+  const idx = RANKS.indexOf(current);
+  if (idx === RANKS.length-1) return { progress:1, nextXp:null, remaining:0 };
+  const next = RANKS[idx+1];
+  const range = next.xpRequired - current.xpRequired;
+  const progress = (xp - current.xpRequired) / range;
+  return { progress:Math.min(1, progress), nextXp:next.xpRequired, remaining:next.xpRequired - xp };
+}
+
+// ---------- 4. Состояние игры ----------
+let game = {
+  balance: 100,
+  inventory: [],
+  stats: {
+    totalCasesOpened: 0,
+    bestDropId: null,
+    totalUpgradeSuccess: 0,
+    totalCoinsSpent: 0,
+    totalCoinsEarned: 0,
+    lastDailyBonus: null,
+    usedCoupons: [],
+    couponGoldaUses: 0,
+    upgradedItemId: null,
+    xp: 0,
+    achievements: [],
+    unlockedCases: []
+  },
+  username: "user",
+  selectedCaseId: 1
+};
+
+// ---------- 5. Загрузка и сохранение ----------
+function loadGame() {
+  const data = DataManager.load();
+  if (data) {
+    game.balance = data.balance ?? 100;
+    game.inventory = Array.isArray(data.inventory) ? data.inventory : [];
+    if (data.stats) {
+      game.stats = { ...game.stats, ...data.stats };
+      game.stats.achievements = Array.isArray(game.stats.achievements) ? game.stats.achievements : [];
+      game.stats.unlockedCases = Array.isArray(game.stats.unlockedCases) ? game.stats.unlockedCases : [];
+    }
+    game.selectedCaseId = data.selectedCaseId ?? 1;
+    game.username = data.username ?? "user";
+    if (game.stats.upgradedItemId && typeof game.stats.upgradedItemId === 'object') {
+      game.stats.upgradedItemId = game.stats.upgradedItemId.itemId || null;
+    }
+  }
+}
+function saveGame() {
+  DataManager.save({
+    balance: game.balance,
+    inventory: game.inventory,
+    stats: game.stats,
+    selectedCaseId: game.selectedCaseId,
+    username: game.username
+  });
+}
+
+// ---------- 6. Вспомогательные функции ----------
+function byId(list, id){ return list.find(i => i.id === id); }
+function rarityColorClass(r){ return ""; }
+function rarityBgClass(r){ return ""; }
+function imgOrPlaceholder(item, cls){
+  if (!item) return `<div class="${cls||'ph'}">❓</div>`;
+  return `<img src="${item.img}" class="${cls||''}" onerror="this.outerHTML='<div class=&quot;${cls||'ph'}&quot;>📸</div>'">`;
+}
 function addItemInstance(itemId) {
   const uniqueId = Date.now() + Math.random() * 100000 + '_' + itemId;
-  inventory.push({ uniqueId, itemId });
-}
-function getItemInstances(itemId) {
-  return inventory.filter(it => it.itemId === itemId);
+  game.inventory.push({ uniqueId, itemId });
 }
 function getCount(itemId) {
-  return getItemInstances(itemId).length;
+  return game.inventory.filter(it => it.itemId === itemId).length;
+}
+function getItemInstances(itemId) {
+  return game.inventory.filter(it => it.itemId === itemId);
 }
 function getAllItemsGrouped() {
   const groups = {};
-  for (const inst of inventory) {
-    if (stats.upgradedItemId !== null && inst.itemId === stats.upgradedItemId) {
-      continue;
-    }
+  for (const inst of game.inventory) {
+    if (game.stats.upgradedItemId !== null && inst.itemId === game.stats.upgradedItemId) continue;
     if (!groups[inst.itemId]) groups[inst.itemId] = [];
     groups[inst.itemId].push(inst);
   }
@@ -675,186 +1002,175 @@ function isItemUpgradable(itemId) {
   const item = byId(ALL_ITEMS, itemId);
   if (!item) return false;
   const price = getItemPrice(item);
-  return price >= 50000 && (stats.upgradedItemId == null);
+  return price >= 50000 && game.stats.upgradedItemId == null;
 }
 function getUpgradedItem() {
-  if (stats.upgradedItemId === null) return null;
-  const item = byId(ALL_ITEMS, stats.upgradedItemId);
-  if (!item) {
-    stats.upgradedItemId = null;
-    return null;
-  }
+  if (game.stats.upgradedItemId === null) return null;
+  const item = byId(ALL_ITEMS, game.stats.upgradedItemId);
+  if (!item) { game.stats.upgradedItemId = null; return null; }
   return item;
 }
+function updateBalanceUI(){ document.getElementById('balance').textContent = game.balance; }
 
-function loadGameData() {
-  try {
-    const saved = localStorage.getItem('grushaDropData');
-    if (saved) {
-      const data = JSON.parse(saved);
-      balance = data.balance ?? 100;
-      if (data.inventory && !Array.isArray(data.inventory)) {
-        const oldInv = data.inventory;
-        inventory = [];
-        for (const [id, count] of Object.entries(oldInv)) {
-          for (let i = 0; i < count; i++) {
-            addItemInstance(parseInt(id));
-          }
-        }
-      } else if (Array.isArray(data.inventory)) {
-        inventory = data.inventory;
-      } else {
-        inventory = [];
-      }
-      // Объединяем сохранённую статистику с дефолтной,
-      // чтобы старые сохранения без новых полей не ломали апгрейд.
-      if (data.stats && typeof data.stats === 'object') {
-        stats = { ...stats, ...data.stats };
-        stats.usedCoupons = Array.isArray(stats.usedCoupons) ? stats.usedCoupons : [];
-        stats.couponGoldaUses = Number(stats.couponGoldaUses) || 0;
-        stats.upgradedItemId = stats.upgradedItemId ?? null;
-      }
-      selectedCaseId = data.selectedCaseId ?? 1;
-      username = data.username ?? "user";
-
-      // Если upgradedItemId хранит объект (старый формат) – конвертируем
-      if (stats.upgradedItemId && typeof stats.upgradedItemId === 'object') {
-        const old = stats.upgradedItemId;
-        stats.upgradedItemId = old && old.itemId ? old.itemId : null;
-        saveGameData();
-      }
-    }
-  } catch (e) {}
-}
-function saveGameData() {
-  localStorage.setItem('grushaDropData', JSON.stringify({
-    balance,
-    inventory,
-    stats,
-    selectedCaseId,
-    username
-  }));
-}
-
-function byId(list, id){ return list.find(i => i.id === id); }
-function rarityColorClass(r){ return "r-" + r; }
-function rarityBgClass(r){ return "bg-" + r; }
-function fmtChance(c){ return (c % 1 === 0 ? c : c.toFixed(1)) + "%"; }
-function getRarityIndex(r){ return RARITY_ORDER.indexOf(r); }
-function getRarityWeight(r){ return RARITY_WEIGHT[r] || 0; }
-function imgOrPlaceholder(item, cls){
-  return `<img src="${item.img}" class="${cls}" onerror="this.outerHTML='<div class=&quot;${cls==='mimg'?'mimg':'ph'}&quot;>📸</div>'">`;
-}
-function updateBalanceUI(){ document.getElementById('balance').textContent = balance; }
-function getCurrentCase() { return CASES.find(c => c.id === selectedCaseId); }
-
-// ---------- 4. Ежедневный бонус и купоны ----------
-function checkDailyBonus() {
-  const today = new Date().toISOString().slice(0,10);
-  if (stats.lastDailyBonus !== today) {
-    balance += 300;
-    stats.totalCoinsEarned += 300;
-    stats.lastDailyBonus = today;
-    saveGameData();
-    updateBalanceUI();
-    updateProfileStats();
-    const msg = document.getElementById('couponMessage');
-    msg.textContent = '🎁 Ежедневный бонус +300 монет!';
-    msg.style.color = '#7fdb7f';
-    setTimeout(() => { msg.textContent = ''; }, 5000);
-  }
-  const el = document.getElementById('statDailyBonus');
-  if (stats.lastDailyBonus === today) {
-    el.textContent = '✅ Получен сегодня';
-    el.style.color = '#7fdb7f';
-  } else {
-    el.textContent = '⏳ Ожидает';
-    el.style.color = '#ffb23d';
-  }
-}
-
-const COUPONS = {
-  'mishel': 9999,
-  'pozdnyak': 500,
-  'bilet-na-vertoletik': 1488,
-  'chiter': 999999,
-  'golda': 1500,
-  'golda1': 1500000
-};
-function activateCoupon() {
-  const input = document.getElementById('couponInput');
-  const msg = document.getElementById('couponMessage');
-  const code = input.value.trim().toLowerCase();
-  if (!code) { msg.textContent = '❌ Введите промокод'; msg.style.color = '#ff6b6b'; return; }
-  if (stats.usedCoupons.includes(code) && code !== 'golda') {
-    msg.textContent = '❌ Этот промокод уже использован';
-    msg.style.color = '#ff6b6b';
-    return;
-  }
-  if (code === 'golda') {
-    if (stats.couponGoldaUses >= 3) {
-      msg.textContent = '❌ Лимит использований golda (3) исчерпан';
-      msg.style.color = '#ff6b6b';
-      return;
-    }
-  }
-  if (!(code in COUPONS)) { msg.textContent = '❌ Неверный промокод'; msg.style.color = '#ff6b6b'; return; }
-  const reward = COUPONS[code];
-  balance += reward;
-  stats.totalCoinsEarned += reward;
-  if (code === 'golda') {
-    stats.couponGoldaUses += 1;
-    if (stats.couponGoldaUses >= 3) stats.usedCoupons.push('golda');
-  } else {
-    stats.usedCoupons.push(code);
-  }
-  saveGameData();
+function updateUI(){
   updateBalanceUI();
-  updateProfileStats();
-  msg.textContent = `✅ Промокод активирован! +${reward} монет`;
-  msg.style.color = '#7fdb7f';
-  input.value = '';
+
+  const rank = getCurrentRank(game.stats.xp);
+  const prog = getRankProgress(game.stats.xp);
+  const next = RANKS[RANKS.indexOf(rank) + 1];
+
+  document.getElementById('headerRankIcon').textContent = rank.icon;
+  document.getElementById('headerRankName').textContent = rank.name;
+  document.getElementById('headerRankXp').textContent = game.stats.xp + ' XP';
+  document.getElementById('headerRankProgress').style.width = (prog.progress * 100) + '%';
+  document.getElementById('headerRank').title = next
+    ? `До ранга «${next.name}»: ${prog.remaining} XP`
+    : 'Максимальный ранг';
+
+  const casesPanel = document.getElementById('panel-cases');
+  if (casesPanel && casesPanel.classList.contains('active')) {
+    renderCasesGrid();
+    renderLeaderboard();
+  }
+}
+function syncRankCaseUnlocks() {
+  if (!Array.isArray(game.stats.unlockedCases)) game.stats.unlockedCases = [];
+  const currentRankIndex = RANKS.findIndex(r => r.name === getCurrentRank(game.stats.xp).name);
+  for (const c of CASES) {
+    if (!c.rankReq) {
+      if (!game.stats.unlockedCases.includes(c.id)) game.stats.unlockedCases.push(c.id);
+      continue;
+    }
+    const reqIndex = RANKS.findIndex(r => r.name === c.rankReq);
+    if (reqIndex !== -1 && currentRankIndex >= reqIndex && !game.stats.unlockedCases.includes(c.id)) {
+      game.stats.unlockedCases.push(c.id);
+    }
+  }
+}
+function isCaseUnlocked(c) {
+  if (!c || !c.rankReq) return true;
+  const currentIndex = RANKS.findIndex(r => r.name === getCurrentRank(game.stats.xp).name);
+  const requiredIndex = RANKS.findIndex(r => r.name === c.rankReq);
+  return requiredIndex !== -1 && currentIndex >= requiredIndex;
+}
+function getCurrentCase() { return CASES.find(c => c.id === game.selectedCaseId); }
+
+// ---------- 7. XP и достижения ----------
+function addXp(amount, source, skipAchievementCheck = false) {
+  amount = Number(amount) || 0;
+  if (amount <= 0) return;
+  const oldRank = getCurrentRank(game.stats.xp);
+  game.stats.xp += amount;
+  const newRank = getCurrentRank(game.stats.xp);
+  if (newRank.name !== oldRank.name) {
+    showNotification(`🎉 Повышение ранга! Теперь вы ${newRank.icon} ${newRank.name}!`, 'rankup');
+    const newlyUnlocked = CASES.filter(c => c.rankReq && c.rankReq === newRank.name && !game.stats.unlockedCases.includes(c.id));
+    for (let c of newlyUnlocked) {
+      game.stats.unlockedCases.push(c.id);
+      showNotification(`🔓 Открыт новый кейс: ${c.name}!`, 'case_unlock');
+    }
+    launchConfetti(30);
+  }
+  if (!skipAchievementCheck) checkAchievements();
+  saveGame();
+  updateUI();
 }
 
-// ---------- 5. Рендер кейсов и переключение ----------
+function checkAchievements() {
+  const newlyUnlocked = [];
+  for (const ach of ACHIEVEMENTS) {
+    if (game.stats.achievements.includes(ach.id)) continue;
+    if (ach.check(game)) {
+      game.stats.achievements.push(ach.id);
+      newlyUnlocked.push(ach);
+    }
+  }
+  if (!newlyUnlocked.length) return;
+
+  let rewardXp = 0;
+  for (const ach of newlyUnlocked) {
+    rewardXp += ach.xpReward;
+    showNotification(`🏅 Достижение: ${ach.name} (+${ach.xpReward} XP)`, 'achievement');
+  }
+  if (rewardXp > 0) addXp(rewardXp, 'achievement', true);
+}
+
+// ---------- 8. Уведомления ----------
+function showNotification(text, type='info') {
+  const container = document.getElementById('notificationContainer');
+  const notif = document.createElement('div');
+  notif.className = 'notification';
+  let icon = 'ℹ️';
+  if (type === 'rankup') icon = '🎉';
+  else if (type === 'achievement') icon = '🏅';
+  else if (type === 'case_unlock') icon = '🔓';
+  notif.innerHTML = `<span class="n-icon">${icon}</span><span class="n-text">${text}</span><span class="n-close">✕</span>`;
+  container.appendChild(notif);
+  notif.querySelector('.n-close').addEventListener('click', () => notif.remove());
+  setTimeout(() => { if (notif.parentNode) notif.remove(); }, 6000);
+}
+
+// ---------- 9. Конфетти ----------
+function launchConfetti(count=40) {
+  const colors = ['#ffcf4d','#ff7a3d','#4caf50','#2f8fff','#a24bf0','#ff3d6b'];
+  for (let i=0; i<count; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti';
+    c.style.left = Math.random()*100 + 'vw';
+    c.style.background = colors[Math.floor(Math.random()*colors.length)];
+    c.style.transform = 'rotate('+Math.random()*360+'deg)';
+    document.body.appendChild(c);
+    const duration = 2000 + Math.random()*1500;
+    const drift = (Math.random()-0.5)*200;
+    c.animate([
+      { transform: c.style.transform + ' translate(0,0)', opacity:1 },
+      { transform: 'rotate('+Math.random()*720+'deg) translate('+drift+'px, 100vh)', opacity:.9 }
+    ], { duration, easing:'cubic-bezier(.2,.6,.4,1)' });
+    setTimeout(() => c.remove(), duration+50);
+  }
+}
+
+// ---------- 10. Рендер кейсов и переключение ----------
 function renderCasesGrid() {
   const grid = document.getElementById('casesGridContainer');
-  grid.innerHTML = CASES.map(c => `
-    <div class="case-card" data-id="${c.id}">
+  const currentRank = getCurrentRank(game.stats.xp);
+  grid.innerHTML = CASES.map(c => {
+    const lockedByRank = c.rankReq && RANKS.findIndex(r => r.name === c.rankReq) > RANKS.indexOf(currentRank);
+    const locked = lockedByRank;
+    const lockIcon = locked ? '<div class="lock-icon">🔒</div>' : '';
+    const reqText = c.rankReq ? `<div class="rank-req">Требуется: ${c.rankReq}</div>` : '';
+    const lockedClass = locked ? 'locked' : '';
+    return `<div class="case-card ${lockedClass}" data-id="${c.id}" ${locked ? '' : 'style="cursor:pointer;"'}>
+      ${lockIcon}
       ${imgOrPlaceholder({img:c.img, name:c.name}, 'case-img')}
       <h3>${c.name}</h3>
       <div class="cost">${c.cost} 🪙</div>
-    </div>
-  `).join('');
-  document.querySelectorAll('.case-card').forEach(el => {
+      ${reqText}
+    </div>`;
+  }).join('');
+  document.querySelectorAll('.case-card:not(.locked)').forEach(el => {
     el.addEventListener('click', function() {
-      selectedCaseId = Number(this.dataset.id);
+      game.selectedCaseId = Number(this.dataset.id);
       showDetailView();
-      saveGameData();
+      saveGame();
     });
   });
 }
 
-const gridContainer = document.getElementById('casesGridContainer');
-const detailContainer = document.getElementById('caseDetailContainer');
-
 function showSelectionView() {
-  gridContainer.style.display = 'grid';
-  detailContainer.classList.remove('show');
+  document.getElementById('casesGridContainer').style.display = 'grid';
+  document.getElementById('caseDetailContainer').classList.remove('show');
   document.getElementById('detailRollSection').classList.remove('show');
   document.getElementById('multiRollContainer').classList.remove('show');
   document.getElementById('caseAction').classList.remove('hidden');
   document.getElementById('detailOpenBtn').disabled = false;
-  const ruletka = document.getElementById('ruletkaSound');
-  ruletka.pause();
-  ruletka.currentTime = 0;
   document.getElementById('winBurst').classList.remove('show');
   document.getElementById('upgradeWheelContainer').classList.remove('wheel-win-active');
 }
 
 function showDetailView() {
-  gridContainer.style.display = 'none';
-  detailContainer.classList.add('show');
+  document.getElementById('casesGridContainer').style.display = 'none';
+  document.getElementById('caseDetailContainer').classList.add('show');
   renderDetailView();
 }
 
@@ -867,8 +1183,12 @@ function renderDetailView() {
   grid.innerHTML = c.items.map(({id, chance}) => {
     const item = byId(ALL_ITEMS, id);
     const price = getItemPrice(item);
+    let colorClass = 'price-low';
+    if (price > 10000) colorClass = 'price-top';
+    else if (price > 1000) colorClass = 'price-high';
+    else if (price > 200) colorClass = 'price-mid';
     return `<div class="inv-card">
-      <div class="rarity-strip ${rarityBgClass(item.rarity)}"></div>
+      <div class="rarity-strip ${colorClass}"></div>
       ${imgOrPlaceholder(item,'ph')}
       <div class="inv-price">${price} 🪙</div>
     </div>`;
@@ -879,7 +1199,23 @@ function renderDetailView() {
   document.getElementById('detailOpenBtn').disabled = false;
 }
 
-// ---------- 6. Открытие кейса (мульти) ----------
+function updateMultiOpenPrice() {
+  const c = getCurrentCase();
+  if (!c) return;
+  if (!isCaseUnlocked(c)) {
+    alert(`Кейс доступен с ранга «${c.rankReq}».`);
+    return;
+  }
+  const count = Math.max(1, parseInt(document.getElementById('multiSelect').value, 10) || 1);
+  const total = c.cost * count;
+  const priceTag = document.getElementById('detailCaseCost');
+  priceTag.textContent = count > 1
+    ? `${c.cost} 🪙 × ${count} = ${total} 🪙`
+    : `${c.cost} 🪙`;
+}
+document.getElementById('multiSelect').addEventListener('change', updateMultiOpenPrice);
+
+// ---------- 11. Открытие кейсов ----------
 function weightedRandomItem(caseItems) {
   const total = caseItems.reduce((s, it) => s + it.chance, 0);
   let r = Math.random() * total;
@@ -892,79 +1228,71 @@ function weightedRandomItem(caseItems) {
   return byId(ALL_ITEMS, caseItems[0].id);
 }
 
-const caseAction = document.getElementById('caseAction');
-const detailRollSection = document.getElementById('detailRollSection');
-const detailRollTrack = document.getElementById('detailRollTrack');
-const multiRollContainer = document.getElementById('multiRollContainer');
-const detailOpenBtn = document.getElementById('detailOpenBtn');
-const multiSelect = document.getElementById('multiSelect');
-
-function updateMultiOpenPrice() {
-  const c = getCurrentCase();
-  if (!c) return;
-  const count = Math.max(1, parseInt(multiSelect.value, 10) || 1);
-  const total = c.cost * count;
-  const priceTag = document.getElementById('detailCaseCost');
-  priceTag.textContent = count > 1
-    ? `${c.cost} 🪙 × ${count} = ${total} 🪙`
-    : `${c.cost} 🪙`;
-}
-
-multiSelect.addEventListener('change', updateMultiOpenPrice);
-
 let isOpening = false;
 let openResults = [];
 
-detailOpenBtn.onclick = function() {
+document.getElementById('detailOpenBtn').onclick = function() {
   if (isOpening) return;
   const c = getCurrentCase();
   if (!c) return;
+  if (!isCaseUnlocked(c)) {
+    alert(`Кейс доступен с ранга «${c.rankReq}».`);
+    return;
+  }
   const count = Math.max(1, parseInt(document.getElementById('multiSelect').value, 10) || 1);
   const totalCost = c.cost * count;
-  if (balance < totalCost) {
+  if (game.balance < totalCost) {
     alert('Недостаточно монет!');
     return;
   }
   isOpening = true;
   this.disabled = true;
-  balance -= totalCost;
-  stats.totalCoinsSpent += totalCost;
-  stats.totalCasesOpened += count;
-  saveGameData();
+  game.balance -= totalCost;
+  game.stats.totalCoinsSpent += totalCost;
+  game.stats.totalCasesOpened += count;
+  if (!Array.isArray(game.stats.unlockedCases)) game.stats.unlockedCases = [];
+  if (!game.stats.unlockedCases.includes(c.id)) game.stats.unlockedCases.push(c.id);
+  // XP за открытие (50 за каждый)
+  addXp(50 * count, 'case_open');
+  saveGame();
   updateBalanceUI();
 
-  caseAction.classList.add('hidden');
+  document.getElementById('caseAction').classList.add('hidden');
 
   const items = [];
-  for (let i = 0; i < count; i++) {
+  for (let i=0; i<count; i++) {
     const won = weightedRandomItem(c.items);
     items.push(won);
     const currentPrice = getItemPrice(won);
-    const bestItem = stats.bestDropId ? byId(ALL_ITEMS, stats.bestDropId) : null;
+    const bestItem = game.stats.bestDropId ? byId(ALL_ITEMS, game.stats.bestDropId) : null;
     const bestPrice = bestItem ? getItemPrice(bestItem) : -1;
-    if (!stats.bestDropId || currentPrice > bestPrice) {
-      stats.bestDropId = won.id;
+    if (!game.stats.bestDropId || currentPrice > bestPrice) {
+      game.stats.bestDropId = won.id;
     }
+    // Бонус XP за редкость
+    let bonusXp = 0;
+    if (won.rarity === 'uncommon') bonusXp = 15;
+    else if (won.rarity === 'rare') bonusXp = 30;
+    else if (won.rarity === 'epic') bonusXp = 60;
+    else if (won.rarity === 'legendary') bonusXp = 90;
+    else if (won.rarity === 'mythical') bonusXp = 120;
+    if (bonusXp) addXp(bonusXp, 'rarity_bonus');
   }
-  saveGameData();
+  saveGame();
 
   if (count === 1) {
-    detailRollSection.classList.add('show');
+    document.getElementById('detailRollSection').classList.add('show');
     const won = items[0];
-    const track = detailRollTrack;
+    const track = document.getElementById('detailRollTrack');
     track.style.transition = 'none';
     track.style.transform = 'translateX(0)';
     const caseItems = c.items;
     const REEL_LEN = 30;
     const TAIL_PAD = 12;
     const strip = [];
-    for (let i = 0; i < REEL_LEN - 1; i++) {
-      strip.push(weightedRandomItem(caseItems));
-    }
+    for (let i=0; i<REEL_LEN-1; i++) strip.push(weightedRandomItem(caseItems));
     strip.push(won);
-    for (let i = 0; i < TAIL_PAD; i++) {
-      strip.push(weightedRandomItem(caseItems));
-    }
+    for (let i=0; i<TAIL_PAD; i++) strip.push(weightedRandomItem(caseItems));
     track.innerHTML = strip.map((it, idx) => `
       <div class="roll-item" data-idx="${idx}">
         ${imgOrPlaceholder(it, 'ph')}
@@ -996,45 +1324,26 @@ detailOpenBtn.onclick = function() {
       showNextModal();
     }, ROLL_DURATION * 1000 + 200);
   } else {
-    multiRollContainer.classList.add('show');
-    multiRollContainer.innerHTML = '';
+    // Мульти-открытие (аналогично, но с несколькими рулетками)
+    document.getElementById('multiRollContainer').classList.add('show');
+    const container = document.getElementById('multiRollContainer');
+    container.innerHTML = '';
     const viewports = [];
-    for (let i = 0; i < count; i++) {
-      const viewport = document.createElement('div');
-      viewport.className = 'roll-viewport';
-      viewport.style.flex = '1 1 180px';
-      viewport.style.minWidth = '150px';
-      viewport.style.height = '120px';
-      viewport.style.position = 'relative';
-      viewport.style.overflow = 'hidden';
-      viewport.style.borderRadius = '8px';
-      viewport.style.background = '#1c2540';
-      viewport.style.border = '1px solid #2a3455';
+    for (let i=0; i<count; i++) {
+      const vp = document.createElement('div');
+      vp.className = 'roll-viewport';
+      vp.style.flex = '1 1 180px';
+      vp.style.minWidth = '150px';
+      vp.style.height = '120px';
       const pointer = document.createElement('div');
       pointer.className = 'roll-pointer';
-      pointer.style.position = 'absolute';
-      pointer.style.left = '50%';
-      pointer.style.top = '0';
-      pointer.style.bottom = '0';
-      pointer.style.width = '3px';
-      pointer.style.background = '#ff7a3d';
-      pointer.style.transform = 'translateX(-50%)';
-      pointer.style.zIndex = '4';
-      pointer.style.boxShadow = '0 0 10px #ff7a3d';
-      viewport.appendChild(pointer);
+      vp.appendChild(pointer);
       const track = document.createElement('div');
       track.className = 'roll-track';
-      track.style.position = 'absolute';
-      track.style.top = '0';
-      track.style.left = '0';
-      track.style.display = 'flex';
-      track.style.height = '100%';
-      track.style.willChange = 'transform';
-      viewport.appendChild(track);
-      multiRollContainer.appendChild(viewport);
-      viewports.push({ viewport, track, won: items[i] });
+      vp.appendChild(track);
+      container.appendChild(vp);
+      viewports.push({ viewport:vp, track, won: items[i] });
     }
-    const sound = c.sound;
     const ruletka = document.getElementById('ruletkaSound');
     ruletka.currentTime = 0;
     ruletka.play().catch(() => {});
@@ -1046,14 +1355,9 @@ detailOpenBtn.onclick = function() {
       const track = vp.track;
       const won = vp.won;
       const strip = [];
-      const caseItems = c.items;
-      for (let i = 0; i < REEL_LEN - 1; i++) {
-        strip.push(weightedRandomItem(caseItems));
-      }
+      for (let i=0; i<REEL_LEN-1; i++) strip.push(weightedRandomItem(c.items));
       strip.push(won);
-      for (let i = 0; i < TAIL_PAD; i++) {
-        strip.push(weightedRandomItem(caseItems));
-      }
+      for (let i=0; i<TAIL_PAD; i++) strip.push(weightedRandomItem(c.items));
       track.innerHTML = strip.map((it, idx2) => `
         <div class="roll-item" data-idx="${idx2}" style="width:80px; height:120px; flex-shrink:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; border-right:1px solid #2a3455;">
           ${imgOrPlaceholder(it, 'ph')}
@@ -1074,14 +1378,11 @@ detailOpenBtn.onclick = function() {
       ruletka.currentTime = 0;
       viewports.forEach(vp => {
         const items = vp.track.querySelectorAll('.roll-item');
-        if (items.length > 0) {
-          const last = items[items.length - 1];
-          if (last) last.classList.add('winner');
-        }
+        if (items.length) items[items.length-1].classList.add('winner');
         vp.viewport.classList.add('impact');
         setTimeout(() => vp.viewport.classList.remove('impact'), 500);
       });
-      playDropSound(sound);
+      playDropSound(c.sound);
       screenFlash();
       openResults = viewports.map(vp => vp.won);
       showNextModal();
@@ -1092,49 +1393,52 @@ detailOpenBtn.onclick = function() {
 function showNextModal() {
   if (openResults.length === 0) {
     isOpening = false;
-    detailOpenBtn.disabled = false;
-    caseAction.classList.remove('hidden');
-    detailRollSection.classList.remove('show');
-    multiRollContainer.classList.remove('show');
+    document.getElementById('detailOpenBtn').disabled = false;
+    document.getElementById('caseAction').classList.remove('hidden');
+    document.getElementById('detailRollSection').classList.remove('show');
+    document.getElementById('multiRollContainer').classList.remove('show');
     if (document.getElementById('panel-profile').classList.contains('active')) updateProfileStats();
     if (document.getElementById('panel-upgrade').classList.contains('active')) renderUpgradeTab();
     return;
   }
   const won = openResults.shift();
-  pendingItem = won;
+  window.pendingItem = won;
   const price = getItemPrice(won);
   document.getElementById('modalImg').innerHTML = imgOrPlaceholder(won,'mimg');
   const rareEl = document.getElementById('modalRare');
-  rareEl.textContent = RARITY_LABEL[won.rarity];
-  rareEl.className = 'mrare ' + rarityColorClass(won.rarity);
+  rareEl.textContent = '';
+  rareEl.className = 'mrare';
   document.getElementById('modalName').textContent = won.name;
   document.getElementById('modalPrice').textContent = `💰 Цена: ${price} 🪙`;
   document.getElementById('modalBonus').textContent = won.bonus;
   document.getElementById('modalOverlay').classList.add('show');
-  launchConfetti();
+  launchConfetti(20);
 }
 
 document.getElementById('claimBtn').onclick = function() {
-  if (!pendingItem) return;
-  addItemInstance(pendingItem.id);
-  saveGameData();
+  if (!window.pendingItem) return;
+  addItemInstance(window.pendingItem.id);
+  saveGame();
   document.getElementById('modalOverlay').classList.remove('show');
-  pendingItem = null;
+  window.pendingItem = null;
   showNextModal();
 };
 document.getElementById('modalSellBtn').onclick = function() {
-  if (!pendingItem) return;
-  const price = getItemPrice(pendingItem);
-  balance += price;
-  stats.totalCoinsEarned += price;
-  saveGameData();
+  if (!window.pendingItem) return;
+  const price = getItemPrice(window.pendingItem);
+  game.balance += price;
+  game.stats.totalCoinsEarned += price;
+  // XP за продажу (10 XP за 1000 монет)
+  const xpGain = Math.floor(price / 1000) * 10;
+  addXp(xpGain, 'sell');
+  saveGame();
   updateBalanceUI();
   document.getElementById('modalOverlay').classList.remove('show');
-  pendingItem = null;
+  window.pendingItem = null;
   const msg = document.getElementById('couponMessage');
   msg.textContent = `💰 Продано за ${price} монет!`;
   msg.style.color = '#7fdb7f';
-  setTimeout(() => { msg.textContent = ''; }, 3000);
+  setTimeout(() => msg.textContent = '', 3000);
   showNextModal();
 };
 
@@ -1146,10 +1450,9 @@ document.getElementById('backToCasesBtn').onclick = function() {
   showSelectionView();
 };
 
-// ---------- 7. Эффекты ----------
 function playDropSound(soundId) {
   const el = document.getElementById(soundId);
-  if(el) { el.currentTime = 0; el.play().catch(()=>{}); }
+  if (el) { el.currentTime = 0; el.play().catch(()=>{}); }
 }
 function screenFlash(){
   const flash = document.createElement('div');
@@ -1158,46 +1461,43 @@ function screenFlash(){
   flash.animate([{opacity:0},{opacity:1,offset:.15},{opacity:0}], {duration:500, easing:'ease-out'});
   setTimeout(() => flash.remove(), 520);
 }
-function launchConfetti(){
-  const colors = ['#ffcf4d','#ff7a3d','#4caf50','#2f8fff','#a24bf0','#ff3d6b'];
-  for(let i=0; i<60; i++){
-    const c = document.createElement('div');
-    c.className = 'confetti';
-    c.style.left = Math.random()*100 + 'vw';
-    c.style.background = colors[Math.floor(Math.random()*colors.length)];
-    c.style.transform = 'rotate('+Math.random()*360+'deg)';
-    document.body.appendChild(c);
-    const duration = 2200 + Math.random()*1400;
-    const drift = (Math.random()-0.5)*200;
-    c.animate([
-      { transform: c.style.transform + ' translate(0,0)', opacity:1 },
-      { transform: 'rotate('+Math.random()*720+'deg) translate('+drift+'px, 100vh)', opacity:.9 }
-    ], { duration, easing:'cubic-bezier(.2,.6,.4,1)' });
-    setTimeout(() => c.remove(), duration+50);
-  }
-}
 
-// ---------- 8. Профиль + Инвентарь (с улучшением) ----------
-function updateProfileStats(){
-  document.getElementById('statBalance').textContent = balance;
-  const best = stats.bestDropId ? byId(ALL_ITEMS, stats.bestDropId) : null;
+// ---------- 12. Профиль и инвентарь ----------
+function updateProfileStats() {
+  document.getElementById('statBalance').textContent = game.balance;
+  const best = game.stats.bestDropId ? byId(ALL_ITEMS, game.stats.bestDropId) : null;
   const bestEl = document.getElementById('statBestDrop');
-  if(best){
-    bestEl.textContent = `${best.name} (${RARITY_LABEL[best.rarity]}) — ${getItemPrice(best)} 🪙`;
+  if (best) {
+    bestEl.textContent = `${best.name} — ${getItemPrice(best)} 🪙`;
     bestEl.style.color = getComputedStyle(document.documentElement).getPropertyValue(`--${best.rarity}`).trim();
   } else {
     bestEl.textContent = '—';
     bestEl.style.color = 'var(--muted)';
   }
-  document.getElementById('statCases').textContent = stats.totalCasesOpened;
-  document.getElementById('statItems').textContent = inventory.length;
-  document.getElementById('statUpgrades').textContent = stats.totalUpgradeSuccess;
-  document.getElementById('statSpent').textContent = stats.totalCoinsSpent;
-  document.getElementById('statEarned').textContent = stats.totalCoinsEarned;
+  document.getElementById('statCases').textContent = game.stats.totalCasesOpened;
+  document.getElementById('statItems').textContent = game.inventory.length;
+  document.getElementById('statUpgrades').textContent = game.stats.totalUpgradeSuccess;
+  document.getElementById('statSpent').textContent = game.stats.totalCoinsSpent;
+  document.getElementById('statEarned').textContent = game.stats.totalCoinsEarned;
+  document.getElementById('statXp').textContent = game.stats.xp;
+  const rank = getCurrentRank(game.stats.xp);
+  document.getElementById('statRank').textContent = rank.icon + ' ' + rank.name;
   checkDailyBonus();
-  document.getElementById('usernameDisplay').textContent = username;
+  document.getElementById('usernameDisplay').textContent = game.username;
   renderUpgradedBlock();
   renderProfileInventory();
+  renderAchievements();
+
+  // Прогресс ранга в профиле
+  document.getElementById('profileRankName').textContent = rank.icon + ' ' + rank.name;
+  document.getElementById('profileRankXp').textContent = game.stats.xp + ' XP';
+  const prog = getRankProgress(game.stats.xp);
+  document.getElementById('profileRankProgress').style.width = (prog.progress * 100) + '%';
+  if (prog.nextXp !== null) {
+    document.getElementById('profileRankNext').textContent = `До следующего ранга: ${prog.remaining} XP`;
+  } else {
+    document.getElementById('profileRankNext').textContent = 'Максимальный ранг достигнут!';
+  }
 }
 
 function renderUpgradedBlock() {
@@ -1208,8 +1508,7 @@ function renderUpgradedBlock() {
     document.getElementById('upgImg').src = item.img;
     document.getElementById('upgImg').onerror = function(){ this.outerHTML = '<div style="width:60px;height:60px;border-radius:8px;background:#0e1320;display:flex;align-items:center;justify-content:center;font-size:30px;">📸</div>'; };
     document.getElementById('upgName').textContent = item.name;
-    const price = getItemPrice(item);
-    document.getElementById('upgPrice').textContent = `⭐ Улучшенный • цена: ${price} 🪙`;
+    document.getElementById('upgPrice').textContent = `⭐ Улучшенный • цена: ${getItemPrice(item)} 🪙`;
   } else {
     block.style.display = 'none';
   }
@@ -1239,39 +1538,35 @@ function renderProfileInventory() {
     </div>`;
   }).join('');
 
-  // Продажа
   container.querySelectorAll('.sell-btn').forEach(btn => {
     btn.addEventListener('click', function() {
       const uniqueId = this.dataset.unique;
       const price = Number(this.dataset.price);
-      const idx = inventory.findIndex(it => it.uniqueId === uniqueId);
+      const idx = game.inventory.findIndex(it => it.uniqueId === uniqueId);
       if (idx === -1) return;
-      inventory.splice(idx, 1);
-      balance += price;
-      stats.totalCoinsEarned += price;
-      saveGameData();
+      game.inventory.splice(idx, 1);
+      game.balance += price;
+      game.stats.totalCoinsEarned += price;
+      const xpGain = Math.floor(price / 1000) * 10;
+      addXp(xpGain, 'sell');
+      saveGame();
       updateBalanceUI();
       updateProfileStats();
       if (document.getElementById('panel-upgrade').classList.contains('active')) renderUpgradeTab();
-      const msg = document.getElementById('couponMessage');
-      msg.textContent = `💰 Продано за ${price} монет!`;
-      msg.style.color = '#7fdb7f';
-      setTimeout(() => { msg.textContent = ''; }, 3000);
     });
   });
 
-  // Улучшение (с подтверждением)
   container.querySelectorAll('.upgrade-btn').forEach(btn => {
     btn.addEventListener('click', function() {
       const itemId = Number(this.dataset.id);
       const uniqueId = this.dataset.unique;
-      const inst = inventory.find(it => it.uniqueId === uniqueId);
+      const inst = game.inventory.find(it => it.uniqueId === uniqueId);
       if (!inst) return;
       const item = byId(ALL_ITEMS, itemId);
       if (!item) return;
       const price = getItemPrice(item);
       if (price < 50000) return;
-      if (stats.upgradedItemId !== null) {
+      if (game.stats.upgradedItemId !== null) {
         alert('Вы уже улучшили один предмет! Снимите улучшение, чтобы улучшить другой.');
         return;
       }
@@ -1279,16 +1574,12 @@ function renderProfileInventory() {
         `Улучшить "${item.name}"?`,
         `Цена предмета: ${price} 🪙<br>Вы сможете улучшить только один предмет. Продолжить?`,
         function() {
-          const idx = inventory.findIndex(it => it.uniqueId === uniqueId);
+          const idx = game.inventory.findIndex(it => it.uniqueId === uniqueId);
           if (idx === -1) return;
-          inventory.splice(idx, 1);
-          stats.upgradedItemId = item.id;
-          saveGameData();
+          game.inventory.splice(idx, 1);
+          game.stats.upgradedItemId = item.id;
+          saveGame();
           updateProfileStats();
-          const msg = document.getElementById('couponMessage');
-          msg.textContent = `✨ Предмет "${item.name}" улучшен!`;
-          msg.style.color = '#9b4dff';
-          setTimeout(() => { msg.textContent = ''; }, 4000);
         },
         function() {}
       );
@@ -1297,49 +1588,40 @@ function renderProfileInventory() {
 }
 
 document.getElementById('sellAllBtn').addEventListener('click', function() {
-  if (inventory.length === 0) {
+  if (game.inventory.length === 0) {
     alert('Инвентарь пуст!');
     return;
   }
   if (!confirm('Продать все предметы?')) return;
   let total = 0;
-  for (const inst of inventory) {
+  for (const inst of game.inventory) {
     const item = byId(ALL_ITEMS, inst.itemId);
     if (item) total += getItemPrice(item);
   }
-  balance += total;
-  stats.totalCoinsEarned += total;
-  inventory = [];
-  saveGameData();
+  game.balance += total;
+  game.stats.totalCoinsEarned += total;
+  const xpGain = Math.floor(total / 1000) * 10;
+  addXp(xpGain, 'sell');
+  game.inventory = [];
+  saveGame();
   updateBalanceUI();
   updateProfileStats();
   if (document.getElementById('panel-upgrade').classList.contains('active')) renderUpgradeTab();
-  const msg = document.getElementById('couponMessage');
-  msg.textContent = `💰 Продано всё! Заработано ${total} монет!`;
-  msg.style.color = '#7fdb7f';
-  setTimeout(() => { msg.textContent = ''; }, 4000);
 });
 
 document.getElementById('usernameSaveBtn').addEventListener('click', function() {
   const input = document.getElementById('usernameInput');
   const newName = input.value.trim();
-  if (newName.length === 0) {
-    alert('Введите никнейм');
-    return;
-  }
-  username = newName;
+  if (!newName) { alert('Введите никнейм'); return; }
+  game.username = newName;
   input.value = '';
-  saveGameData();
-  document.getElementById('usernameDisplay').textContent = username;
-  const msg = document.getElementById('couponMessage');
-  msg.textContent = `✅ Никнейм изменён на "${username}"`;
-  msg.style.color = '#7fdb7f';
-  setTimeout(() => { msg.textContent = ''; }, 3000);
+  saveGame();
+  document.getElementById('usernameDisplay').textContent = game.username;
+  updateUI();
 });
 
 // Аватарка
 let avatarDataURL = localStorage.getItem('avatarDataURL') || null;
-const avatarWrap = document.getElementById('avatarWrap');
 const avatarImg = document.getElementById('avatarImg');
 const avatarPlaceholder = document.getElementById('avatarPlaceholder');
 const avatarInput = document.getElementById('avatarInput');
@@ -1348,7 +1630,7 @@ if (avatarDataURL) {
   avatarImg.style.display = 'block';
   avatarPlaceholder.style.display = 'none';
 }
-avatarWrap.addEventListener('click', () => avatarInput.click());
+document.getElementById('avatarWrap').addEventListener('click', () => avatarInput.click());
 avatarInput.addEventListener('change', (e) => {
   const file = e.target.files[0];
   if (!file) return;
@@ -1367,8 +1649,7 @@ avatarInput.addEventListener('change', (e) => {
 // Меню трёх точек для улучшенного предмета
 document.getElementById('upgMenu').addEventListener('click', function(e) {
   e.stopPropagation();
-  const dropdown = document.getElementById('upgDropdown');
-  dropdown.classList.toggle('show');
+  document.getElementById('upgDropdown').classList.toggle('show');
 });
 document.addEventListener('click', function() {
   document.getElementById('upgDropdown').classList.remove('show');
@@ -1376,32 +1657,109 @@ document.addEventListener('click', function() {
 document.getElementById('removeUpgradeBtn').addEventListener('click', function(e) {
   e.stopPropagation();
   document.getElementById('upgDropdown').classList.remove('show');
-  if (stats.upgradedItemId === null) return;
-  const item = byId(ALL_ITEMS, stats.upgradedItemId);
+  if (game.stats.upgradedItemId === null) return;
+  const item = byId(ALL_ITEMS, game.stats.upgradedItemId);
   if (!item) return;
   showConfirmModal(
     `Снять улучшение с "${item.name}"?`,
     `Предмет исчезнет навсегда! Вы уверены?`,
     function() {
-      stats.upgradedItemId = null;
-      saveGameData();
+      game.stats.upgradedItemId = null;
+      saveGame();
       updateProfileStats();
-      const msg = document.getElementById('couponMessage');
-      msg.textContent = `❌ Улучшение снято. Предмет исчез.`;
-      msg.style.color = '#ff6b6b';
-      setTimeout(() => { msg.textContent = ''; }, 4000);
     },
     function() {}
   );
 });
 
-// ---------- 9. Апгрейд (рулетка) ----------
+// ---------- 13. Ежедневный бонус и купоны ----------
+function checkDailyBonus() {
+  const today = new Date().toISOString().slice(0,10);
+  if (game.stats.lastDailyBonus !== today) {
+    game.balance += 300;
+    game.stats.totalCoinsEarned += 300;
+    game.stats.lastDailyBonus = today;
+    addXp(30, 'daily_bonus');
+    saveGame();
+    updateBalanceUI();
+    const msg = document.getElementById('couponMessage');
+    msg.textContent = '🎁 Ежедневный бонус +300 монет и +30 XP!';
+    msg.style.color = '#7fdb7f';
+    setTimeout(() => msg.textContent = '', 5000);
+  }
+  const el = document.getElementById('statDailyBonus');
+  if (game.stats.lastDailyBonus === today) {
+    el.textContent = '✅ Получен сегодня';
+    el.style.color = '#7fdb7f';
+  } else {
+    el.textContent = '⏳ Ожидает';
+    el.style.color = '#ffb23d';
+  }
+}
+
+const COUPONS = {
+  'mishel': 9999,
+  'pozdnyak': 500,
+  'bilet-na-vertoletik': 1488,
+  'chiter': 999999,
+  'golda': 1500,
+  'golda1': 1500000
+};
+function activateCoupon() {
+  const input = document.getElementById('couponInput');
+  const msg = document.getElementById('couponMessage');
+  const code = input.value.trim().toLowerCase();
+  if (!code) { msg.textContent = '❌ Введите промокод'; msg.style.color = '#ff6b6b'; return; }
+  if (game.stats.usedCoupons.includes(code) && code !== 'golda') {
+    msg.textContent = '❌ Этот промокод уже использован';
+    msg.style.color = '#ff6b6b';
+    return;
+  }
+  if (code === 'golda') {
+    if (game.stats.couponGoldaUses >= 3) {
+      msg.textContent = '❌ Лимит использований golda (3) исчерпан';
+      msg.style.color = '#ff6b6b';
+      return;
+    }
+  }
+  if (!(code in COUPONS)) { msg.textContent = '❌ Неверный промокод'; msg.style.color = '#ff6b6b'; return; }
+  const reward = COUPONS[code];
+  game.balance += reward;
+  game.stats.totalCoinsEarned += reward;
+  if (code === 'golda') {
+    game.stats.couponGoldaUses += 1;
+    if (game.stats.couponGoldaUses >= 3) game.stats.usedCoupons.push('golda');
+  } else {
+    game.stats.usedCoupons.push(code);
+  }
+  saveGame();
+  updateBalanceUI();
+  updateProfileStats();
+  msg.textContent = `✅ Промокод активирован! +${reward} монет`;
+  msg.style.color = '#7fdb7f';
+  input.value = '';
+}
+document.getElementById('couponBtn').addEventListener('click', activateCoupon);
+document.getElementById('couponInput').addEventListener('keydown', (e) => { if(e.key === 'Enter') activateCoupon(); });
+
+// ---------- 14. Достижения (рендер) ----------
+function renderAchievements() {
+  const container = document.getElementById('achievementsList');
+  container.innerHTML = ACHIEVEMENTS.map(ach => {
+    const unlocked = game.stats.achievements.includes(ach.id);
+    return `<div style="background:${unlocked ? 'var(--panel2)' : 'var(--panel)'}; border:1px solid ${unlocked ? 'var(--accent2)' : 'var(--border)'}; border-radius:8px; padding:6px; text-align:center; opacity:${unlocked ? 1 : 0.5};">
+      <div style="font-size:24px;">${unlocked ? '🏅' : '🔒'}</div>
+      <div style="font-size:11px; font-weight:700;">${ach.name}</div>
+      <div style="font-size:9px; color:var(--muted);">${ach.desc}</div>
+      <div style="font-size:9px; color:var(--gold);">+${ach.xpReward} XP</div>
+    </div>`;
+  }).join('');
+}
+
+// ---------- 15. Апгрейд (рулетка) ----------
 const wheelCanvas = document.getElementById('upgradeWheelCanvas');
 const ctx = wheelCanvas.getContext('2d');
-const W = 400, H = 400;
-const cx = W/2, cy = H/2;
-const radius = 160;
-const arcWidth = 28;
+const W = 400, H = 400, cx = W/2, cy = H/2, radius = 160, arcWidth = 28;
 let wheelArrowAngle = 0;
 let isWheelSpinning = false;
 
@@ -1413,25 +1771,20 @@ function drawUpgradeWheel(chance, angleDeg) {
   ctx.fillStyle = '#1c2540';
   ctx.fill();
   ctx.shadowBlur = 0;
-
   ctx.beginPath();
   ctx.arc(cx, cy, radius + 4, 0, 2 * Math.PI);
   ctx.strokeStyle = '#2a3455';
   ctx.lineWidth = 2;
   ctx.stroke();
-
-  for (let i = 0; i < 12; i++) {
-    const a = (i / 12) * 2 * Math.PI - Math.PI/2;
-    const r1 = radius + 6;
-    const r2 = radius + 14;
+  for (let i=0; i<12; i++) {
+    const a = (i/12)*2*Math.PI - Math.PI/2;
     ctx.beginPath();
-    ctx.moveTo(cx + r1 * Math.cos(a), cy + r1 * Math.sin(a));
-    ctx.lineTo(cx + r2 * Math.cos(a), cy + r2 * Math.sin(a));
+    ctx.moveTo(cx + (radius+6)*Math.cos(a), cy + (radius+6)*Math.sin(a));
+    ctx.lineTo(cx + (radius+14)*Math.cos(a), cy + (radius+14)*Math.sin(a));
     ctx.strokeStyle = '#2a3455';
     ctx.lineWidth = 2;
     ctx.stroke();
   }
-
   ctx.beginPath();
   ctx.arc(cx, cy, radius, -Math.PI/2, -Math.PI/2 + angleSuccess);
   ctx.arc(cx, cy, radius - arcWidth, -Math.PI/2 + angleSuccess, -Math.PI/2, true);
@@ -1441,10 +1794,6 @@ function drawUpgradeWheel(chance, angleDeg) {
   ctx.shadowBlur = 16;
   ctx.fill();
   ctx.shadowBlur = 0;
-  ctx.strokeStyle = '#1c2540';
-  ctx.lineWidth = 2;
-  ctx.stroke();
-
   ctx.beginPath();
   ctx.arc(cx, cy, radius, -Math.PI/2 + angleSuccess, -Math.PI/2 + 2*Math.PI);
   ctx.arc(cx, cy, radius - arcWidth, -Math.PI/2 + 2*Math.PI, -Math.PI/2 + angleSuccess, true);
@@ -1454,422 +1803,429 @@ function drawUpgradeWheel(chance, angleDeg) {
   ctx.shadowBlur = 16;
   ctx.fill();
   ctx.shadowBlur = 0;
-  ctx.strokeStyle = '#1c2540';
-  ctx.lineWidth = 2;
-  ctx.stroke();
-
   ctx.beginPath();
   ctx.arc(cx, cy, radius - arcWidth - 4, 0, 2 * Math.PI);
   ctx.fillStyle = '#0e1320';
   ctx.fill();
-  ctx.strokeStyle = '#2a3455';
-  ctx.lineWidth = 1;
-  ctx.stroke();
-
+  ctx.shadowBlur = 0;
   ctx.beginPath();
-  ctx.arc(cx, cy, 10, 0, 2 * Math.PI);
-  ctx.fillStyle = '#2a3455';
+  ctx.arc(cx, cy, 7, 0, 2 * Math.PI);
+  ctx.fillStyle = '#ffffff';
   ctx.fill();
-  ctx.strokeStyle = '#1c2540';
-  ctx.lineWidth = 2;
-  ctx.stroke();
-
-  const angleRad = angleDeg * Math.PI / 180;
   ctx.save();
   ctx.translate(cx, cy);
-  ctx.rotate(angleRad);
-  ctx.shadowBlur = 0;
+  ctx.rotate((angleDeg || 0) * Math.PI / 180);
   ctx.beginPath();
-  ctx.moveTo(0, -radius - 18);
-  ctx.lineTo(-10, -radius - 2);
-  ctx.lineTo(10, -radius - 2);
+  ctx.moveTo(0, -(radius + 26));
+  ctx.lineTo(-9, -(radius + 8));
+  ctx.lineTo(9, -(radius + 8));
   ctx.closePath();
-  ctx.fillStyle = '#ffa500';
-  ctx.shadowColor = '#ffa500';
-  ctx.shadowBlur = 20;
+  ctx.fillStyle = '#ffcf4d';
+  ctx.shadowColor = '#000';
+  ctx.shadowBlur = 8;
   ctx.fill();
   ctx.restore();
-
-  ctx.save();
-  ctx.shadowBlur = 0;
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.font = 'bold 40px Segoe UI, Arial, sans-serif';
-  ctx.fillStyle = '#39ff14';
-  ctx.shadowColor = '#39ff14';
-  ctx.shadowBlur = 20;
-  ctx.fillText(Math.round(chance) + '%', cx, cy - 10);
-  ctx.shadowBlur = 0;
-  ctx.font = '18px Segoe UI, Arial, sans-serif';
-  ctx.fillStyle = '#8a92b2';
-  ctx.fillText('ШАНС УСПЕХА', cx, cy + 30);
-  ctx.restore();
 }
 
-function spinUpgradeWheel(chance, onComplete) {
-  if (isWheelSpinning) return;
-  isWheelSpinning = true;
-
-  const angleSuccessDeg = (chance / 100) * 360;
-  const rand = Math.random() * 100;
-  const isSuccess = rand < chance;
-  let targetAngleDeg = isSuccess
-    ? Math.random() * angleSuccessDeg
-    : angleSuccessDeg + Math.random() * (360 - angleSuccessDeg);
-
-  let currentNorm = wheelArrowAngle % 360;
-  if (currentNorm < 0) currentNorm += 360;
-  let targetNorm = targetAngleDeg % 360;
-  if (targetNorm < 0) targetNorm += 360;
-  let diff = (targetNorm - currentNorm + 360) % 360;
-  const extraSpins = 6 + Math.floor(Math.random() * 7);
-  const totalDelta = diff + extraSpins * 360;
-  const targetAngle = wheelArrowAngle + totalDelta;
-  const startAngle = wheelArrowAngle;
-  const duration = 3500 + Math.random() * 2000;
-  const startTime = performance.now();
-
-  const ruletka = document.getElementById('ruletkaSound');
-  ruletka.currentTime = 0;
-  ruletka.play().catch(() => {});
-
-  function animate(now) {
-    const elapsed = now - startTime;
-    const progress = Math.min(elapsed / duration, 1);
-    const ease = 1 - Math.pow(1 - progress, 3);
-    const current = startAngle + (targetAngle - startAngle) * ease;
-    wheelArrowAngle = current;
-    drawUpgradeWheel(chance, current);
-
-    if (progress < 1) {
-      requestAnimationFrame(animate);
-    } else {
-      wheelArrowAngle = targetAngle;
-      drawUpgradeWheel(chance, targetAngle);
-      ruletka.pause();
-      ruletka.currentTime = 0;
-      isWheelSpinning = false;
-      const finalAngle = ((targetAngle % 360) + 360) % 360;
-      const inGreen = finalAngle < angleSuccessDeg;
-      if (inGreen) {
-        playWheelWinEffect();
-      }
-      onComplete(inGreen);
-    }
-  }
-  requestAnimationFrame(animate);
-}
-
-function playWheelWinEffect() {
-  const container = document.getElementById('upgradeWheelContainer');
-  const burst = document.getElementById('winBurst');
-  const sound = document.getElementById('dropSound');
-
-  if (sound) {
-    sound.currentTime = 0;
-    sound.play().catch(() => {});
-  }
-
-  if (container) {
-    container.classList.add('wheel-win-active');
-    setTimeout(() => container.classList.remove('wheel-win-active'), 2000);
-  }
-
-  if (burst) {
-    burst.classList.remove('show');
-    void burst.offsetWidth;
-    burst.classList.add('show');
-    setTimeout(() => burst.classList.remove('show'), 2000);
-  }
-}
-
-function calculateChance(fromUniqueIds, toId) {
-  if (!toId || fromUniqueIds.length === 0) return 0;
-  const to = byId(ALL_ITEMS, toId);
-  if (!to) return 0;
-  const toPrice = getItemPrice(to);
-  if (toPrice <= 0) return 0;
-  let totalFromPrice = 0;
-  for (const uid of fromUniqueIds) {
-    const inst = inventory.find(it => it.uniqueId === uid);
-    if (!inst) continue;
-    const item = byId(ALL_ITEMS, inst.itemId);
-    if (item) totalFromPrice += getItemPrice(item);
-  }
-  if (totalFromPrice <= 0) return 0;
-  let chance = (totalFromPrice / toPrice) * 100;
-  const countBonus = Math.min(1.3, 1 + (fromUniqueIds.length - 1) * 0.03);
-  chance = chance * countBonus;
-  return Math.round(Math.max(5, Math.min(95, chance)));
-}
-
-function renderUpgradeTab(){
-  renderInventoryUpgrade();
-  renderTargets();
-  updatePreview();
-}
-
-function renderInventoryUpgrade(){
-  const grid = document.getElementById('inventoryGrid');
-  const available = inventory.filter(inst => !(stats.upgradedItemId !== null && inst.itemId === stats.upgradedItemId));
-  if (available.length === 0) {
-    grid.innerHTML = '<div class="up-empty" style="grid-column:1/-1;">Нет доступных предметов для апгрейда</div>';
-    return;
-  }
-  grid.innerHTML = available.map(inst => {
-    const item = byId(ALL_ITEMS, inst.itemId);
-    if (!item) return '';
-    const active = selectedFromUniqueIds.includes(inst.uniqueId) ? 'active' : '';
-    const price = getItemPrice(item);
-    return `<div class="up-inv-item ${active}" data-unique="${inst.uniqueId}" onclick="toggleFromUnique('${inst.uniqueId}')">
-      ${imgOrPlaceholder(item,'ph')}
-      <div class="n ${rarityColorClass(item.rarity)}">${item.name}</div>
-      <div class="qty">×1</div>
-      <div class="price">${price} 🪙</div>
-    </div>`;
-  }).join('');
-}
-
-function renderTargets(){
-  const grid = document.getElementById('targetGrid');
-  if (selectedFromUniqueIds.length === 0) {
-    grid.innerHTML = '<div class="up-empty" style="grid-column:1/-1;">Сначала выберите исходные предметы</div>';
-    return;
-  }
-  let totalFromPrice = 0;
-  for (const uid of selectedFromUniqueIds) {
-    const inst = inventory.find(it => it.uniqueId === uid);
-    if (!inst) continue;
-    const item = byId(ALL_ITEMS, inst.itemId);
-    if (item) totalFromPrice += getItemPrice(item);
-  }
-  const targets = ALL_ITEMS.filter(it => getItemPrice(it) > totalFromPrice && getItemPrice(it) > 0);
-  if(targets.length === 0){
-    grid.innerHTML = '<div class="up-empty" style="grid-column:1/-1;">Нет предметов дороже суммы исходных</div>';
-    return;
-  }
-  targets.sort((a,b) => getItemPrice(b) - getItemPrice(a));
-  grid.innerHTML = targets.map(item => {
-    const active = (item.id === selectedToId) ? 'active' : '';
-    const price = getItemPrice(item);
-    return `<div class="up-target-item ${active}" data-id="${item.id}" onclick="selectTo(${item.id})">
-      ${imgOrPlaceholder(item,'ph')}
-      <div class="n ${rarityColorClass(item.rarity)}">${item.name}</div>
-      <div class="qty">(есть: ${getCount(item.id)})</div>
-      <div class="price">${price} 🪙</div>
-    </div>`;
-  }).join('');
-}
-
-window.toggleFromUnique = function(uniqueId) {
-  const idx = selectedFromUniqueIds.indexOf(uniqueId);
-  if (idx !== -1) {
-    selectedFromUniqueIds.splice(idx, 1);
-  } else {
-    const inst = inventory.find(it => it.uniqueId === uniqueId);
-    if (inst && !(stats.upgradedItemId !== null && inst.itemId === stats.upgradedItemId)) {
-      selectedFromUniqueIds.push(uniqueId);
-    }
-  }
-  if (selectedToId) {
-    const totalFromPrice = selectedFromUniqueIds.reduce((sum, uid) => {
-      const inst = inventory.find(it => it.uniqueId === uid);
-      if (!inst) return sum;
-      const item = byId(ALL_ITEMS, inst.itemId);
-      return sum + (item ? getItemPrice(item) : 0);
-    }, 0);
-    const to = byId(ALL_ITEMS, selectedToId);
-    if (to && getItemPrice(to) <= totalFromPrice) {
-      selectedToId = null;
-    }
-  }
-  renderUpgradeTab();
-};
-
-window.selectTo = function(id) {
-  if (selectedToId === id) {
-    selectedToId = null;
-  } else {
-    const to = byId(ALL_ITEMS, id);
-    if (!to) return;
-    const totalFromPrice = selectedFromUniqueIds.reduce((sum, uid) => {
-      const inst = inventory.find(it => it.uniqueId === uid);
-      if (!inst) return sum;
-      const item = byId(ALL_ITEMS, inst.itemId);
-      return sum + (item ? getItemPrice(item) : 0);
-    }, 0);
-    if (getItemPrice(to) > totalFromPrice) {
-      selectedToId = id;
-    } else {
-      alert('Целевой предмет должен быть дороже суммы выбранных исходных!');
-    }
-  }
-  renderUpgradeTab();
-};
-
-function updatePreview(){
-  const fromPreview = document.getElementById('upFromPreview');
-  const toPreview = document.getElementById('upToPreview');
-  const btn = document.getElementById('exchangeBtn');
-
-  if (selectedFromUniqueIds.length === 0) {
-    fromPreview.innerHTML = '<div class="up-empty">Ничего не выбрано</div>';
-  } else {
-    let html = '';
-    let totalPrice = 0;
-    for (const uid of selectedFromUniqueIds) {
-      const inst = inventory.find(it => it.uniqueId === uid);
-      if (!inst) continue;
-      const item = byId(ALL_ITEMS, inst.itemId);
-      if (item) {
-        const price = getItemPrice(item);
-        totalPrice += price;
-        html += `<div class="up-item">
-          ${imgOrPlaceholder(item, '')}
-          <span class="up-item-name">${item.name}</span>
-          <span class="up-item-price">${price} 🪙</span>
-        </div>`;
-      }
-    }
-    html += `<div class="up-total">Всего: ${selectedFromUniqueIds.length} шт. | Сумма: ${totalPrice} 🪙</div>`;
-    fromPreview.innerHTML = html;
-  }
-
-  if (selectedToId) {
-    const to = byId(ALL_ITEMS, selectedToId);
-    if (to) {
-      const price = getItemPrice(to);
-      toPreview.innerHTML = `${imgOrPlaceholder(to,'ph')}
-        <div class="pn ${rarityColorClass(to.rarity)}">${to.name}</div>
-        <div class="pq">Уже есть: ${getCount(to.id)} шт.</div>
-        <div class="price">Цена: ${price} 🪙</div>`;
-    }
-  } else {
-    toPreview.innerHTML = '<div class="up-empty">Ничего не выбрано</div>';
-  }
-
-  const canUpgrade = selectedFromUniqueIds.length > 0 && selectedToId !== null;
-  btn.disabled = !canUpgrade;
-  if (canUpgrade) {
-    const chance = calculateChance(selectedFromUniqueIds, selectedToId);
-    drawUpgradeWheel(chance, 0);
-  } else {
-    drawUpgradeWheel(0, 0);
-  }
-}
-
-document.getElementById('exchangeBtn').onclick = function(){
-  if (selectedFromUniqueIds.length === 0 || !selectedToId) return;
-  const to = byId(ALL_ITEMS, selectedToId);
-  if (!to) return;
-  for (const uid of selectedFromUniqueIds) {
-    const inst = inventory.find(it => it.uniqueId === uid);
-    if (!inst) {
-      alert('Один из выбранных предметов отсутствует!');
-      return;
-    }
-  }
-  const chance = calculateChance(selectedFromUniqueIds, selectedToId);
-
-  this.disabled = true;
-  document.getElementById('upResult').textContent = 'Крутим рулетку…';
-  document.getElementById('upResult').className = 'up-result';
-
-  const fromCopy = [...selectedFromUniqueIds];
-  for (const uid of selectedFromUniqueIds) {
-    const idx = inventory.findIndex(it => it.uniqueId === uid);
-    if (idx !== -1) inventory.splice(idx, 1);
-  }
-  selectedFromUniqueIds = [];
-  selectedToId = null;
-
-  spinUpgradeWheel(chance, (success) => {
-    if (success) {
-      addItemInstance(to.id);
-      stats.totalUpgradeSuccess += 1;
-      document.getElementById('upResult').textContent = `✅ Успех! Вы получили ${to.name}!`;
-      document.getElementById('upResult').className = 'up-result success';
-      launchConfetti();
-      setTimeout(() => {
-        saveGameData();
-        renderUpgradeTab();
-        this.disabled = false;
-        if (document.getElementById('panel-profile').classList.contains('active')) updateProfileStats();
-      }, 2000);
-    } else {
-      document.getElementById('upResult').textContent = `❌ Неудача. ${fromCopy.length} предмет(ов) сгорели.`;
-      document.getElementById('upResult').className = 'up-result fail';
-      saveGameData();
-      renderUpgradeTab();
-      this.disabled = false;
-      if (document.getElementById('panel-profile').classList.contains('active')) updateProfileStats();
-    }
-  });
-};
-
-// ---------- 10. Модалка подтверждения ----------
-let confirmCallback = null;
-let cancelCallback = null;
-
+let confirmAction = null;
 function showConfirmModal(title, text, onConfirm, onCancel) {
+  confirmAction = { onConfirm: onConfirm || function(){}, onCancel: onCancel || function(){} };
   document.getElementById('confirmTitle').textContent = title;
   document.getElementById('confirmText').innerHTML = text;
   document.getElementById('confirmModal').classList.add('show');
-  confirmCallback = onConfirm;
-  cancelCallback = onCancel;
 }
-document.getElementById('confirmCancel').addEventListener('click', function() {
+document.getElementById('confirmOk').addEventListener('click', function(){
+  const action = confirmAction; confirmAction = null;
   document.getElementById('confirmModal').classList.remove('show');
-  if (cancelCallback) cancelCallback();
+  if (action) action.onConfirm();
 });
-document.getElementById('confirmOk').addEventListener('click', function() {
+document.getElementById('confirmCancel').addEventListener('click', function(){
+  const action = confirmAction; confirmAction = null;
   document.getElementById('confirmModal').classList.remove('show');
-  if (confirmCallback) confirmCallback();
+  if (action) action.onCancel();
 });
 
-// ---------- 11. Переключение вкладок ----------
-document.querySelectorAll('.tab[data-tab]').forEach(tab => {
-  tab.onclick = function(){
-    document.querySelectorAll('.tab[data-tab]').forEach(t => t.classList.remove('active'));
-    this.classList.add('active');
-    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-    document.getElementById('panel-' + this.dataset.tab).classList.add('active');
-    document.getElementById('winBurst').classList.remove('show');
-    document.getElementById('upgradeWheelContainer').classList.remove('wheel-win-active');
-    if (this.dataset.tab === 'cases') {
-      showSelectionView();
-      renderCasesGrid();
+function renderLeaderboard() {
+  const list = document.getElementById('leaderboardList'); if (!list) return;
+  const names = ['Пупа','Лупа','Бурмалда','Мишель','Денис','Артем','Серёга','Юспик','Тимур'];
+  const xp = [15800,12600,9900,8200,7000,5600,4300,3100,2200];
+  const rows = names.map((name,i)=>({name,xp:xp[i],rank:getCurrentRank(xp[i])}));
+  rows.push({name:game.username||'user',xp:game.stats.xp,rank:getCurrentRank(game.stats.xp),current:true});
+  rows.sort((a,b)=>b.xp-a.xp);
+  list.innerHTML = rows.map((r,i)=>`<div class="lb-entry ${r.current?'current-user':''}"><span class="rank-num">${i+1}</span><span class="lb-username">${r.name}</span><span class="lb-rank-icon">${r.rank.icon}</span><span class="lb-xp">${r.xp} XP</span></div>`).join('');
+}
+
+let selectedUpgradeInstances = [];
+let selectedUpgradeTargetId = null;
+let upgradeBusy = false;
+function getUpgradeSourceTotal(){
+  return selectedUpgradeInstances.reduce((sum,inst)=>{ const item=byId(ALL_ITEMS,inst.itemId); return sum+(item?getItemPrice(item):0); },0);
+}
+function getUpgradeChance(){
+  const total=getUpgradeSourceTotal(); const target=selectedUpgradeTargetId==null?null:byId(ALL_ITEMS,selectedUpgradeTargetId);
+  if(!total||!target) return 0; const price=getItemPrice(target); if(price<=total) return 0;
+  return Math.max(1,Math.min(95,total/price*100));
+}
+function renderUpgradePreviews(){
+  const from=document.getElementById('upFromPreview'), to=document.getElementById('upToPreview');
+  from.innerHTML=selectedUpgradeInstances.length?selectedUpgradeInstances.map(inst=>{const item=byId(ALL_ITEMS,inst.itemId);return item?`<div class="up-item">${imgOrPlaceholder(item,'ph')}<span class="up-item-name">${item.name}</span><span class="up-item-price">${getItemPrice(item)} 🪙</span></div>`:''}).join('')+`<div class="up-total">Сумма: ${getUpgradeSourceTotal()} 🪙</div>`:'<div class="up-empty">Ничего не выбрано</div>';
+  const target=selectedUpgradeTargetId==null?null:byId(ALL_ITEMS,selectedUpgradeTargetId);
+  to.innerHTML=target?`${imgOrPlaceholder(target,'ph')}<div class="pn">${target.name}</div><div class="price">${getItemPrice(target)} 🪙</div><div class="pq">Шанс: ${getUpgradeChance().toFixed(1)}%</div>`:'<div class="up-empty">Ничего не выбрано</div>';
+}
+function renderUpgradeTab(){
+  const inv=document.getElementById('inventoryGrid'), targets=document.getElementById('targetGrid'); if(!inv||!targets)return;
+  const total=getUpgradeSourceTotal();
+  inv.innerHTML=game.inventory.length?game.inventory.map(inst=>{const item=byId(ALL_ITEMS,inst.itemId);if(!item)return '';const active=selectedUpgradeInstances.some(x=>x.uniqueId===inst.uniqueId);return `<div class="up-inv-item ${active?'active':''}" data-unique="${inst.uniqueId}">${imgOrPlaceholder(item,'ph')}<div class="n">${item.name}</div><div class="qty">${getItemPrice(item)} 🪙</div></div>`}).join(''):'<div class="up-empty">Инвентарь пуст</div>';
+  inv.querySelectorAll('.up-inv-item').forEach(el=>el.addEventListener('click',()=>{const uid=el.dataset.unique;const i=selectedUpgradeInstances.findIndex(x=>x.uniqueId===uid);if(i>=0)selectedUpgradeInstances.splice(i,1);else{const inst=game.inventory.find(x=>x.uniqueId===uid);if(inst)selectedUpgradeInstances.push(inst);}selectedUpgradeTargetId=null;renderUpgradeTab();}));
+  targets.innerHTML=total?ALL_ITEMS.filter(item=>getItemPrice(item)>total).map(item=>{const active=selectedUpgradeTargetId===item.id;return `<div class="up-target-item ${active?'active':''}" data-id="${item.id}">${imgOrPlaceholder(item,'ph')}<div class="n">${item.name}</div><div class="price">${getItemPrice(item)} 🪙</div></div>`}).join(''):'<div class="up-empty">Сначала выберите исходные предметы</div>';
+  targets.querySelectorAll('.up-target-item').forEach(el=>el.addEventListener('click',()=>{selectedUpgradeTargetId=Number(el.dataset.id);renderUpgradeTab();}));
+  renderUpgradePreviews(); drawUpgradeWheel(getUpgradeChance(),wheelArrowAngle);
+  document.getElementById('exchangeBtn').disabled=!(selectedUpgradeInstances.length&&selectedUpgradeTargetId!==null&&getUpgradeChance()>0&&!upgradeBusy);
+}
+document.getElementById('exchangeBtn').addEventListener('click',function(){
+  if(upgradeBusy)return; const chance=getUpgradeChance(); const target=selectedUpgradeTargetId==null?null:byId(ALL_ITEMS,selectedUpgradeTargetId); if(!selectedUpgradeInstances.length||!target||!chance)return;
+  upgradeBusy=true; this.disabled=true; const ids=selectedUpgradeInstances.map(x=>x.uniqueId); const success=Math.random()*100<chance; const result=document.getElementById('upResult'); const wheel=document.getElementById('upgradeWheelContainer'); wheelArrowAngle+=720+Math.random()*360; drawUpgradeWheel(success?100:0,wheelArrowAngle);
+  setTimeout(()=>{ids.forEach(uid=>{const i=game.inventory.findIndex(x=>x.uniqueId===uid);if(i>=0)game.inventory.splice(i,1);});if(success){game.stats.totalUpgradeSuccess+=1;game.stats.upgradedItemId=target.id;result.textContent=`🎉 Успех! Получен ${target.name}.`;result.className='up-result success';wheel.classList.add('wheel-win-active');document.getElementById('winBurst').classList.add('show');launchConfetti(45);addXp(100,'upgrade');}else{result.textContent='💥 Неудача. Исходные предметы сгорели.';result.className='up-result fail';addXp(10,'upgrade_fail');}saveGame();selectedUpgradeInstances=[];selectedUpgradeTargetId=null;upgradeBusy=false;renderUpgradeTab();updateProfileStats();setTimeout(()=>{wheel.classList.remove('wheel-win-active');document.getElementById('winBurst').classList.remove('show');},2200);},700);
+});
+
+async function claimDailyBonusOnline(){
+  if(!currentUser)return;
+  try{
+    const {data,error}=await sb.rpc('claim_daily_bonus');
+    if(error) throw error;
+    if(data?.claimed){
+      game.balance=Number(data.balance); game.stats.xp=Number(data.xp);
+      updateBalanceUI();
+      $('couponMessage').textContent='🎁 Ежедневный бонус +300 монет и +30 XP!';
+      $('couponMessage').style.color='#7fdb7f';
+      setTimeout(()=>{$('couponMessage').textContent='';},5000);
+      await refreshMyState();
     }
-    if (this.dataset.tab === 'upgrade') renderUpgradeTab();
-    if (this.dataset.tab === 'profile') {
-      setTimeout(() => updateProfileStats(), 50);
-    }
-  };
-});
+  }catch(e){ console.warn('daily bonus',e); }
+}
 
-document.getElementById('logoLink').addEventListener('click', function() {
-  const casesTab = document.querySelector('.tab[data-tab="cases"]');
-  if (casesTab) casesTab.click();
-});
+function switchTab(tabName){
+  if(!['cases','upgrade','profile'].includes(tabName))return;
+  document.querySelectorAll('#tabs .tab[data-tab]').forEach(t=>t.classList.toggle('active',t.dataset.tab===tabName));
+  document.querySelectorAll('main .panel').forEach(p=>p.classList.remove('active'));
+  const panel=document.getElementById('panel-'+tabName); if(panel)panel.classList.add('active');
+  if(tabName==='cases'){renderCasesGrid();renderLeaderboard();}
+  else if(tabName==='upgrade')renderUpgradeTab();
+  else updateProfileStats();
+}
+document.querySelectorAll('#tabs .tab[data-tab]').forEach(t=>t.addEventListener('click',()=>switchTab(t.dataset.tab)));
+document.getElementById('logoLink').addEventListener('click',()=>switchTab('cases'));
 
-// ---------- 12. Инициализация ----------
-loadGameData();
-updateBalanceUI();
-renderCasesGrid();
-showSelectionView();
-renderDetailView();
-checkDailyBonus();
-document.getElementById('couponBtn').addEventListener('click', activateCoupon);
-document.getElementById('couponInput').addEventListener('keydown', (e) => { if(e.key === 'Enter') activateCoupon(); });
-drawUpgradeWheel(0, 0);
-
-setTimeout(() => {
-  if (document.getElementById('panel-profile').classList.contains('active')) {
-    updateProfileStats();
-  }
-}, 500);
-
-console.log('🍐 Груша-ДРОП – финальная версия с сохранением улучшения загружена!');
+// Supabase boot is initialized below.
 </script>
+
+<script>
+// ============================================================================
+// SUPABASE ONLINE ACCOUNTS / PERSISTENT GAME STATE
+// ============================================================================
+const SUPABASE_URL = 'https://rlxfwmkhihjxfdztglff.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_bPcHQqlGQyrnfLznM9lIiw_jZSk2DhD';
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+  auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+});
+
+let currentUser = null;
+let onlineChannel = null;
+let leaderboardTimer = null;
+let publicProfileReturnTab = 'cases';
+let authMode = 'login';
+let publicProfileUserId = null;
+
+const $ = (id) => document.getElementById(id);
+
+function setAuthMessage(text, ok=false){
+  const el=$('authMessage'); el.textContent=text||''; el.classList.toggle('ok',!!ok);
+}
+function setAuthMode(mode){
+  authMode=mode;
+  const register=mode==='register';
+  $('authTitle').textContent=register?'РЕГИСТРАЦИЯ':'ВХОД В АККАУНТ';
+  $('authUsername').style.display=register?'block':'none';
+  $('authPassword2').style.display=register?'block':'none';
+  $('authUsername').required=register;
+  $('authPassword2').required=register;
+  $('authSubmit').textContent=register?'СОЗДАТЬ АККАУНТ':'ВОЙТИ';
+  $('authSwitchText').textContent=register?'Уже есть аккаунт?':'Нет аккаунта?';
+  $('authSwitch').textContent=register?'ВОЙТИ':'ЗАРЕГИСТРИРОВАТЬСЯ';
+  $('authForgotWrap').style.display=register?'none':'block';
+  setAuthMessage('');
+}
+
+$('authSwitch').addEventListener('click',()=>setAuthMode(authMode==='login'?'register':'login'));
+$('authForm').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const email=$('authEmail').value.trim();
+  const password=$('authPassword').value;
+  $('authSubmit').disabled=true;
+  try{
+    if(authMode==='register'){
+      const username=$('authUsername').value.trim();
+      const p2=$('authPassword2').value;
+      if(username.length<2){throw new Error('Никнейм должен содержать минимум 2 символа.');}
+      if(password.length<6){throw new Error('Пароль должен содержать минимум 6 символов.');}
+      if(password!==p2){throw new Error('Пароли не совпадают.');}
+      const {data,error}=await sb.auth.signUp({
+        email,password,
+        options:{data:{username},emailRedirectTo:window.location.href.split('#')[0]}
+      });
+      if(error) throw error;
+      if(data.session){
+        setAuthMessage('Аккаунт создан!',true);
+      }else{
+        setAuthMessage('Аккаунт создан. Проверь почту и перейди по ссылке подтверждения.',true);
+      }
+    }else{
+      const {data,error}=await sb.auth.signInWithPassword({email,password});
+      if(error) throw error;
+      if(data.session) await enterGame(data.session.user);
+    }
+  }catch(err){ setAuthMessage(err.message||'Ошибка авторизации.'); }
+  finally{ $('authSubmit').disabled=false; }
+});
+$('authForgot').addEventListener('click',async()=>{
+  const email=$('authEmail').value.trim();
+  if(!email){setAuthMessage('Сначала введи Email.');return;}
+  const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:window.location.href.split('#')[0]});
+  setAuthMessage(error?error.message:'Письмо для сброса пароля отправлено, если такой адрес зарегистрирован.',!error);
+});
+
+async function signOut(){
+  try{await sb.auth.signOut();}finally{leaveOnline();currentUser=null;document.body.classList.add('auth-locked');$('authScreen').classList.remove('hidden');setAuthMode('login');$('authForm').reset();}
+}
+$('logoutBtn').addEventListener('click',signOut);
+
+async function loadMyState(){
+  if(!currentUser) return null;
+  const [{data:profile,error:pErr},{data:state,error:sErr},{data:inventory,error:iErr},{data:achs,error:aErr}]=await Promise.all([
+    sb.from('profiles').select('id,username,avatar_url').eq('id',currentUser.id).single(),
+    sb.from('player_state').select('*').eq('id',currentUser.id).single(),
+    sb.from('inventory').select('id,item_id,created_at').eq('user_id',currentUser.id).order('created_at',{ascending:true}),
+    sb.from('player_achievements').select('achievement_id,unlocked_at').eq('user_id',currentUser.id)
+  ]);
+  const err=pErr||sErr||iErr||aErr; if(err) throw err;
+  return {profile,state,inventory:inventory||[],achievements:achs||[]};
+}
+
+function applyServerState(bundle){
+  const p=bundle.profile, s=bundle.state;
+  game.username=p.username||'user';
+  game.balance=Number(s.balance||0);
+  game.inventory=(bundle.inventory||[]).map(x=>({uniqueId:x.id,itemId:Number(x.item_id)}));
+  game.stats={
+    ...game.stats,
+    totalCasesOpened:Number(s.total_cases_opened||0),
+    bestDropId:s.best_drop_id==null?null:Number(s.best_drop_id),
+    totalUpgradeSuccess:Number(s.total_upgrade_success||0),
+    totalCoinsSpent:Number(s.total_coins_spent||0),
+    totalCoinsEarned:Number(s.total_coins_earned||0),
+    lastDailyBonus:s.last_daily_bonus||null,
+    usedCoupons:Array.isArray(s.used_coupons)?s.used_coupons:[],
+    couponGoldaUses:Number(s.coupon_golda_uses||0),
+    upgradedItemId:s.upgraded_item_id==null?null:Number(s.upgraded_item_id),
+    xp:Number(s.xp||0),
+    achievements:(bundle.achievements||[]).map(x=>x.achievement_id),
+    unlockedCases:Array.isArray(s.unlocked_cases)?s.unlocked_cases.map(Number):[]
+  };
+  updateBalanceUI();
+  $('usernameDisplay').textContent=game.username;
+  renderAvatar(p.avatar_url);
+}
+
+function renderAvatar(url){
+  const img=$('avatarImg'), ph=$('avatarPlaceholder');
+  if(url){img.src=url;img.style.display='block';ph.style.display='none';}
+  else{img.removeAttribute('src');img.style.display='none';ph.style.display='block';}
+}
+
+async function refreshMyState(){
+  const bundle=await loadMyState();
+  if(!bundle) return;
+  applyServerState(bundle);
+  syncRankCaseUnlocks();
+  updateUI();
+  updateProfileStats();
+  if(document.getElementById('panel-upgrade')?.classList.contains('active')) renderUpgradeTab();
+  if(document.getElementById('panel-cases')?.classList.contains('active')){renderCasesGrid();await renderLeaderboard();}
+}
+
+async function enterGame(user){
+  if(!user) return;
+  currentUser=user;
+  document.body.classList.remove('auth-locked');$('authScreen').classList.add('hidden');
+  try{
+    await refreshMyState();
+    await setupOnlinePresence();
+    await renderLeaderboard();
+    handleHashRoute();
+  }catch(err){
+    console.error(err); setAuthMessage('Не удалось загрузить профиль: '+(err.message||err));
+  }
+}
+
+async function setupOnlinePresence(){
+  if(onlineChannel) await sb.removeChannel(onlineChannel);
+  onlineChannel=sb.channel('grusha-drop-online',{config:{presence:{key:currentUser.id}}});
+  onlineChannel.on('presence',{event:'sync'},updateOnlineCount).subscribe(async status=>{
+    if(status==='SUBSCRIBED') await onlineChannel.track({user_id:currentUser.id,username:game.username});
+  });
+}
+function updateOnlineCount(){
+  if(!onlineChannel){$('onlineCount').textContent='0';return;}
+  const state=onlineChannel.presenceState();
+  $('onlineCount').textContent=Object.keys(state).length;
+}
+async function leaveOnline(){
+  if(onlineChannel){try{await onlineChannel.untrack();await sb.removeChannel(onlineChannel);}catch(_){} onlineChannel=null;}
+}
+
+async function renderLeaderboard(){
+  const list=$('leaderboardList'); if(!list||!currentUser)return;
+  list.innerHTML='<div style="color:var(--muted);padding:10px;text-align:center;">Загрузка...</div>';
+  const {data,error}=await sb.rpc('get_leaderboard');
+  if(error){list.innerHTML='<div style="color:#ff6b6b;padding:10px;text-align:center;">Не удалось загрузить рейтинг.</div>';return;}
+  list.innerHTML=(data||[]).map((r,i)=>`<div class="lb-entry ${r.user_id===currentUser.id?'current-user':''}" data-user-id="${r.user_id}">
+      <span class="rank-num">${i+1}</span><span class="lb-username">${escapeHtml(r.username)}</span>
+      <span class="lb-rank-icon">${r.rank_icon}</span><span class="lb-xp">${Number(r.xp)} XP</span>
+    </div>`).join('') || '<div style="color:var(--muted);padding:10px;text-align:center;">Пока нет игроков.</div>';
+  list.querySelectorAll('.lb-entry').forEach(el=>el.addEventListener('click',()=>openPublicProfile(el.dataset.userId)));
+}
+
+function escapeHtml(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+
+async function openPublicProfile(userId){
+  if(!userId||!currentUser)return;
+  publicProfileUserId=userId;
+  publicProfileReturnTab=document.querySelector('main .panel.active')?.id?.replace('panel-','')||'cases';
+  location.hash='profile='+encodeURIComponent(userId);
+  switchTab('public-profile');
+  const {data,error}=await sb.rpc('get_public_profile',{target_user_id:userId});
+  if(error){$('publicName').textContent='Ошибка';$('publicInventory').innerHTML='<div class="inv-empty">Не удалось загрузить профиль.</div>';return;}
+  renderPublicProfile(data);
+}
+function renderPublicProfile(d){
+  const p=d.profile||{}, s=d.state||{}, itemBy=(id)=>byId(ALL_ITEMS,Number(id));
+  const rank=getCurrentRank(Number(s.xp||0));
+  $('publicName').textContent=p.username||'user'; $('publicRank').textContent=`${rank.icon} ${rank.name} • ${Number(s.xp||0)} XP`;
+  $('publicBalance').textContent=Number(s.balance||0); $('publicXp').textContent=Number(s.xp||0);
+  $('publicCases').textContent=Number(s.total_cases_opened||0); $('publicItems').textContent=(d.inventory||[]).length;
+  $('publicUpgrades').textContent=Number(s.total_upgrade_success||0); $('publicEarned').textContent=Number(s.total_coins_earned||0);
+  const av=$('publicAvatar'); av.innerHTML=p.avatar_url?`<img src="${escapeHtml(p.avatar_url)}" alt="avatar">`:'<span>👤</span>';
+  const up=itemBy(s.upgraded_item_id);
+  $('publicUpgradedSection').style.display=up?'block':'none';
+  if(up){$('publicUpgradedImg').src=up.img;$('publicUpgradedName').textContent=up.name;$('publicUpgradedPrice').textContent=`Цена: ${getItemPrice(up)} 🪙`;}
+  const inv=$('publicInventory'); inv.innerHTML=(d.inventory||[]).map(inst=>{const it=itemBy(inst.item_id);return it?`<div class="inv-card">${imgOrPlaceholder(it,'ph')}<div class="inv-price">${getItemPrice(it)} 🪙</div></div>`:''}).join('')||'<div class="inv-empty">Инвентарь пуст</div>';
+  const achIds=new Set((d.achievements||[]).map(String)); $('publicAchievements').innerHTML=ACHIEVEMENTS.map(a=>`<div style="background:${achIds.has(String(a.id))?'var(--panel2)':'var(--panel)'};border:1px solid ${achIds.has(String(a.id))?'var(--accent2)':'var(--border)'};border-radius:8px;padding:6px;text-align:center;opacity:${achIds.has(String(a.id))?1:.5};"><div style="font-size:22px;">${achIds.has(String(a.id))?'🏅':'🔒'}</div><div style="font-size:10px;font-weight:700;">${escapeHtml(a.name)}</div></div>`).join('');
+}
+$('publicProfileBack').addEventListener('click',()=>{location.hash='';switchTab(publicProfileReturnTab||'cases');});
+
+function switchTab(tabName){
+  if(!['cases','upgrade','profile','public-profile'].includes(tabName))return;
+  document.querySelectorAll('#tabs .tab[data-tab]').forEach(t=>t.classList.toggle('active',t.dataset.tab===tabName));
+  document.querySelectorAll('main .panel').forEach(p=>p.classList.remove('active'));
+  const panel=document.getElementById('panel-'+tabName); if(panel)panel.classList.add('active');
+  if(tabName==='cases'){renderCasesGrid();renderLeaderboard();}
+  else if(tabName==='upgrade')renderUpgradeTab();
+  else if(tabName==='profile'){ updateProfileStats(); claimDailyBonusOnline(); }
+}
+document.querySelectorAll('#tabs .tab[data-tab]').forEach(t=>t.addEventListener('click',()=>switchTab(t.dataset.tab)));
+$('logoLink').addEventListener('click',()=>{location.hash='';switchTab('cases');});
+
+// --- Server-backed profile rendering ---
+async function updateProfileStats(){
+  if(!currentUser)return;
+  $('statBalance').textContent=game.balance;
+  const best=game.stats.bestDropId?byId(ALL_ITEMS,game.stats.bestDropId):null;
+  $('statBestDrop').textContent=best?`${best.name} — ${getItemPrice(best)} 🪙`:'—';
+  $('statCases').textContent=game.stats.totalCasesOpened; $('statItems').textContent=game.inventory.length;
+  $('statUpgrades').textContent=game.stats.totalUpgradeSuccess; $('statSpent').textContent=game.stats.totalCoinsSpent; $('statEarned').textContent=game.stats.totalCoinsEarned; $('statXp').textContent=game.stats.xp;
+  const rank=getCurrentRank(game.stats.xp); $('statRank').textContent=rank.icon+' '+rank.name; $('usernameDisplay').textContent=game.username;
+  $('profileRankName').textContent=rank.icon+' '+rank.name; $('profileRankXp').textContent=game.stats.xp+' XP';
+  const prog=getRankProgress(game.stats.xp); $('profileRankProgress').style.width=(prog.progress*100)+'%'; $('profileRankNext').textContent=prog.nextXp!==null?`До следующего ранга: ${prog.remaining} XP`:'Максимальный ранг достигнут!';
+  renderUpgradedBlock(); renderProfileInventory(); renderAchievements();
+}
+function renderUpgradedBlock(){const block=$('upgradedItemBlock'),item=getUpgradedItem(); if(item){block.style.display='block';$('upgImg').src=item.img;$('upgName').textContent=item.name;$('upgPrice').textContent=`⭐ Улучшенный • цена: ${getItemPrice(item)} 🪙`;}else block.style.display='none';}
+function renderProfileInventory(){
+  const container=$('profileInventoryList'); const groups={};
+  for(const inst of game.inventory){if(game.stats.upgradedItemId!==null&&inst.itemId===game.stats.upgradedItemId)continue;(groups[inst.itemId]??=[]).push(inst);}
+  if(!Object.keys(groups).length){container.innerHTML='<div class="inv-empty">Инвентарь пуст</div>';return;}
+  container.innerHTML=Object.entries(groups).map(([id,instances])=>{const item=byId(ALL_ITEMS,Number(id));if(!item)return '';const price=getItemPrice(item),first=instances[0],canUpgrade=price>=50000&&game.stats.upgradedItemId==null;return `<div class="inv-item"><div class="inv-img">${imgOrPlaceholder(item,'inv-img')}</div><div class="inv-name">${escapeHtml(item.name)}</div><div class="inv-qty">×${instances.length}</div><div class="inv-price">Цена: ${price} 🪙</div>${canUpgrade?`<button class="upgrade-btn" data-id="${item.id}" data-unique="${first.uniqueId}">Улучшить</button>`:''}<button class="sell-btn" data-unique="${first.uniqueId}">Продать 1</button></div>`}).join('');
+  container.querySelectorAll('.sell-btn').forEach(btn=>btn.addEventListener('click',async()=>{try{btn.disabled=true;const {data,error}=await sb.rpc('sell_inventory_item',{inventory_id:btn.dataset.unique});if(error)throw error;await refreshMyState();}catch(e){alert(e.message||'Не удалось продать предмет.');}finally{btn.disabled=false;}}));
+  container.querySelectorAll('.upgrade-btn').forEach(btn=>btn.addEventListener('click',()=>{const uid=btn.dataset.unique,id=Number(btn.dataset.id),item=byId(ALL_ITEMS,id);showConfirmModal(`Улучшить "${item.name}"?`,`Цена предмета: ${getItemPrice(item)} 🪙<br>Вы сможете улучшить только один предмет. Продолжить?`,async()=>{try{btn.disabled=true;const {data,error}=await sb.rpc('set_upgraded_item',{inventory_id:uid});if(error)throw error;await refreshMyState();}catch(e){alert(e.message||'Не удалось улучшить предмет.');}finally{btn.disabled=false;}} ,()=>{}); }));
+}
+function renderAchievements(){const c=$('achievementsList'), ids=new Set(game.stats.achievements);c.innerHTML=ACHIEVEMENTS.map(a=>`<div style="background:${ids.has(a.id)?'var(--panel2)':'var(--panel)'};border:1px solid ${ids.has(a.id)?'var(--accent2)':'var(--border)'};border-radius:8px;padding:6px;text-align:center;opacity:${ids.has(a.id)?1:.5};"><div style="font-size:24px;">${ids.has(a.id)?'🏅':'🔒'}</div><div style="font-size:11px;font-weight:700;">${escapeHtml(a.name)}</div><div style="font-size:9px;color:var(--muted);">${escapeHtml(a.desc)}</div><div style="font-size:9px;color:var(--gold);">+${a.xpReward} XP</div></div>`).join('');}
+
+// --- Replace vulnerable local-only game actions with database RPCs ---
+$('detailOpenBtn').onclick=async function(){
+  if(isOpening||!currentUser)return;
+  const c=getCurrentCase(); if(!c)return;
+  if(!isCaseUnlocked(c)){alert(`Кейс доступен с ранга «${c.rankReq}».`);return;}
+  const count=Math.max(1,Math.min(5,parseInt($('multiSelect').value,10)||1));
+  if(game.balance<c.cost*count){alert('Недостаточно монет!');return;}
+  isOpening=true;this.disabled=true;
+  try{
+    const {data,error}=await sb.rpc('open_case',{case_id:c.id,open_count:count});
+    if(error)throw error;
+    const rows=data?.results||[];
+    game.balance=Number(data.balance);game.stats.xp=Number(data.xp);game.stats.totalCoinsSpent=Number(data.total_coins_spent);game.stats.totalCasesOpened=Number(data.total_cases_opened);game.stats.bestDropId=data.best_drop_id==null?null:Number(data.best_drop_id);
+    syncRankCaseUnlocks();updateBalanceUI();
+    $('caseAction').classList.add('hidden');
+    openResults=rows.map(r=>({pendingId:r.pending_id,item:byId(ALL_ITEMS,Number(r.item_id))})).filter(x=>x.item);
+    if(count===1){
+      $('detailRollSection').classList.add('show');const track=$('detailRollTrack'),won=openResults[0].item;track.style.transition='none';track.style.transform='translateX(0)';const strip=[];for(let i=0;i<29;i++)strip.push(weightedRandomItem(c.items));strip.push(won);for(let i=0;i<12;i++)strip.push(weightedRandomItem(c.items));track.innerHTML=strip.map((it,idx)=>`<div class="roll-item" data-idx="${idx}">${imgOrPlaceholder(it,'ph')}<div class="rn">${escapeHtml(it.name)}</div></div>`).join('');const itemWidth=120,vw=document.querySelector('.roll-viewport').clientWidth,finalOffset=(29.5)*itemWidth-vw/2,ROLL_DURATION=3,ruletka=$('ruletkaSound');ruletka.currentTime=0;ruletka.play().catch(()=>{});requestAnimationFrame(()=>{track.style.transition=`transform ${ROLL_DURATION}s cubic-bezier(.22,.61,.36,1)`;track.style.transform=`translateX(-${finalOffset}px)`;});setTimeout(()=>{ruletka.pause();ruletka.currentTime=0;const last=track.querySelector('[data-idx="29"]');if(last)last.classList.add('winner');document.querySelector('.roll-viewport').classList.add('impact');playDropSound(c.sound);screenFlash();showNextModal();},3200);
+    }else{
+      $('multiRollContainer').classList.add('show');const container=$('multiRollContainer');container.innerHTML='';const viewports=[];for(let i=0;i<count;i++){const vp=document.createElement('div');vp.className='roll-viewport';vp.style.cssText='flex:1 1 180px;min-width:150px;height:120px;';const pointer=document.createElement('div');pointer.className='roll-pointer';vp.appendChild(pointer);const track=document.createElement('div');track.className='roll-track';vp.appendChild(track);container.appendChild(vp);viewports.push({viewport:vp,track,won:openResults[i].item});}
+      const ruletka=$('ruletkaSound');ruletka.currentTime=0;ruletka.play().catch(()=>{});viewports.forEach((vp,idx)=>{const strip=[];for(let i=0;i<29;i++)strip.push(weightedRandomItem(c.items));strip.push(vp.won);for(let i=0;i<10;i++)strip.push(weightedRandomItem(c.items));vp.track.innerHTML=strip.map((it,idx2)=>`<div class="roll-item" data-idx="${idx2}" style="width:80px;height:120px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border-right:1px solid #2a3455;">${imgOrPlaceholder(it,'ph')}<div class="rn" style="font-size:8px;text-align:center;padding:0 2px;">${escapeHtml(it.name)}</div></div>`).join('');const vw=vp.viewport.clientWidth||200,fo=29.5*80-vw/2;vp.track.style.transition='none';vp.track.style.transform='translateX(0)';setTimeout(()=>{vp.track.style.transition='transform 3s cubic-bezier(.22,.61,.36,1)';vp.track.style.transform=`translateX(-${fo}px)`;},idx*100);});setTimeout(()=>{ruletka.pause();ruletka.currentTime=0;viewports.forEach(v=>{const it=v.track.querySelector('[data-idx="29"]');if(it)it.classList.add('winner');v.viewport.classList.add('impact');playDropSound(c.sound);});screenFlash();showNextModal();},3300);
+    }
+  }catch(e){isOpening=false;this.disabled=false;alert(e.message||'Не удалось открыть кейс.');}
+};
+
+// Pending-drop modal now uses server claim/sell.
+function showNextModal(){
+  if(openResults.length===0){isOpening=false;$('detailOpenBtn').disabled=false;$('caseAction').classList.remove('hidden');$('detailRollSection').classList.remove('show');$('multiRollContainer').classList.remove('show');refreshMyState().catch(console.error);return;}
+  const won=openResults.shift();window.pendingItem=won;const price=getItemPrice(won.item);$('modalImg').innerHTML=imgOrPlaceholder(won.item,'mimg');$('modalRare').textContent='';$('modalName').textContent=won.item.name;$('modalPrice').textContent=`💰 Цена: ${price} 🪙`;$('modalBonus').textContent=won.item.bonus;$('modalOverlay').classList.add('show');launchConfetti(20);
+}
+$('claimBtn').onclick=async function(){if(!window.pendingItem)return;try{this.disabled=true;const {error}=await sb.rpc('claim_pending_drop',{pending_id:window.pendingItem.pendingId});if(error)throw error;$('modalOverlay').classList.remove('show');window.pendingItem=null;await refreshMyState();showNextModal();}catch(e){alert(e.message||'Не удалось забрать предмет.');}finally{this.disabled=false;}};
+$('modalSellBtn').onclick=async function(){if(!window.pendingItem)return;try{this.disabled=true;const {error}=await sb.rpc('sell_pending_drop',{pending_id:window.pendingItem.pendingId});if(error)throw error;$('modalOverlay').classList.remove('show');window.pendingItem=null;await refreshMyState();showNextModal();}catch(e){alert(e.message||'Не удалось продать предмет.');}finally{this.disabled=false;}};
+
+// Remove old local-only listeners by replacing elements where necessary.
+function replaceWithClone(id){const old=$(id);const clone=old.cloneNode(true);old.replaceWith(clone);return clone;}
+const sellAllBtn=replaceWithClone('sellAllBtn');sellAllBtn.addEventListener('click',async()=>{if(!game.inventory.length){alert('Инвентарь пуст!');return;}if(!confirm('Продать все предметы?'))return;try{sellAllBtn.disabled=true;const {error}=await sb.rpc('sell_all_inventory');if(error)throw error;await refreshMyState();}catch(e){alert(e.message||'Не удалось продать инвентарь.');}finally{sellAllBtn.disabled=false;}});
+const usernameSave=replaceWithClone('usernameSaveBtn');usernameSave.addEventListener('click',async()=>{const name=$('usernameInput').value.trim();if(!name){alert('Введите никнейм');return;}try{usernameSave.disabled=true;const {error}=await sb.rpc('update_my_profile',{new_username:name,new_avatar_url:null});if(error)throw error;$('usernameInput').value='';await refreshMyState();}catch(e){alert(e.message||'Не удалось изменить никнейм.');}finally{usernameSave.disabled=false;}});
+const couponBtn=replaceWithClone('couponBtn');couponBtn.addEventListener('click',activateCouponOnline);const couponInput=replaceWithClone('couponInput');couponInput.addEventListener('keydown',e=>{if(e.key==='Enter')activateCouponOnline();});
+async function activateCouponOnline(){const input=$('couponInput'),msg=$('couponMessage'),code=input.value.trim().toLowerCase();if(!code){msg.textContent='❌ Введите промокод';msg.style.color='#ff6b6b';return;}try{const {data,error}=await sb.rpc('activate_coupon',{coupon_code:code});if(error)throw error;msg.textContent=`✅ Промокод активирован! +${Number(data.reward)} монет`;msg.style.color='#7fdb7f';input.value='';await refreshMyState();}catch(e){msg.textContent='❌ '+(e.message||'Неверный промокод');msg.style.color='#ff6b6b';}}
+const avatarWrapClone=replaceWithClone('avatarWrap');const avatarInputClone=replaceWithClone('avatarInput');avatarWrapClone.addEventListener('click',()=>avatarInputClone.click());avatarInputClone.addEventListener('change',async e=>{const file=e.target.files?.[0];if(!file||!currentUser)return;try{const ext=(file.name.split('.').pop()||'jpg').toLowerCase();const path=`${currentUser.id}/avatar.${ext}`;const {error:upErr}=await sb.storage.from('avatars').upload(path,file,{upsert:true,contentType:file.type});if(upErr)throw upErr;const {data}=sb.storage.from('avatars').getPublicUrl(path);const {error:pErr}=await sb.rpc('update_my_profile',{new_username:null,new_avatar_url:data.publicUrl});if(pErr)throw pErr;await refreshMyState();}catch(err){alert(err.message||'Не удалось загрузить аватар.');}finally{avatarInputClone.value='';}});
+const upgMenu=$('upgMenu');if(upgMenu)upgMenu.addEventListener('click',e=>{e.stopPropagation();$('upgDropdown').classList.toggle('show');});document.addEventListener('click',()=>{if($('upgDropdown'))$('upgDropdown').classList.remove('show');});
+$('removeUpgradeBtn').addEventListener('click',async e=>{e.stopPropagation();$('upgDropdown').classList.remove('show');if(game.stats.upgradedItemId===null)return;const item=byId(ALL_ITEMS,game.stats.upgradedItemId);showConfirmModal(`Снять улучшение с "${item.name}"?`,`Предмет исчезнет навсегда! Вы уверены?`,async()=>{try{const {error}=await sb.rpc('remove_upgraded_item');if(error)throw error;await refreshMyState();}catch(err){alert(err.message||'Не удалось снять улучшение.');}},()=>{});});
+
+// Server-backed upgrade button: replaces the old local randomizer.
+const exchange=replaceWithClone('exchangeBtn');exchange.addEventListener('click',async()=>{if(upgradeBusy||!selectedUpgradeInstances.length||selectedUpgradeTargetId===null)return;upgradeBusy=true;exchange.disabled=true;const ids=selectedUpgradeInstances.map(x=>x.uniqueId);const targetId=selectedUpgradeTargetId;try{const {data,error}=await sb.rpc('upgrade_items',{source_inventory_ids:ids,target_item_id:targetId});if(error)throw error;const result=$('upResult');const wheel=$('upgradeWheelContainer');wheelArrowAngle+=720+Math.random()*360;drawUpgradeWheel(data.success?100:0,wheelArrowAngle);if(data.success){result.textContent=`🎉 Успех! Получен ${byId(ALL_ITEMS,targetId).name}.`;result.className='up-result success';wheel.classList.add('wheel-win-active');$('winBurst').classList.add('show');launchConfetti(45);}else{result.textContent='💥 Неудача. Исходные предметы сгорели.';result.className='up-result fail';}await new Promise(r=>setTimeout(r,700));selectedUpgradeInstances=[];selectedUpgradeTargetId=null;await refreshMyState();setTimeout(()=>{wheel.classList.remove('wheel-win-active');$('winBurst').classList.remove('show');},2200);}catch(e){alert(e.message||'Апгрейд не выполнен.');}finally{upgradeBusy=false;exchange.disabled=false;renderUpgradeTab();}});
+
+// Local addXp must never be trusted for persistent progression in account mode.
+const localAddXp=addXp; addXp=function(amount,source,skip){game.stats.xp+=Number(amount)||0;updateUI();};
+const localSaveGame=saveGame; saveGame=function(){};
+
+function handleHashRoute(){
+  const m=location.hash.match(/^#profile=([0-9a-f-]{20,})$/i);
+  if(m&&m[1]){openPublicProfile(m[1]);}else{switchTab('cases');}
+}
+window.addEventListener('hashchange',()=>{if(!location.hash) switchTab('cases'); else handleHashRoute();});
+
+// Keep leaderboard fresh without requiring client-side write permissions to other players.
+if(leaderboardTimer)clearInterval(leaderboardTimer); leaderboardTimer=setInterval(()=>{if(currentUser&&document.getElementById('panel-cases')?.classList.contains('active'))renderLeaderboard();},10000);
+
+// Auth session bootstrap.
+document.body.classList.add('auth-locked');
+(async()=>{
+  const {data:{session}}=await sb.auth.getSession();
+  if(session) await enterGame(session.user);
+  sb.auth.onAuthStateChange((event,session)=>{ if(event==='SIGNED_IN'&&session) setTimeout(()=>enterGame(session.user),0); if(event==='SIGNED_OUT'){currentUser=null;document.body.classList.add('auth-locked');$('authScreen').classList.remove('hidden');} });
+})();
+</script>
+
 </body>
 </html>
