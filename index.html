@@ -134,7 +134,7 @@ main{padding:28px 0 60px;}
 .upgrade-wheel-container::after{content:"";position:absolute;inset:8px;border-radius:50%;box-shadow:inset 0 0 0 2px rgba(255,255,255,.08),inset 0 0 24px rgba(0,0,0,.35),0 0 0 1px rgba(0,0,0,.45);pointer-events:none;z-index:2;}
 .wheel-pointer{position:absolute;inset:7px;border-radius:50%;transform:rotate(0deg);transform-origin:50% 50%;will-change:transform;z-index:8;pointer-events:none;}
 .wheel-pointer::before{content:"";position:absolute;left:50%;top:-3px;transform:translateX(-50%);width:0;height:0;border-left:11px solid transparent;border-right:11px solid transparent;border-top:22px solid #ffd257;filter:drop-shadow(0 4px 7px rgba(0,0,0,.72));}
-.wheel-pointer::after{content:"";position:absolute;left:50%;top:50%;width:7px;height:7px;border-radius:50%;background:#fff6c7;transform:translate(-50%,-50%);box-shadow:0 0 8px rgba(255,255,255,.85),0 0 14px rgba(255,210,87,.85);}
+.wheel-pointer::after{content:"";position:absolute;left:50%;top:50%;width:10px;height:10px;border-radius:50%;background:transparent;transform:translate(-50%,-50%);box-shadow:none;}
 .wheel-center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:46%;height:46%;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:radial-gradient(circle at 50% 28%,#1a243e 0%,#0d1320 68%,#090d17 100%);border:2px solid rgba(255,255,255,.08);box-shadow:0 12px 28px rgba(0,0,0,.42),inset 0 0 28px rgba(0,0,0,.34),inset 0 2px 0 rgba(255,255,255,.04);z-index:5;pointer-events:none;overflow:hidden;padding:8px;}
 .wheel-chance{position:static;transform:none;font-family:'Segoe UI Black','Arial Black',Impact,sans-serif;font-size:34px;line-height:.95;font-weight:900;letter-spacing:-1.5px;color:#fff;white-space:nowrap;font-variant-numeric:tabular-nums;text-align:center;display:block;text-shadow:0 1px 0 rgba(255,255,255,.35),0 2px 0 rgba(0,0,0,.95),0 4px 0 rgba(0,0,0,.74),0 7px 9px rgba(0,0,0,.62);}
 .wheel-caption{position:static;transform:none;margin-top:6px;font-family:'Segoe UI Semibold','Segoe UI',Arial,sans-serif;font-size:9px;line-height:1;color:#a5b0cd;text-transform:uppercase;letter-spacing:1.4px;text-align:center;white-space:nowrap;text-shadow:0 2px 6px rgba(0,0,0,.55);}
@@ -142,9 +142,9 @@ main{padding:28px 0 60px;}
 .upgrade-wheel-container.wheel-fail{box-shadow:0 18px 50px rgba(0,0,0,.28),0 0 70px rgba(255,49,49,.18);}
 .upgrade-wheel-container.wheel-win-active{animation:wheelWinPulse .5s ease-in-out 4;}
 @keyframes wheelWinPulse{0%,100%{filter:brightness(1);}50%{filter:brightness(1.15);box-shadow:0 18px 50px rgba(0,0,0,.28),0 0 80px rgba(57,255,20,.42);}}
-.upgrade-wheel-container.wheel-win-active canvas{animation:wheelCanvasFlash .5s ease-in-out 4;transform:none!important;}
+.upgrade-wheel-container.wheel-win-active canvas{animation:wheelCanvasFlash .5s ease-in-out 4;transform:none!important;filter:saturate(.55) brightness(1.08);}
 @keyframes wheelCanvasFlash{0%,100%{filter:brightness(1) saturate(1);}50%{filter:brightness(1.18) saturate(1.14);}}
-.wheel-win-overlay{position:absolute;inset:8px;border-radius:50%;background:radial-gradient(circle,rgba(125,255,92,.16),rgba(43,224,20,0) 65%);opacity:0;pointer-events:none;z-index:4;}
+.wheel-win-overlay{position:absolute;inset:8px;border-radius:50%;background:radial-gradient(circle at 50% 42%,rgba(126,255,112,.42),rgba(36,255,54,.28) 52%,rgba(36,190,54,.22) 78%,rgba(36,190,54,.08) 100%);border:3px solid rgba(102,255,110,.78);opacity:0;pointer-events:none;z-index:4;mix-blend-mode:screen;box-shadow:inset 0 0 45px rgba(75,255,83,.42),0 0 35px rgba(75,255,83,.34);}
 .upgrade-wheel-container.wheel-win-active .wheel-win-overlay{opacity:1;animation:wheelOverlayGlow .7s ease-in-out infinite;}
 @keyframes wheelOverlayGlow{0%,100%{box-shadow:0 0 28px rgba(57,255,20,.18);}50%{box-shadow:0 0 50px rgba(57,255,20,.42);}}
 .win-burst{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(.3);font-size:36px;font-weight:900;letter-spacing:1px;color:#fff;text-shadow:0 2px 4px rgba(0,0,0,.85),0 0 18px rgba(0,0,0,.6);opacity:0;pointer-events:none;z-index:9;white-space:nowrap;}
@@ -161,6 +161,7 @@ main{padding:28px 0 60px;}
 .up-inv-item{background:var(--panel2); border:1px solid var(--border); border-radius:8px; padding:6px; text-align:center; cursor:pointer; transition:border .15s, transform .1s;}
 .up-inv-item:hover{transform:scale(1.04); border-color:var(--accent2);}
 .up-inv-item.active{border-color:var(--accent); box-shadow:0 0 10px var(--accent);}
+.up-inv-item.upgrade-source-limit{opacity:.45;cursor:not-allowed;}
 .up-inv-item img,.up-inv-item .ph{width:48px; height:48px; border-radius:6px; object-fit:cover; background:#0e1320; display:flex; align-items:center; justify-content:center; font-size:20px; margin:0 auto 4px;}
 .up-inv-item .n{font-size:10px; line-height:1.2; color:var(--text);}
 .up-inv-item .qty{font-size:9px; color:var(--muted);}
@@ -389,6 +390,7 @@ body.auth-locked>header,body.auth-locked>main,body.auth-locked>footer,body.auth-
                   <option value="3">3</option>
                   <option value="4">4</option>
                   <option value="5">5</option>
+                   <option value="6">6</option>
                 </select>
               </div>
               <button class="open-btn" id="detailOpenBtn">🎰 ОТКРЫТЬ</button>
@@ -1765,7 +1767,7 @@ let wheelArrowAngle = 0;
 let isWheelSpinning = false;
 
 function drawUpgradeWheel(chance){
-  if(!ctx)return;const safeChance=Math.max(0,Math.min(95,Number(chance)||0));const tau=Math.PI*2,greenStart=-Math.PI/2,greenAngle=safeChance/100*tau,greenEnd=greenStart+greenAngle;ctx.clearRect(0,0,W,H);ctx.save();
+  if(!ctx)return;const safeChance=Math.max(0,Math.min(MAX_UPGRADE_CHANCE,Number(chance)||0));const tau=Math.PI*2,greenStart=-Math.PI/2,greenAngle=safeChance/100*tau,greenEnd=greenStart+greenAngle;ctx.clearRect(0,0,W,H);ctx.save();
   ctx.beginPath();ctx.arc(cx,cy,radius+18,0,tau);ctx.fillStyle='#18213a';ctx.fill();
   ctx.beginPath();ctx.arc(cx,cy,radius,-Math.PI/2,Math.PI*1.5,false);ctx.arc(cx,cy,radius-arcWidth,Math.PI*1.5,-Math.PI/2,true);ctx.closePath();ctx.fillStyle='#f04450';ctx.fill();
   if(greenAngle>0.0001){ctx.beginPath();ctx.arc(cx,cy,radius,greenStart,greenEnd,false);ctx.arc(cx,cy,radius-arcWidth,greenEnd,greenStart,true);ctx.closePath();ctx.fillStyle='#44e83e';ctx.fill();}
@@ -1782,7 +1784,7 @@ function secureRandom01(){
   return Math.random();
 }
 function pickVisualStopAngle(chance,success){
-  const greenSize=Math.max(0,Math.min(95,Number(chance)||0))*3.6;
+  const greenSize=Math.max(0,Math.min(MAX_UPGRADE_CHANCE,Number(chance)||0))*3.6;
   const margin=Math.min(2, Math.max(.25, greenSize/8));
   if(success){
     const lo=margin, hi=Math.max(margin+0.01,greenSize-margin);
@@ -1798,7 +1800,7 @@ function normalizeDeg(deg){return ((deg%360)+360)%360;}
 function animateUpgradeWheel(chance, success, stopAngleDeg, spins=6){
   if(isWheelSpinning)return Promise.resolve();
   isWheelSpinning=true;
-  const safeChance=Math.max(0,Math.min(95,Number(chance)||0));
+  const safeChance=Math.max(0,Math.min(MAX_UPGRADE_CHANCE,Number(chance)||0));
   const stopAngle=normalizeDeg(Number(stopAngleDeg));
   const start=Number(wheelArrowAngle||0);
   let delta=normalizeDeg(stopAngle-normalizeDeg(start));
@@ -1861,10 +1863,12 @@ let upgradeBusy = false;
 function getUpgradeSourceTotal(){
   return selectedUpgradeInstances.reduce((sum,inst)=>{ const item=byId(ALL_ITEMS,inst.itemId); return sum+(item?getItemPrice(item):0); },0);
 }
+const MAX_UPGRADE_CHANCE = 80;
+const MAX_UPGRADE_SOURCES = 6;
 function getUpgradeChance(){
   const total=getUpgradeSourceTotal(); const target=selectedUpgradeTargetId==null?null:byId(ALL_ITEMS,selectedUpgradeTargetId);
   if(!total||!target) return 0; const price=getItemPrice(target); if(price<=total) return 0;
-  return Math.max(1,Math.min(95,total/price*100));
+  return Math.max(1,Math.min(MAX_UPGRADE_CHANCE,total/price*100));
 }
 function renderUpgradePreviews(){
   const from=document.getElementById('upFromPreview'), to=document.getElementById('upToPreview');
@@ -1886,8 +1890,13 @@ function renderUpgradeTab(){
   const showcaseId=game.stats.upgradedInventoryId?String(game.stats.upgradedInventoryId):null;
   const total=getUpgradeSourceTotal();
 
-  if(selectedUpgradeTargetId!==null && !isItemUnlockedForUpgrade(selectedUpgradeTargetId)){
-    selectedUpgradeTargetId=null;
+  // Цель не сбрасываем при добавлении источника: меняем шанс мгновенно.
+  // Сбрасываем только если цель действительно перестала быть допустимой.
+  if(selectedUpgradeTargetId!==null){
+    const currentTarget=byId(ALL_ITEMS,Number(selectedUpgradeTargetId));
+    if(!currentTarget || !isItemUnlockedForUpgrade(currentTarget.id) || getItemPrice(currentTarget)<=total){
+      selectedUpgradeTargetId=null;
+    }
   }
 
   const sourceInventory=game.inventory.filter(inst=>String(inst.uniqueId)!==showcaseId);
@@ -1895,7 +1904,8 @@ function renderUpgradeTab(){
     ? sourceInventory.map(inst=>{
         const item=byId(ALL_ITEMS,Number(inst.itemId)); if(!item)return '';
         const active=selectedUpgradeInstances.some(x=>String(x.uniqueId)===String(inst.uniqueId));
-        return `<div class="up-inv-item ${active?'active':''}" data-unique="${escapeHtml(inst.uniqueId)}">
+        const lockedByLimit=!active && selectedUpgradeInstances.length>=MAX_UPGRADE_SOURCES;
+        return `<div class="up-inv-item ${active?'active':''} ${lockedByLimit?'upgrade-source-limit':''}" data-unique="${escapeHtml(inst.uniqueId)}">
           ${imgOrPlaceholder(item,'ph')}
           <div class="n">${escapeHtml(item.name)}</div>
           <div class="qty">${getItemPrice(item)} 🪙</div>
@@ -1906,12 +1916,18 @@ function renderUpgradeTab(){
   inv.querySelectorAll('.up-inv-item').forEach(el=>el.addEventListener('click',()=>{
     const uid=el.dataset.unique;
     const i=selectedUpgradeInstances.findIndex(x=>String(x.uniqueId)===String(uid));
-    if(i>=0) selectedUpgradeInstances.splice(i,1);
-    else{
+    if(i>=0){
+      selectedUpgradeInstances.splice(i,1);
+    }else{
+      if(selectedUpgradeInstances.length>=MAX_UPGRADE_SOURCES){
+        $('upResult').textContent='Можно выбрать максимум 6 исходных предметов.';
+        $('upResult').className='up-result fail';
+        return;
+      }
       const inst=game.inventory.find(x=>String(x.uniqueId)===String(uid));
       if(inst) selectedUpgradeInstances.push(inst);
     }
-    selectedUpgradeTargetId=null;
+    // Не сбрасываем выбранную цель. Она сохраняется, пока остаётся доступной по цене и рангу.
     $('upResult').textContent='Выберите исходные и целевой предметы, затем нажмите «Прокачать».';
     $('upResult').className='up-result';
     renderUpgradeTab();
@@ -2289,7 +2305,7 @@ $('detailOpenBtn').onclick=async function(){
   if(isOpening||!currentUser)return;
   const c=getCurrentCase(); if(!c)return;
   if(!isCaseUnlocked(c)){alert(`Кейс доступен с ранга «${c.rankReq}».`);return;}
-  const count=Math.max(1,Math.min(5,parseInt($('multiSelect').value,10)||1));
+  const count=Math.max(1,Math.min(6,parseInt($('multiSelect').value,10)||1));
   if(game.balance<c.cost*count){alert('Недостаточно монет!');return;}
   isOpening=true;this.disabled=true;
   try{
@@ -2350,6 +2366,7 @@ removeUpgradeBtn.addEventListener('click',async e=>{
 // Server-backed upgrade button with animated roulette.
 const exchange=replaceWithClone('exchangeBtn');exchange.addEventListener('click',async()=>{
   if(upgradeBusy||!selectedUpgradeInstances.length||selectedUpgradeTargetId===null)return;
+  if(selectedUpgradeInstances.length>MAX_UPGRADE_SOURCES){alert('Максимум 6 исходных предметов.');return;}
   const localChance=getUpgradeChance();
   if(!localChance)return;
   upgradeBusy=true;
@@ -2363,7 +2380,8 @@ const exchange=replaceWithClone('exchangeBtn');exchange.addEventListener('click'
     if(error)throw error;
     const chance=Number(data?.chance ?? localChance);
     const success=data?.success===true || data?.success==='true' || data?.success===1;
-    const stopAngle=pickVisualStopAngle(chance,success);
+    const serverStop = Number(data?.stop_angle);
+    const stopAngle = Number.isFinite(serverStop) ? serverStop : pickVisualStopAngle(chance,success);
     await animateUpgradeWheel(chance,success,stopAngle,5);
 
     if(success){
