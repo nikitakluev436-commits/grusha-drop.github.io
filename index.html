@@ -128,19 +128,26 @@ main{padding:28px 0 60px;}
 .up-preview .price{font-size:13px; color:var(--gold); font-weight:700;}
 .up-empty{color:var(--muted); font-size:13px; padding:20px 0;}
 .up-middle{background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:20px 16px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px;}
-.upgrade-wheel-container{width:100%; max-width:340px; margin:0 auto; border-radius:50%; box-shadow:0 0 40px rgba(57,255,20,0.15),0 0 80px rgba(57,255,20,0.05);}
-.upgrade-wheel-container canvas{display:block; width:100%; aspect-ratio:1/1; border-radius:50%; background:#1c2540;}
-.upgrade-wheel-container{position:relative; transition:box-shadow .15s, background .15s;}
-.upgrade-wheel-container.wheel-win-active{animation:wheelWinPulse 0.5s ease-in-out 4;}
-@keyframes wheelWinPulse{0%{box-shadow:0 0 40px rgba(57,255,20,.15),0 0 80px rgba(57,255,20,.05);}50%{box-shadow:0 0 60px 20px rgba(57,255,20,.9),0 0 120px 40px rgba(57,255,20,.6);}100%{box-shadow:0 0 40px rgba(57,255,20,.15),0 0 80px rgba(57,255,20,.05);}}
-.upgrade-wheel-container.wheel-win-active canvas{animation:wheelCanvasFlash 0.5s ease-in-out 4;}
-@keyframes wheelCanvasFlash{0%,100%{filter:brightness(1) saturate(1);}50%{filter:brightness(1.6) saturate(1.6);}}
-.wheel-win-overlay{position:absolute; inset:0; border-radius:50%; background:radial-gradient(circle,#7dff5c 0%,#2be014 55%,#159108 100%); opacity:0; pointer-events:none; z-index:4;}
-.upgrade-wheel-container.wheel-win-active .wheel-win-overlay{opacity:1; animation:wheelOverlayGlow 0.6s ease-in-out infinite;}
-@keyframes wheelOverlayGlow{0%,100%{box-shadow:0 0 40px 10px rgba(57,255,20,.9),0 0 90px 20px rgba(57,255,20,.5); filter:brightness(1);}50%{box-shadow:0 0 70px 25px rgba(57,255,20,1),0 0 130px 40px rgba(57,255,20,.7); filter:brightness(1.3);}}
-.win-burst{position:absolute; top:50%; left:50%; transform:translate(-50%,-50%) scale(.3); font-size:38px; font-weight:900; letter-spacing:2px; color:#fff; text-shadow:0 2px 4px rgba(0,0,0,.85),0 0 18px rgba(0,0,0,.6); opacity:0; pointer-events:none; z-index:5; white-space:nowrap;}
+.upgrade-wheel-container{position:relative;width:100%;max-width:360px;aspect-ratio:1/1;margin:0 auto;border-radius:50%;padding:8px;background:radial-gradient(circle at 50% 42%,rgba(57,255,20,.08),transparent 48%),#11182a;box-shadow:0 18px 50px rgba(0,0,0,.28),0 0 55px rgba(57,255,20,.08);overflow:visible;}
+.upgrade-wheel-container canvas{display:block;width:100%;height:100%;border-radius:50%;background:transparent;}
+.upgrade-wheel-container::after{content:"";position:absolute;inset:8px;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06),inset 0 0 30px rgba(0,0,0,.28);pointer-events:none;z-index:2;}
+.wheel-pointer{position:absolute;left:50%;top:-2px;transform:translateX(-50%);width:0;height:0;border-left:12px solid transparent;border-right:12px solid transparent;border-top:0;border-bottom:24px solid #ffd257;filter:drop-shadow(0 3px 6px rgba(0,0,0,.65));z-index:8;}
+.wheel-pointer::after{content:"";position:absolute;left:-4px;top:20px;width:8px;height:8px;border-radius:50%;background:#fff3b0;box-shadow:0 0 12px rgba(255,210,87,.9);}
+.wheel-center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:42%;aspect-ratio:1/1;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:radial-gradient(circle at 50% 35%,#18213a 0%,#0d1320 72%);border:1px solid rgba(255,255,255,.09);box-shadow:0 12px 30px rgba(0,0,0,.35),inset 0 0 30px rgba(0,0,0,.3);z-index:5;pointer-events:none;}
+.wheel-chance{font-family:'Segoe UI',Arial,sans-serif;font-size:clamp(30px,4.8vw,46px);line-height:1;font-weight:800;letter-spacing:-1.5px;color:#f3f6ff;text-shadow:0 2px 12px rgba(0,0,0,.55);font-variant-numeric:tabular-nums;}
+.wheel-caption{margin-top:8px;font-family:'Segoe UI',Arial,sans-serif;font-size:11px;line-height:1;color:#8f9bbd;text-transform:uppercase;letter-spacing:1.5px;}
+.upgrade-wheel-container.wheel-success{box-shadow:0 18px 50px rgba(0,0,0,.28),0 0 70px rgba(57,255,20,.28);}
+.upgrade-wheel-container.wheel-fail{box-shadow:0 18px 50px rgba(0,0,0,.28),0 0 70px rgba(255,49,49,.18);}
+.upgrade-wheel-container.wheel-win-active{animation:wheelWinPulse .5s ease-in-out 4;}
+@keyframes wheelWinPulse{0%,100%{filter:brightness(1);}50%{filter:brightness(1.15);box-shadow:0 18px 50px rgba(0,0,0,.28),0 0 80px rgba(57,255,20,.42);}}
+.upgrade-wheel-container.wheel-win-active canvas{animation:wheelCanvasFlash .5s ease-in-out 4;}
+@keyframes wheelCanvasFlash{0%,100%{filter:brightness(1) saturate(1);}50%{filter:brightness(1.18) saturate(1.14);}}
+.wheel-win-overlay{position:absolute;inset:8px;border-radius:50%;background:radial-gradient(circle,rgba(125,255,92,.16),rgba(43,224,20,0) 65%);opacity:0;pointer-events:none;z-index:4;}
+.upgrade-wheel-container.wheel-win-active .wheel-win-overlay{opacity:1;animation:wheelOverlayGlow .7s ease-in-out infinite;}
+@keyframes wheelOverlayGlow{0%,100%{box-shadow:0 0 28px rgba(57,255,20,.18);}50%{box-shadow:0 0 50px rgba(57,255,20,.42);}}
+.win-burst{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(.3);font-size:36px;font-weight:900;letter-spacing:1px;color:#fff;text-shadow:0 2px 4px rgba(0,0,0,.85),0 0 18px rgba(0,0,0,.6);opacity:0;pointer-events:none;z-index:9;white-space:nowrap;}
 .win-burst.show{animation:winBurstPop 1.4s cubic-bezier(.2,.8,.3,1.2) forwards;}
-@keyframes winBurstPop{0%{opacity:0; transform:translate(-50%,-50%) scale(.2) rotate(-8deg);}15%{opacity:1; transform:translate(-50%,-50%) scale(1.25) rotate(3deg);}30%{transform:translate(-50%,-50%) scale(1) rotate(0deg);}75%{opacity:1; transform:translate(-50%,-50%) scale(1) rotate(0deg);}100%{opacity:0; transform:translate(-50%,-50%) scale(1.15) rotate(0deg);}}
+@keyframes winBurstPop{0%{opacity:0;transform:translate(-50%,-50%) scale(.2) rotate(-8deg);}15%{opacity:1;transform:translate(-50%,-50%) scale(1.2) rotate(3deg);}30%{transform:translate(-50%,-50%) scale(1) rotate(0deg);}75%{opacity:1;transform:translate(-50%,-50%) scale(1) rotate(0deg);}100%{opacity:0;transform:translate(-50%,-50%) scale(1.12) rotate(0deg);}}
 .exchange-btn{background:linear-gradient(180deg,var(--accent2),var(--accent)); border:none; color:#241000; font-weight:800; padding:14px 20px; border-radius:10px; cursor:pointer; font-size:14px; width:100%; max-width:280px; box-shadow:0 4px 0 #b04c1e;}
 .exchange-btn:active{transform:translateY(3px); box-shadow:0 1px 0 #b04c1e;}
 .exchange-btn:disabled{opacity:.4; cursor:not-allowed; box-shadow:none;}
@@ -403,7 +410,12 @@ body.auth-locked>header,body.auth-locked>main,body.auth-locked>footer,body.auth-
       </div>
       <div class="up-middle">
         <div class="upgrade-wheel-container" id="upgradeWheelContainer">
-          <canvas id="upgradeWheelCanvas" width="400" height="400"></canvas>
+          <canvas id="upgradeWheelCanvas" width="520" height="520"></canvas>
+          <div class="wheel-center" aria-live="polite">
+            <div class="wheel-chance" id="upgradeChanceText">0.0%</div>
+            <div class="wheel-caption">Шанс успеха</div>
+          </div>
+          <div class="wheel-pointer" aria-hidden="true"></div>
           <div class="wheel-win-overlay"></div>
           <div class="win-burst" id="winBurst">УСПЕХ!</div>
         </div>
@@ -1007,7 +1019,7 @@ function isItemUpgradable(itemId) {
 function getUpgradedItem() {
   if (game.stats.upgradedItemId === null) return null;
   const item = byId(ALL_ITEMS, game.stats.upgradedItemId);
-  if (!item) { game.stats.upgradedItemId = null; return null; }
+  if (!item || getItemPrice(item) < 50000) { game.stats.upgradedItemId = null; return null; }
   return item;
 }
 function updateBalanceUI(){ document.getElementById('balance').textContent = game.balance; }
@@ -1763,98 +1775,115 @@ const W = 400, H = 400, cx = W/2, cy = H/2, radius = 160, arcWidth = 28;
 let wheelArrowAngle = 0;
 let isWheelSpinning = false;
 
-function drawUpgradeWheel(chance, angleDeg, resultState=null) {
-  ctx.clearRect(0, 0, W, H);
-  const safeChance = Math.max(0, Math.min(95, Number(chance) || 0));
-  const angleSuccess = (safeChance / 100) * 2 * Math.PI;
+function drawUpgradeWheel(chance, rotationDeg=0) {
+  if (!ctx) return;
+  const safeChance=Math.max(0,Math.min(95,Number(chance)||0));
+  const greenAngle=(safeChance/100)*Math.PI*2;
+  const redStart=-Math.PI/2+greenAngle;
+  ctx.clearRect(0,0,W,H);
+
+  ctx.save();
+  ctx.translate(cx,cy);
+  ctx.rotate((Number(rotationDeg)||0)*Math.PI/180);
+
+  // outer ring
   ctx.beginPath();
-  ctx.arc(cx, cy, radius + 6, 0, 2 * Math.PI);
-  ctx.fillStyle = '#1c2540';
+  ctx.arc(0,0,radius+18,0,Math.PI*2);
+  ctx.fillStyle='#18213a';
   ctx.fill();
-  ctx.shadowBlur = 0;
+
+  // red base
   ctx.beginPath();
-  ctx.arc(cx, cy, radius + 4, 0, 2 * Math.PI);
-  ctx.strokeStyle = '#2a3455';
-  ctx.lineWidth = 2;
+  ctx.arc(0,0,radius,-Math.PI/2+greenAngle,Math.PI*1.5,false);
+  ctx.arc(0,0,radius-arcWidth,Math.PI*1.5,-Math.PI/2+greenAngle,true);
+  ctx.closePath();
+  ctx.fillStyle='#ff3d48';
+  ctx.shadowColor='rgba(255,61,72,.22)';
+  ctx.shadowBlur=18;
+  ctx.fill();
+  ctx.shadowBlur=0;
+
+  // green success sector
+  ctx.beginPath();
+  ctx.arc(0,0,radius,-Math.PI/2,-Math.PI/2+greenAngle,false);
+  ctx.arc(0,0,radius-arcWidth,-Math.PI/2+greenAngle,-Math.PI/2,true);
+  ctx.closePath();
+  ctx.fillStyle='#43f13a';
+  ctx.shadowColor='rgba(67,241,58,.30)';
+  ctx.shadowBlur=22;
+  ctx.fill();
+  ctx.shadowBlur=0;
+
+  // segment separators / tick ring
+  ctx.strokeStyle='rgba(255,255,255,.11)';
+  ctx.lineWidth=2;
+  ctx.beginPath();
+  ctx.arc(0,0,radius+5,0,Math.PI*2);
   ctx.stroke();
-  for (let i=0; i<12; i++) {
-    const a = (i/12)*2*Math.PI - Math.PI/2;
+  for(let i=0;i<16;i++){
+    const a=(i/16)*Math.PI*2;
     ctx.beginPath();
-    ctx.moveTo(cx + (radius+6)*Math.cos(a), cy + (radius+6)*Math.sin(a));
-    ctx.lineTo(cx + (radius+14)*Math.cos(a), cy + (radius+14)*Math.sin(a));
-    ctx.strokeStyle = '#2a3455';
-    ctx.lineWidth = 2;
+    ctx.moveTo((radius+7)*Math.cos(a),(radius+7)*Math.sin(a));
+    ctx.lineTo((radius+16)*Math.cos(a),(radius+16)*Math.sin(a));
+    ctx.strokeStyle='rgba(255,255,255,.10)';
+    ctx.lineWidth=2;
     ctx.stroke();
   }
-  ctx.beginPath();
-  ctx.arc(cx, cy, radius, -Math.PI/2, -Math.PI/2 + angleSuccess);
-  ctx.arc(cx, cy, radius - arcWidth, -Math.PI/2 + angleSuccess, -Math.PI/2, true);
-  ctx.closePath();
-  ctx.fillStyle = '#39ff14';
-  ctx.shadowColor = '#39ff14';
-  ctx.shadowBlur = 16;
-  ctx.fill();
-  ctx.shadowBlur = 0;
-  ctx.beginPath();
-  ctx.arc(cx, cy, radius, -Math.PI/2 + angleSuccess, -Math.PI/2 + 2*Math.PI);
-  ctx.arc(cx, cy, radius - arcWidth, -Math.PI/2 + 2*Math.PI, -Math.PI/2 + angleSuccess, true);
-  ctx.closePath();
-  ctx.fillStyle = '#ff3131';
-  ctx.shadowColor = '#ff3131';
-  ctx.shadowBlur = 16;
-  ctx.fill();
-  ctx.shadowBlur = 0;
-  ctx.beginPath();
-  ctx.arc(cx, cy, radius - arcWidth - 4, 0, 2 * Math.PI);
-  ctx.fillStyle = '#0e1320';
-  ctx.fill();
-  ctx.shadowBlur = 0;
-  ctx.beginPath();
-  ctx.arc(cx, cy, 7, 0, 2 * Math.PI);
-  ctx.fillStyle = '#ffffff';
-  ctx.fill();
 
-  ctx.save();
-  ctx.fillStyle = '#ffffff';
-  ctx.font = '800 32px Segoe UI, Arial, sans-serif';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.shadowColor = 'rgba(0,0,0,.65)';
-  ctx.shadowBlur = 8;
-  ctx.fillText(`${safeChance.toFixed(1)}%`, cx, cy + 34);
+  // inner rim
+  ctx.beginPath();
+  ctx.arc(0,0,radius-arcWidth-6,0,Math.PI*2);
+  ctx.fillStyle='#0d1320';
+  ctx.fill();
+  ctx.strokeStyle='rgba(255,255,255,.07)';
+  ctx.lineWidth=2;
+  ctx.stroke();
   ctx.restore();
 
-  ctx.save();
-  ctx.translate(cx, cy);
-  ctx.rotate((angleDeg || 0) * Math.PI / 180);
-  ctx.beginPath();
-  ctx.moveTo(0, -(radius + 26));
-  ctx.lineTo(-9, -(radius + 8));
-  ctx.lineTo(9, -(radius + 8));
-  ctx.closePath();
-  ctx.fillStyle = '#ffcf4d';
-  ctx.shadowColor = '#000';
-  ctx.shadowBlur = 8;
-  ctx.fill();
-  ctx.restore();
+  const chanceText=document.getElementById('upgradeChanceText');
+  if(chanceText) chanceText.textContent=`${safeChance.toFixed(1)}%`;
 }
 
-function animateUpgradeWheel(chance, spins=5) {
-  if (isWheelSpinning) return Promise.resolve();
-  isWheelSpinning = true;
-  const start = wheelArrowAngle;
-  const end = start + spins * 360 + 180 + Math.random() * 180;
-  const duration = 3200;
-  const startedAt = performance.now();
+function mod2pi(v){
+  const tau=Math.PI*2;
+  return ((v%tau)+tau)%tau;
+}
 
-  return new Promise(resolve => {
-    function frame(now) {
-      const t = Math.min(1, (now - startedAt) / duration);
-      const eased = 1 - Math.pow(1 - t, 3);
-      wheelArrowAngle = start + (end - start) * eased;
-      drawUpgradeWheel(chance, wheelArrowAngle);
-      if (t < 1) requestAnimationFrame(frame);
-      else { wheelArrowAngle = end; isWheelSpinning = false; resolve(); }
+function animateUpgradeWheel(chance, success, spins=5) {
+  if(isWheelSpinning) return Promise.resolve();
+  isWheelSpinning=true;
+  const safeChance=Math.max(0,Math.min(95,Number(chance)||0));
+  const greenAngle=(safeChance/100)*Math.PI*2;
+  const redAngle=Math.PI*2-greenAngle;
+
+  // Choose the exact sector where the fixed pointer must land.
+  // Green = success, red = failure.
+  const margin=0.10;
+  const targetOffset=success
+    ? (greenAngle>margin*2 ? margin+Math.random()*(greenAngle-margin*2) : greenAngle/2)
+    : (redAngle>margin*2 ? greenAngle+margin+Math.random()*(redAngle-margin*2) : greenAngle+redAngle/2);
+  const desiredRotationRad=-targetOffset;
+  const startRad=(Number(wheelArrowAngle)||0)*Math.PI/180;
+  const delta=mod2pi(desiredRotationRad-mod2pi(startRad));
+  const endRad=startRad+spins*Math.PI*2+delta;
+  const duration=3200;
+  const startedAt=performance.now();
+
+  const wheel=document.getElementById('upgradeWheelContainer');
+  wheel.classList.remove('wheel-success','wheel-fail');
+  return new Promise(resolve=>{
+    function frame(now){
+      const t=Math.min(1,(now-startedAt)/duration);
+      const eased=1-Math.pow(1-t,3);
+      const radians=startRad+(endRad-startRad)*eased;
+      wheelArrowAngle=radians*180/Math.PI;
+      drawUpgradeWheel(safeChance,wheelArrowAngle);
+      if(t<1){requestAnimationFrame(frame);return;}
+      wheelArrowAngle=endRad*180/Math.PI;
+      drawUpgradeWheel(safeChance,wheelArrowAngle);
+      isWheelSpinning=false;
+      wheel.classList.add(success?'wheel-success':'wheel-fail');
+      resolve();
     }
     requestAnimationFrame(frame);
   });
@@ -1909,17 +1938,18 @@ function renderUpgradeTab(){
   const inv=document.getElementById('inventoryGrid'), targets=document.getElementById('targetGrid'); if(!inv||!targets)return;
   const total=getUpgradeSourceTotal();
   inv.innerHTML=game.inventory.length?game.inventory.map(inst=>{const item=byId(ALL_ITEMS,inst.itemId);if(!item)return '';const active=selectedUpgradeInstances.some(x=>x.uniqueId===inst.uniqueId);return `<div class="up-inv-item ${active?'active':''}" data-unique="${inst.uniqueId}">${imgOrPlaceholder(item,'ph')}<div class="n">${item.name}</div><div class="qty">${getItemPrice(item)} 🪙</div></div>`}).join(''):'<div class="up-empty">Инвентарь пуст</div>';
-  inv.querySelectorAll('.up-inv-item').forEach(el=>el.addEventListener('click',()=>{const uid=el.dataset.unique;const i=selectedUpgradeInstances.findIndex(x=>x.uniqueId===uid);if(i>=0)selectedUpgradeInstances.splice(i,1);else{const inst=game.inventory.find(x=>x.uniqueId===uid);if(inst)selectedUpgradeInstances.push(inst);}selectedUpgradeTargetId=null;renderUpgradeTab();}));
+  inv.querySelectorAll('.up-inv-item').forEach(el=>el.addEventListener('click',()=>{const uid=el.dataset.unique;const i=selectedUpgradeInstances.findIndex(x=>x.uniqueId===uid);if(i>=0)selectedUpgradeInstances.splice(i,1);else{const inst=game.inventory.find(x=>x.uniqueId===uid);if(inst)selectedUpgradeInstances.push(inst);}selectedUpgradeTargetId=null;
+    $('upResult').textContent='Выберите исходные и целевой предметы, затем нажмите «Прокачать».';
+    $('upResult').className='up-result';
+    renderUpgradeTab();
+  }));
   targets.innerHTML=total?ALL_ITEMS.filter(item=>getItemPrice(item)>total).map(item=>{const active=selectedUpgradeTargetId===item.id;return `<div class="up-target-item ${active?'active':''}" data-id="${item.id}">${imgOrPlaceholder(item,'ph')}<div class="n">${item.name}</div><div class="price">${getItemPrice(item)} 🪙</div></div>`}).join(''):'<div class="up-empty">Сначала выберите исходные предметы</div>';
   targets.querySelectorAll('.up-target-item').forEach(el=>el.addEventListener('click',()=>{selectedUpgradeTargetId=Number(el.dataset.id);renderUpgradeTab();}));
   renderUpgradePreviews(); drawUpgradeWheel(getUpgradeChance(),wheelArrowAngle);
   document.getElementById('exchangeBtn').disabled=!(selectedUpgradeInstances.length&&selectedUpgradeTargetId!==null&&getUpgradeChance()>0&&!upgradeBusy);
 }
-document.getElementById('exchangeBtn').addEventListener('click',function(){
-  if(upgradeBusy)return; const chance=getUpgradeChance(); const target=selectedUpgradeTargetId==null?null:byId(ALL_ITEMS,selectedUpgradeTargetId); if(!selectedUpgradeInstances.length||!target||!chance)return;
-  upgradeBusy=true; this.disabled=true; const ids=selectedUpgradeInstances.map(x=>x.uniqueId); const success=Math.random()*100<chance; const result=document.getElementById('upResult'); const wheel=document.getElementById('upgradeWheelContainer'); wheelArrowAngle+=720+Math.random()*360; drawUpgradeWheel(success?100:0,wheelArrowAngle);
-  setTimeout(()=>{ids.forEach(uid=>{const i=game.inventory.findIndex(x=>x.uniqueId===uid);if(i>=0)game.inventory.splice(i,1);});if(success){game.stats.totalUpgradeSuccess+=1;game.stats.upgradedItemId=target.id;result.textContent=`🎉 Успех! Получен ${target.name}.`;result.className='up-result success';wheel.classList.add('wheel-win-active');document.getElementById('winBurst').classList.add('show');launchConfetti(45);addXp(100,'upgrade');}else{result.textContent='💥 Неудача. Исходные предметы сгорели.';result.className='up-result fail';addXp(10,'upgrade_fail');}saveGame();selectedUpgradeInstances=[];selectedUpgradeTargetId=null;upgradeBusy=false;renderUpgradeTab();updateProfileStats();setTimeout(()=>{wheel.classList.remove('wheel-win-active');document.getElementById('winBurst').classList.remove('show');},2200);},700);
-});
+// Legacy client-only upgrade handler removed; the server-backed handler below is authoritative.
+
 
 async function claimDailyBonusOnline(){
   if(!currentUser)return;
@@ -2059,7 +2089,11 @@ function applyServerState(bundle){
     lastDailyBonus:s.last_daily_bonus||null,
     usedCoupons:Array.isArray(s.used_coupons)?s.used_coupons:[],
     couponGoldaUses:Number(s.coupon_golda_uses||0),
-    upgradedItemId:s.upgraded_item_id==null?null:Number(s.upgraded_item_id),
+    upgradedItemId:(()=>{
+      const legacyId=s.upgraded_item_id==null?null:Number(s.upgraded_item_id);
+      const legacyItem=legacyId==null?null:byId(ALL_ITEMS,legacyId);
+      return (legacyItem && getItemPrice(legacyItem)>=50000) ? legacyId : null;
+    })(),
     xp:Number(s.xp||0),
     achievements:(bundle.achievements||[]).map(x=>x.achievement_id),
     unlockedCases:Array.isArray(s.unlocked_cases)?s.unlocked_cases.map(Number):[]
@@ -2232,8 +2266,26 @@ const usernameSave=replaceWithClone('usernameSaveBtn');usernameSave.addEventList
 const couponBtn=replaceWithClone('couponBtn');couponBtn.addEventListener('click',activateCouponOnline);const couponInput=replaceWithClone('couponInput');couponInput.addEventListener('keydown',e=>{if(e.key==='Enter')activateCouponOnline();});
 async function activateCouponOnline(){const input=$('couponInput'),msg=$('couponMessage'),code=input.value.trim().toLowerCase();if(!code){msg.textContent='❌ Введите промокод';msg.style.color='#ff6b6b';return;}try{const {data,error}=await sb.rpc('activate_coupon',{coupon_code:code});if(error)throw error;msg.textContent=`✅ Промокод активирован! +${Number(data.reward)} монет`;msg.style.color='#7fdb7f';input.value='';await refreshMyState();}catch(e){msg.textContent='❌ '+(e.message||'Неверный промокод');msg.style.color='#ff6b6b';}}
 const avatarWrapClone=replaceWithClone('avatarWrap');const avatarInputClone=replaceWithClone('avatarInput');avatarWrapClone.addEventListener('click',()=>avatarInputClone.click());avatarInputClone.addEventListener('change',async e=>{const file=e.target.files?.[0];if(!file||!currentUser)return;try{const ext=(file.name.split('.').pop()||'jpg').toLowerCase();const path=`${currentUser.id}/avatar.${ext}`;const {error:upErr}=await sb.storage.from('avatars').upload(path,file,{upsert:true,contentType:file.type});if(upErr)throw upErr;const {data}=sb.storage.from('avatars').getPublicUrl(path);const {error:pErr}=await sb.rpc('update_my_profile',{new_username:null,new_avatar_url:data.publicUrl});if(pErr)throw pErr;await refreshMyState();}catch(err){alert(err.message||'Не удалось загрузить аватар.');}finally{avatarInputClone.value='';}});
-const upgMenu=$('upgMenu');if(upgMenu)upgMenu.addEventListener('click',e=>{e.stopPropagation();$('upgDropdown').classList.toggle('show');});document.addEventListener('click',()=>{if($('upgDropdown'))$('upgDropdown').classList.remove('show');});
-$('removeUpgradeBtn').addEventListener('click',async e=>{e.stopPropagation();$('upgDropdown').classList.remove('show');if(game.stats.upgradedItemId===null)return;const item=byId(ALL_ITEMS,game.stats.upgradedItemId);showConfirmModal(`Снять улучшение с "${item.name}"?`,`Предмет исчезнет навсегда! Вы уверены?`,async()=>{try{const {error}=await sb.rpc('remove_upgraded_item');if(error)throw error;await refreshMyState();}catch(err){alert(err.message||'Не удалось снять улучшение.');}},()=>{});});
+// Remove the legacy local listeners from the menu/button before wiring the server-backed versions.
+const upgMenu=replaceWithClone('upgMenu');
+upgMenu.addEventListener('click',e=>{e.stopPropagation();$('upgDropdown').classList.toggle('show');});
+document.addEventListener('click',()=>{if($('upgDropdown'))$('upgDropdown').classList.remove('show');});
+const removeUpgradeBtn=replaceWithClone('removeUpgradeBtn');
+removeUpgradeBtn.addEventListener('click',async e=>{
+  e.stopPropagation();$('upgDropdown').classList.remove('show');
+  if(game.stats.upgradedItemId===null)return;
+  const item=byId(ALL_ITEMS,game.stats.upgradedItemId);
+  if(!item)return;
+  showConfirmModal(`Снять улучшение с "${item.name}"?`,`Предмет исчезнет навсегда! Вы уверены?`,async()=>{
+    try{
+      removeUpgradeBtn.disabled=true;
+      const {error}=await sb.rpc('remove_upgraded_item');
+      if(error)throw error;
+      await refreshMyState();
+    }catch(err){alert(err.message||'Не удалось снять улучшение.');}
+    finally{removeUpgradeBtn.disabled=false;}
+  },()=>{});
+});
 
 // Server-backed upgrade button with animated roulette.
 const exchange=replaceWithClone('exchangeBtn');exchange.addEventListener('click',async()=>{
@@ -2250,10 +2302,10 @@ const exchange=replaceWithClone('exchangeBtn');exchange.addEventListener('click'
     const {data,error}=await sb.rpc('upgrade_items',{source_inventory_ids:ids,target_item_id:targetId});
     if(error)throw error;
     const chance=Number(data?.chance ?? localChance);
-    drawUpgradeWheel(chance,wheelArrowAngle);
-    await animateUpgradeWheel(chance,5);
+    const success=data?.success===true || data?.success==='true' || data?.success===1;
+    await animateUpgradeWheel(chance,success,5);
 
-    if(data.success){
+    if(success){
       result.textContent=`🎉 Успех! Получен ${byId(ALL_ITEMS,targetId).name}.`;
       result.className='up-result success';
       wheel.classList.add('wheel-win-active');
@@ -2268,6 +2320,8 @@ const exchange=replaceWithClone('exchangeBtn');exchange.addEventListener('click'
     await refreshMyState();
     setTimeout(()=>{wheel.classList.remove('wheel-win-active');$('winBurst').classList.remove('show');},2200);
   }catch(e){
+    result.textContent='❌ '+(e.message||'Апгрейд не выполнен.');
+    result.className='up-result fail';
     alert(e.message||'Апгрейд не выполнен.');
   }finally{
     upgradeBusy=false;
