@@ -1763,9 +1763,10 @@ const W = 400, H = 400, cx = W/2, cy = H/2, radius = 160, arcWidth = 28;
 let wheelArrowAngle = 0;
 let isWheelSpinning = false;
 
-function drawUpgradeWheel(chance, angleDeg) {
+function drawUpgradeWheel(chance, angleDeg, resultState=null) {
   ctx.clearRect(0, 0, W, H);
-  const angleSuccess = (chance / 100) * 2 * Math.PI;
+  const safeChance = Math.max(0, Math.min(95, Number(chance) || 0));
+  const angleSuccess = (safeChance / 100) * 2 * Math.PI;
   ctx.beginPath();
   ctx.arc(cx, cy, radius + 6, 0, 2 * Math.PI);
   ctx.fillStyle = '#1c2540';
@@ -1812,6 +1813,17 @@ function drawUpgradeWheel(chance, angleDeg) {
   ctx.arc(cx, cy, 7, 0, 2 * Math.PI);
   ctx.fillStyle = '#ffffff';
   ctx.fill();
+
+  ctx.save();
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '800 32px Segoe UI, Arial, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.shadowColor = 'rgba(0,0,0,.65)';
+  ctx.shadowBlur = 8;
+  ctx.fillText(`${safeChance.toFixed(1)}%`, cx, cy + 34);
+  ctx.restore();
+
   ctx.save();
   ctx.translate(cx, cy);
   ctx.rotate((angleDeg || 0) * Math.PI / 180);
@@ -1825,6 +1837,27 @@ function drawUpgradeWheel(chance, angleDeg) {
   ctx.shadowBlur = 8;
   ctx.fill();
   ctx.restore();
+}
+
+function animateUpgradeWheel(chance, spins=5) {
+  if (isWheelSpinning) return Promise.resolve();
+  isWheelSpinning = true;
+  const start = wheelArrowAngle;
+  const end = start + spins * 360 + 180 + Math.random() * 180;
+  const duration = 3200;
+  const startedAt = performance.now();
+
+  return new Promise(resolve => {
+    function frame(now) {
+      const t = Math.min(1, (now - startedAt) / duration);
+      const eased = 1 - Math.pow(1 - t, 3);
+      wheelArrowAngle = start + (end - start) * eased;
+      drawUpgradeWheel(chance, wheelArrowAngle);
+      if (t < 1) requestAnimationFrame(frame);
+      else { wheelArrowAngle = end; isWheelSpinning = false; resolve(); }
+    }
+    requestAnimationFrame(frame);
+  });
 }
 
 let confirmAction = null;
@@ -2202,8 +2235,46 @@ const avatarWrapClone=replaceWithClone('avatarWrap');const avatarInputClone=repl
 const upgMenu=$('upgMenu');if(upgMenu)upgMenu.addEventListener('click',e=>{e.stopPropagation();$('upgDropdown').classList.toggle('show');});document.addEventListener('click',()=>{if($('upgDropdown'))$('upgDropdown').classList.remove('show');});
 $('removeUpgradeBtn').addEventListener('click',async e=>{e.stopPropagation();$('upgDropdown').classList.remove('show');if(game.stats.upgradedItemId===null)return;const item=byId(ALL_ITEMS,game.stats.upgradedItemId);showConfirmModal(`Снять улучшение с "${item.name}"?`,`Предмет исчезнет навсегда! Вы уверены?`,async()=>{try{const {error}=await sb.rpc('remove_upgraded_item');if(error)throw error;await refreshMyState();}catch(err){alert(err.message||'Не удалось снять улучшение.');}},()=>{});});
 
-// Server-backed upgrade button: replaces the old local randomizer.
-const exchange=replaceWithClone('exchangeBtn');exchange.addEventListener('click',async()=>{if(upgradeBusy||!selectedUpgradeInstances.length||selectedUpgradeTargetId===null)return;upgradeBusy=true;exchange.disabled=true;const ids=selectedUpgradeInstances.map(x=>x.uniqueId);const targetId=selectedUpgradeTargetId;try{const {data,error}=await sb.rpc('upgrade_items',{source_inventory_ids:ids,target_item_id:targetId});if(error)throw error;const result=$('upResult');const wheel=$('upgradeWheelContainer');wheelArrowAngle+=720+Math.random()*360;drawUpgradeWheel(data.success?100:0,wheelArrowAngle);if(data.success){result.textContent=`🎉 Успех! Получен ${byId(ALL_ITEMS,targetId).name}.`;result.className='up-result success';wheel.classList.add('wheel-win-active');$('winBurst').classList.add('show');launchConfetti(45);}else{result.textContent='💥 Неудача. Исходные предметы сгорели.';result.className='up-result fail';}await new Promise(r=>setTimeout(r,700));selectedUpgradeInstances=[];selectedUpgradeTargetId=null;await refreshMyState();setTimeout(()=>{wheel.classList.remove('wheel-win-active');$('winBurst').classList.remove('show');},2200);}catch(e){alert(e.message||'Апгрейд не выполнен.');}finally{upgradeBusy=false;exchange.disabled=false;renderUpgradeTab();}});
+// Server-backed upgrade button with animated roulette.
+const exchange=replaceWithClone('exchangeBtn');exchange.addEventListener('click',async()=>{
+  if(upgradeBusy||!selectedUpgradeInstances.length||selectedUpgradeTargetId===null)return;
+  const localChance=getUpgradeChance();
+  if(!localChance)return;
+  upgradeBusy=true;
+  exchange.disabled=true;
+  const ids=selectedUpgradeInstances.map(x=>x.uniqueId);
+  const targetId=selectedUpgradeTargetId;
+  const result=$('upResult');
+  const wheel=$('upgradeWheelContainer');
+  try{
+    const {data,error}=await sb.rpc('upgrade_items',{source_inventory_ids:ids,target_item_id:targetId});
+    if(error)throw error;
+    const chance=Number(data?.chance ?? localChance);
+    drawUpgradeWheel(chance,wheelArrowAngle);
+    await animateUpgradeWheel(chance,5);
+
+    if(data.success){
+      result.textContent=`🎉 Успех! Получен ${byId(ALL_ITEMS,targetId).name}.`;
+      result.className='up-result success';
+      wheel.classList.add('wheel-win-active');
+      $('winBurst').classList.add('show');
+      launchConfetti(45);
+    }else{
+      result.textContent='💥 Неудача. Исходные предметы сгорели.';
+      result.className='up-result fail';
+    }
+    selectedUpgradeInstances=[];
+    selectedUpgradeTargetId=null;
+    await refreshMyState();
+    setTimeout(()=>{wheel.classList.remove('wheel-win-active');$('winBurst').classList.remove('show');},2200);
+  }catch(e){
+    alert(e.message||'Апгрейд не выполнен.');
+  }finally{
+    upgradeBusy=false;
+    exchange.disabled=false;
+    renderUpgradeTab();
+  }
+});
 
 // Local addXp must never be trusted for persistent progression in account mode.
 const localAddXp=addXp; addXp=function(amount,source,skip){game.stats.xp+=Number(amount)||0;updateUI();};
