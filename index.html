@@ -21,7 +21,7 @@ header{background:linear-gradient(180deg,#141a2c,#101526); border-bottom:1px sol
 .logo .mark{font-size:28px;}
 .logo .title{font-size:22px; font-weight:800; letter-spacing:1px;}
 .logo .sub{font-size:11px; color:var(--muted); letter-spacing:2px; margin-top:-2px;}
-.logo img{height:60px; width:auto;}
+.logo img{height:150px; width:auto;}
 .tabs{display:flex; gap:6px;}
 .tab{padding:10px 18px; border-radius:8px; cursor:pointer; font-size:13px; font-weight:700; letter-spacing:.5px; color:var(--muted); border:1px solid transparent; user-select:none;}
 .tab:hover{color:var(--text);}
@@ -2728,7 +2728,7 @@ async function activateCouponOnline(){
     if(error)throw error;msg.textContent=`✅ Промокод активирован! +${Number(data.reward)} монет`;msg.style.color='#7fdb7f';input.value='';await refreshMyState();
   }catch(e){msg.textContent='❌ '+(e.message||'Неверный промокод');msg.style.color='#ff6b6b';}
 }
-const avatarWrapClone=replaceWithClone('avatarWrap');const avatarInputClone=replaceWithClone('avatarInput');avatarWrapClone.addEventListener('click',()=>avatarInputClone.click());avatarInputClone.addEventListener('change',async e=>{const file=e.target.files?.[0];if(!file||!currentUser)return;try{const ext=(file.name.split('.').pop()||'jpg').toLowerCase();const path=`${currentUser.id}/avatar.${ext}`;const {error:upErr}=await sb.storage.from('avatars').upload(path,file,{upsert:true,contentType:file.type});if(upErr)throw upErr;const {data}=sb.storage.from('avatars').getPublicUrl(path);const {error:pErr}=await sb.rpc('update_my_profile',{new_username:null,new_avatar_url:data.publicUrl});if(pErr)throw pErr;await refreshMyState();}catch(err){alert(err.message||'Не удалось загрузить аватар.');}finally{avatarInputClone.value='';}});
+const avatarWrapClone=replaceWithClone('avatarWrap');const avatarInputClone=replaceWithClone('avatarInput');avatarWrapClone.addEventListener('click',()=>avatarInputClone.click());avatarInputClone.addEventListener('change',async e=>{const file=e.target.files?.[0];if(!file||!currentUser)return;try{if(!file.type.startsWith('image/'))throw new Error('Можно загружать только изображения.');const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'');const safeExt=ext||'jpg';const path=`${currentUser.id}/avatar.${safeExt}`;const bucket=sb.storage.from('avatars');const {error:upErr}=await bucket.upload(path,file,{upsert:true,cacheControl:'3600',contentType:file.type});if(upErr)throw upErr;const {data}=bucket.getPublicUrl(path);if(!data?.publicUrl)throw new Error('Не удалось получить URL аватарки.');const {error:pErr}=await sb.rpc('update_my_profile',{new_username:null,new_avatar_url:data.publicUrl});if(pErr)throw pErr;await refreshMyState();}catch(err){alert(err.message||'Не удалось загрузить аватар.');}finally{avatarInputClone.value='';}});
 // Remove the legacy local listeners from the menu/button before wiring the server-backed versions.
 const upgMenu=replaceWithClone('upgMenu');
 upgMenu.addEventListener('click',e=>{e.stopPropagation();$('upgDropdown').classList.toggle('show');});
