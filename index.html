@@ -113,7 +113,7 @@ main{padding:28px 0 60px;}
 .inv-card .inv-price{font-size:9px; color:var(--gold); margin-top:2px;}
 .inv-card .price-tag{position:absolute; bottom:2px; right:2px; font-size:8px; background:rgba(0,0,0,.6); padding:0 4px; border-radius:4px; color:#fff;}
 .upgrade-title{font-size:22px; margin-bottom:20px; text-align:center; font-weight:800; letter-spacing:.5px;}
-.up-selection{display:grid; grid-template-columns:1fr 280px 1fr; gap:20px; align-items:start; margin-bottom:20px;}
+ .up-selection{display:grid; grid-template-columns:minmax(0,1fr) 420px minmax(0,1fr); gap:24px; align-items:start; margin-bottom:20px;}
 .up-card{background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:20px; min-height:200px; display:flex; flex-direction:column; align-items:center; text-align:center;}
 .up-card h4{font-size:13px; color:var(--muted); margin-bottom:10px; font-weight:600;}
 .up-preview{display:flex; flex-direction:column; align-items:center; gap:6px; padding:8px 0; width:100%;}
@@ -127,17 +127,17 @@ main{padding:28px 0 60px;}
 .up-preview .pq{font-size:12px; color:var(--muted);}
 .up-preview .price{font-size:13px; color:var(--gold); font-weight:700;}
 .up-empty{color:var(--muted); font-size:13px; padding:20px 0;}
-.up-middle{background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:20px 16px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px;}
-.upgrade-wheel-container{position:relative;width:100%;max-width:360px;aspect-ratio:1/1;margin:0 auto;border-radius:50%;padding:10px;background:radial-gradient(circle at 50% 36%,rgba(255,255,255,.05),transparent 38%),#11182a;box-shadow:0 20px 55px rgba(0,0,0,.34),0 0 55px rgba(57,255,20,.08);overflow:visible;}
-.wheel-rotor{position:absolute;inset:10px;border-radius:50%;transform:rotate(0deg);transform-origin:50% 50%;will-change:auto;}
+.up-middle{background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:18px 18px 22px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; min-height:520px;}
+.upgrade-wheel-container{position:relative;width:400px;height:400px;max-width:100%;margin:0 auto;border-radius:50%;padding:10px;background:radial-gradient(circle at 50% 36%,rgba(255,255,255,.05),transparent 38%),#11182a;box-shadow:0 20px 55px rgba(0,0,0,.34),0 0 55px rgba(57,255,20,.08);overflow:visible;flex:0 0 auto;}
+.wheel-rotor{position:absolute;inset:10px;border-radius:50%;transform:none!important;transform-origin:50% 50%;will-change:auto;}
 .wheel-rotor canvas{display:block;width:100%;height:100%;border-radius:50%;background:transparent;}
 .upgrade-wheel-container::after{content:"";position:absolute;inset:10px;border-radius:50%;box-shadow:inset 0 0 0 2px rgba(255,255,255,.06),inset 0 0 34px rgba(0,0,0,.34),0 0 0 1px rgba(0,0,0,.45);pointer-events:none;z-index:2;}
-.wheel-pointer{position:absolute;inset:0;transform:rotate(0deg);transform-origin:50% 50%;will-change:transform;z-index:8;pointer-events:none;}
-.wheel-pointer::before{content:"";position:absolute;left:50%;top:-8px;transform:translateX(-50%);width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;border-bottom:30px solid #ffd257;filter:drop-shadow(0 4px 8px rgba(0,0,0,.72));}
-.wheel-pointer::after{content:"";position:absolute;left:50%;top:17px;transform:translateX(-50%);width:13px;height:13px;border-radius:50%;background:#fff3b0;box-shadow:0 0 6px rgba(255,255,255,.85),0 0 18px rgba(255,210,87,.95);}
-.wheel-center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:43%;aspect-ratio:1/1;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:radial-gradient(circle at 50% 30%,#1a243e 0%,#0d1320 68%,#090d17 100%);border:2px solid rgba(255,255,255,.07);box-shadow:0 14px 34px rgba(0,0,0,.42),inset 0 0 34px rgba(0,0,0,.34),inset 0 2px 0 rgba(255,255,255,.04);z-index:5;pointer-events:none;overflow:hidden;padding:10px;}
-.wheel-chance{position:static;transform:none;font-family:'Arial Black',Impact,'Segoe UI',sans-serif;font-size:clamp(38px,4.6vw,56px);line-height:1;font-weight:900;letter-spacing:-1.5px;color:#fff;white-space:nowrap;font-variant-numeric:tabular-nums;text-align:center;display:block;text-shadow:-1px -1px 0 rgba(255,255,255,.26),2px 2px 0 rgba(0,0,0,.85),0 4px 0 rgba(0,0,0,.58),0 7px 0 rgba(0,0,0,.26),0 11px 18px rgba(0,0,0,.72);}
-.wheel-caption{position:static;transform:none;margin-top:10px;font-family:'Segoe UI Semibold','Segoe UI',Arial,sans-serif;font-size:10px;line-height:1;color:#97a4c7;text-transform:uppercase;letter-spacing:1.4px;text-align:center;white-space:nowrap;text-shadow:0 2px 6px rgba(0,0,0,.55);}
+.wheel-pointer{position:absolute;inset:10px;border-radius:50%;transform:rotate(0deg);transform-origin:50% 50%;will-change:transform;z-index:8;pointer-events:none;}
+.wheel-pointer::before{content:"";position:absolute;left:50%;top:-18px;transform:translateX(-50%);width:0;height:0;border-left:16px solid transparent;border-right:16px solid transparent;border-bottom:34px solid #ffd257;filter:drop-shadow(0 5px 9px rgba(0,0,0,.72));}
+.wheel-pointer::after{content:"";position:absolute;left:50%;top:8px;transform:translateX(-50%);width:16px;height:16px;border-radius:50%;background:#fff3b0;box-shadow:0 0 7px rgba(255,255,255,.9),0 0 20px rgba(255,210,87,.95);}
+.wheel-center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:43%;aspect-ratio:1/1;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:radial-gradient(circle at 50% 30%,#1a243e 0%,#0d1320 68%,#090d17 100%);border:2px solid rgba(255,255,255,.07);box-shadow:0 14px 34px rgba(0,0,0,.42),inset 0 0 34px rgba(0,0,0,.34),inset 0 2px 0 rgba(255,255,255,.04);z-index:5;pointer-events:none;overflow:hidden;padding:12px;}
+.wheel-chance{position:static;transform:none;font-family:'Arial Black',Impact,'Segoe UI Black','Segoe UI',sans-serif;font-size:56px;line-height:.95;font-weight:900;letter-spacing:-2px;color:#fff;white-space:nowrap;font-variant-numeric:tabular-nums;text-align:center;display:block;text-shadow:-1px -1px 0 rgba(255,255,255,.34),2px 2px 0 rgba(0,0,0,.95),0 4px 0 rgba(0,0,0,.70),0 7px 0 rgba(0,0,0,.34),0 11px 16px rgba(0,0,0,.75);}
+.wheel-caption{position:static;transform:none;margin-top:10px;font-family:'Segoe UI Semibold','Segoe UI',Arial,sans-serif;font-size:11px;line-height:1;color:#a5b0cd;text-transform:uppercase;letter-spacing:1.6px;text-align:center;white-space:nowrap;text-shadow:0 2px 6px rgba(0,0,0,.55);}
 .upgrade-wheel-container.wheel-success{box-shadow:0 18px 50px rgba(0,0,0,.28),0 0 70px rgba(57,255,20,.28);}
 .upgrade-wheel-container.wheel-fail{box-shadow:0 18px 50px rgba(0,0,0,.28),0 0 70px rgba(255,49,49,.18);}
 .upgrade-wheel-container.wheel-win-active{animation:wheelWinPulse .5s ease-in-out 4;}
@@ -303,6 +303,16 @@ footer{border-top:1px solid var(--border); margin-top:40px; padding:20px 0; text
 body.auth-locked>header,body.auth-locked>main,body.auth-locked>footer,body.auth-locked>.modal-overlay,body.auth-locked>.notification-container{display:none!important;}
 @media(max-width:900px){.public-stats{grid-template-columns:repeat(2,1fr)}.public-inventory{grid-template-columns:repeat(3,1fr)}.public-profile-head{align-items:flex-start}.online-badge{display:none}}
 
+@media(max-width:1300px){
+  .up-selection{grid-template-columns:minmax(0,1fr) 390px minmax(0,1fr);}
+  .upgrade-wheel-container{width:370px;height:370px;}
+  .wheel-chance{font-size:52px;}
+}
+@media(max-width:1050px){
+  .up-selection{grid-template-columns:1fr;}
+  .up-middle{min-height:0;}
+  .upgrade-wheel-container{width:400px;height:400px;max-width:90vw;}
+}
 </style>
 </head>
 <body>
@@ -1751,71 +1761,106 @@ function drawUpgradeWheel(chance){
   if(!ctx) return;
   const safeChance=Math.max(0,Math.min(95,Number(chance)||0));
   const tau=Math.PI*2;
-  const greenAngle=(safeChance/100)*tau;
   const greenStart=-Math.PI/2;
+  const greenAngle=(safeChance/100)*tau;
   const greenEnd=greenStart+greenAngle;
+
   ctx.clearRect(0,0,W,H);
   ctx.save();
-  ctx.beginPath(); ctx.arc(cx,cy,radius+22,0,tau);
-  ctx.fillStyle='#18213a'; ctx.shadowColor='rgba(0,0,0,.38)'; ctx.shadowBlur=22; ctx.fill(); ctx.shadowBlur=0;
+
   ctx.beginPath();
-  ctx.arc(cx,cy,radius,greenEnd,greenStart+tau,false);
-  ctx.arc(cx,cy,radius-arcWidth,greenStart+tau,greenEnd,true);
-  ctx.closePath();
-  ctx.fillStyle='#f34150'; ctx.shadowColor='rgba(243,65,80,.30)'; ctx.shadowBlur=25; ctx.fill(); ctx.shadowBlur=0;
+  ctx.arc(cx,cy,radius+22,0,tau);
+  ctx.fillStyle='#18213a';
+  ctx.shadowColor='rgba(0,0,0,.38)';
+  ctx.shadowBlur=22;
+  ctx.fill();
+  ctx.shadowBlur=0;
+
+  // Full red ring. Green is painted over the exact success fraction.
   ctx.beginPath();
-  ctx.arc(cx,cy,radius,greenStart,greenEnd,false);
-  ctx.arc(cx,cy,radius-arcWidth,greenEnd,greenStart,true);
+  ctx.arc(cx,cy,radius,-Math.PI/2,Math.PI*1.5,false);
+  ctx.arc(cx,cy,radius-arcWidth,Math.PI*1.5,-Math.PI/2,true);
   ctx.closePath();
-  ctx.fillStyle='#45ef38'; ctx.shadowColor='rgba(69,239,56,.40)'; ctx.shadowBlur=28; ctx.fill(); ctx.shadowBlur=0;
-  ctx.strokeStyle='rgba(255,255,255,.27)'; ctx.lineWidth=4;
+  ctx.fillStyle='#f34150';
+  ctx.shadowColor='rgba(243,65,80,.30)';
+  ctx.shadowBlur=25;
+  ctx.fill();
+  ctx.shadowBlur=0;
+
+  if(greenAngle>0){
+    ctx.beginPath();
+    ctx.arc(cx,cy,radius,greenStart,greenEnd,false);
+    ctx.arc(cx,cy,radius-arcWidth,greenEnd,greenStart,true);
+    ctx.closePath();
+    ctx.fillStyle='#45ef38';
+    ctx.shadowColor='rgba(69,239,56,.40)';
+    ctx.shadowBlur=28;
+    ctx.fill();
+    ctx.shadowBlur=0;
+  }
+
+  ctx.strokeStyle='rgba(255,255,255,.30)';
+  ctx.lineWidth=4;
   for(const a of [greenStart,greenEnd]){
     ctx.beginPath();
     ctx.moveTo(cx+(radius-arcWidth-2)*Math.cos(a),cy+(radius-arcWidth-2)*Math.sin(a));
     ctx.lineTo(cx+(radius+4)*Math.cos(a),cy+(radius+4)*Math.sin(a));
     ctx.stroke();
   }
+
   for(let i=0;i<36;i++){
-    const a=(i/36)*tau, outer=radius+15, inner=radius+7;
+    const a=(i/36)*tau-Math.PI/2, outer=radius+15, inner=radius+7;
     ctx.beginPath();
     ctx.moveTo(cx+inner*Math.cos(a),cy+inner*Math.sin(a));
     ctx.lineTo(cx+outer*Math.cos(a),cy+outer*Math.sin(a));
     ctx.strokeStyle=i%3===0?'rgba(255,255,255,.19)':'rgba(255,255,255,.07)';
-    ctx.lineWidth=i%3===0?3:1.5; ctx.stroke();
+    ctx.lineWidth=i%3===0?3:1.5;
+    ctx.stroke();
   }
-  ctx.beginPath(); ctx.arc(cx,cy,radius-arcWidth-8,0,tau);
-  ctx.fillStyle='#0d1320'; ctx.fill();
-  ctx.strokeStyle='rgba(255,255,255,.10)'; ctx.lineWidth=3; ctx.stroke();
-  ctx.beginPath(); ctx.arc(cx,cy,radius-arcWidth-15,0,tau);
-  ctx.strokeStyle='rgba(0,0,0,.48)'; ctx.lineWidth=5; ctx.stroke();
+
+  ctx.beginPath();
+  ctx.arc(cx,cy,radius-arcWidth-8,0,tau);
+  ctx.fillStyle='#0d1320';
+  ctx.fill();
+  ctx.strokeStyle='rgba(255,255,255,.10)';
+  ctx.lineWidth=3;
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.arc(cx,cy,radius-arcWidth-15,0,tau);
+  ctx.strokeStyle='rgba(0,0,0,.48)';
+  ctx.lineWidth=5;
+  ctx.stroke();
+
   ctx.restore();
+
   const chanceText=document.getElementById('upgradeChanceText');
   if(chanceText) chanceText.textContent=`${safeChance.toFixed(1)}%`;
 }
 
 function normalizeDeg(deg){ return ((deg%360)+360)%360; }
-function animateUpgradeWheel(chance, success, spins=6){
+function animateUpgradeWheel(chance, success, spins=5){
   if(isWheelSpinning) return Promise.resolve();
   isWheelSpinning=true;
+
   const safeChance=Math.max(0,Math.min(95,Number(chance)||0));
-  const greenStartDeg=-90;
-  const greenSizeDeg=safeChance*3.6;
-  const redStartDeg=greenStartDeg+greenSizeDeg;
-  const redSizeDeg=360-greenSizeDeg;
+  const greenSize=safeChance*3.6;
+  const redSize=360-greenSize;
 
-  // Wheel sectors are FIXED. Only the pointer rotates.
-  // The pointer's zero position points at -90deg (12 o'clock).
-  const targetSectorAngle = success
-    ? greenStartDeg + greenSizeDeg/2
-    : redStartDeg + redSizeDeg/2;
-  const targetPointerRotation = targetSectorAngle + 90;
-
+  // Pointer 0° = exactly 12 o'clock. Wheel/canvas stays fixed.
+  const targetPointerRotation=success ? greenSize/2 : greenSize + redSize/2;
   const start=Number(wheelArrowAngle||0);
-  const delta=normalizeDeg(targetPointerRotation-start);
-  const end=start+Math.max(1,spins)*360+delta;
-  const duration=3600;
+  const startNorm=normalizeDeg(start);
+  const targetNorm=normalizeDeg(targetPointerRotation);
+  let delta=normalizeDeg(targetNorm-startNorm);
+  if(delta<30) delta+=360;
+
+  // End at the exact center of the chosen sector.
+  const end=start+Math.max(5,spins)*360+delta;
+  const duration=3400;
   const started=performance.now();
   const wheel=document.getElementById('upgradeWheelContainer');
+
   wheel.classList.remove('wheel-success','wheel-fail','wheel-win-active');
 
   return new Promise(resolve=>{
@@ -1824,10 +1869,15 @@ function animateUpgradeWheel(chance, success, spins=6){
       const eased=1-Math.pow(1-t,3);
       const r=start+(end-start)*eased;
       wheelArrowAngle=r;
-      if(wheelPointer) wheelPointer.style.transform=`rotate(${r}deg)`;
-      if(t<1){requestAnimationFrame(frame);return;}
 
-      // Snap to the mathematically exact stopping angle.
+      // ONLY THE ARROW LAYER ROTATES.
+      if(wheelPointer) wheelPointer.style.transform=`rotate(${r}deg)`;
+
+      if(t<1){
+        requestAnimationFrame(frame);
+        return;
+      }
+
       wheelArrowAngle=end;
       if(wheelPointer) wheelPointer.style.transform=`rotate(${end}deg)`;
       isWheelSpinning=false;
