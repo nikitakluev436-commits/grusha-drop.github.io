@@ -42,6 +42,9 @@ main{padding:28px 0 60px;}
 .panel{display:none;}
 .panel.active{display:block;}
 .cases-layout{display:flex; gap:24px;}
+.cases-layout.case-detail-active .leaderboard-wrap{display:none;}
+.cases-layout.case-detail-active .cases-grid-wrap{flex:1; width:100%;}
+.cases-layout.case-detail-active .case-detail-view{width:100%;}
 .cases-grid-wrap{flex:3;}
 .leaderboard-wrap{flex:1; background:var(--panel); border:1px solid var(--border); border-radius:16px; padding:16px; max-height:700px; overflow-y:auto;}
 .leaderboard-wrap h3{color:var(--muted); font-size:14px; letter-spacing:1px; margin-bottom:12px; border-bottom:1px solid var(--border); padding-bottom:8px;}
@@ -53,6 +56,8 @@ main{padding:28px 0 60px;}
 .leaderboard-wrap .lb-entry .lb-xp{font-size:12px; color:var(--gold);}
 .leaderboard-wrap .lb-entry .lb-level{font-size:11px; color:var(--muted);}
 .leaderboard-wrap .lb-entry.current-user{background:var(--panel2); border-left:3px solid var(--accent2);}
+.leaderboard-wrap .lb-developer-entry{display:grid;grid-template-columns:1fr auto auto;row-gap:2px;align-items:center;padding:10px 10px 11px;margin-bottom:10px;background:linear-gradient(135deg,rgba(162,75,240,.16),rgba(255,207,77,.07));border:1px solid rgba(162,75,240,.45);box-shadow:0 8px 24px rgba(162,75,240,.08);}
+.leaderboard-wrap .lb-dev-label{grid-column:1/-1;color:var(--accent2);font-size:10px;font-weight:900;letter-spacing:1.2px;margin-bottom:2px;}
 .cases-grid{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:16px; margin:0 auto;}
 .case-card{background:var(--panel); border:3px solid var(--border); border-radius:16px; padding:14px 14px 20px; text-align:center; cursor:pointer; transition:border .25s, transform .2s, box-shadow .2s; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; position:relative;}
 .case-card:hover:not(.locked){transform:scale(1.03); box-shadow:0 0 25px rgba(255,178,61,.15);}
@@ -68,12 +73,14 @@ main{padding:28px 0 60px;}
 .case-detail-view .back-btn{align-self:flex-start; background:var(--panel2); border:1px solid var(--border); border-radius:8px; padding:8px 16px; color:var(--text); cursor:pointer; font-size:14px; transition:background .2s;}
 .case-detail-view .back-btn:hover{background:var(--panel);}
 .case-detail-view .case-name{font-size:28px; font-weight:800; text-align:center;}
-.case-action-wrapper{width:100%; background:var(--panel2); border:1px solid var(--border); border-radius:16px; padding:24px 32px; min-height:150px; display:flex; flex-direction:column; align-items:center; justify-content:center;}
+.case-action-wrapper{width:100%; background:linear-gradient(180deg,#1d2744,#1a2440); border:1px solid var(--border); border-radius:18px; padding:34px 42px 38px; min-height:230px; display:flex; flex-direction:column; align-items:center; justify-content:center; box-shadow:0 14px 40px rgba(0,0,0,.16); transition:box-shadow .25s ease,transform .25s ease;}
+.case-action-wrapper:hover{box-shadow:0 18px 48px rgba(0,0,0,.2);}
 .case-action{display:flex; flex-direction:column; align-items:center; gap:16px; width:100%; transition: opacity 0.35s ease;}
 .case-action.hidden{display:none !important;}
-.case-action .price-tag{font-weight:700; font-size:22px; color:var(--gold);}
-.case-action .open-btn{background:linear-gradient(180deg,var(--accent2),var(--accent)); border:none; color:#241000; font-weight:800; font-size:20px; padding:16px 30px; border-radius:12px; cursor:pointer; letter-spacing:.5px; box-shadow:0 4px 0 #b04c1e; width:100%; transition:transform .1s;}
-.case-action .open-btn:active{transform:translateY(3px); box-shadow:0 1px 0 #b04c1e;}
+.case-action .price-tag{font-weight:800; font-size:28px; color:var(--gold); line-height:1.1; text-shadow:0 2px 10px rgba(255,207,77,.12);}
+.case-action .open-btn{background:linear-gradient(180deg,#ffb84a,#ff7a3d); border:none; color:#241000; font-weight:900; font-size:24px; padding:20px 34px; border-radius:14px; cursor:pointer; letter-spacing:.6px; box-shadow:0 6px 0 #b04c1e,0 12px 28px rgba(255,122,61,.18); width:82%; min-height:68px; transition:transform .15s cubic-bezier(.2,.75,.2,1),box-shadow .15s ease,filter .15s ease;}
+.case-action .open-btn:hover:not(:disabled){transform:translateY(-2px);filter:brightness(1.03);box-shadow:0 8px 0 #b04c1e,0 16px 32px rgba(255,122,61,.22);}
+.case-action .open-btn:active{transform:translateY(4px); box-shadow:0 2px 0 #b04c1e;}
 .case-action .open-btn:disabled{opacity:.5; cursor:not-allowed; box-shadow:none;}
 .multi-selector{display:flex; align-items:center; gap:8px;}
 .multi-selector select{background:var(--panel2); border:1px solid var(--border); color:var(--text); padding:6px 12px; border-radius:6px; font-size:16px; font-weight:700; cursor:pointer; outline:none;}
@@ -405,6 +412,11 @@ header > .wrap{max-width:1480px;padding:0 28px;}
 .inv-card,.inv-item,.case-card,.up-item,.up-target-card,.public-item-card,.result-card{
   transition:transform .22s cubic-bezier(.2,.75,.2,1),box-shadow .22s ease,border-color .22s ease,filter .22s ease;
 }
+.case-content-item{position:relative;overflow:visible;}
+.case-content-item::after{content:attr(data-item-name);position:absolute;left:50%;bottom:calc(100% + 10px);transform:translate(-50%,8px) scale(.96);background:#0b1020;color:var(--text);border:1px solid rgba(255,207,77,.34);padding:7px 10px;border-radius:8px;white-space:nowrap;font-size:12px;font-weight:800;box-shadow:0 10px 24px rgba(0,0,0,.35);opacity:0;pointer-events:none;z-index:30;transition:opacity .18s ease,transform .18s cubic-bezier(.2,.75,.2,1);}
+.case-content-item::before{content:"";position:absolute;left:50%;bottom:calc(100% + 4px);transform:translate(-50%,4px);border:5px solid transparent;border-top-color:#0b1020;opacity:0;z-index:31;pointer-events:none;transition:opacity .18s ease,transform .18s ease;}
+.case-content-item:hover::after{opacity:1;transform:translate(-50%,0) scale(1);}
+.case-content-item:hover::before{opacity:1;transform:translate(-50%,0);}
 .inv-card:hover,.inv-item:hover,.case-card:hover:not(.locked),.up-item:hover,.up-target-card:hover,.public-item-card:hover,.result-card:hover{
   transform:translateY(-5px) scale(1.02);box-shadow:0 12px 28px rgba(0,0,0,.24);filter:brightness(1.05);
 }
@@ -418,6 +430,7 @@ header > .wrap{max-width:1480px;padding:0 28px;}
   .logo img{height:128px;}
   .tabs{gap:14px;}
   .tab{padding:13px 12px;font-size:14px;}
+  .case-action .open-btn{width:92%;}
   .header-rank{min-width:175px;max-width:190px;}
 }
 @media (max-width:900px){
@@ -1327,6 +1340,7 @@ function renderCasesGrid() {
 }
 
 function showSelectionView() {
+  document.querySelector('.cases-layout')?.classList.remove('case-detail-active');
   document.getElementById('multiSelect').value = '1';
   document.getElementById('casesGridContainer').style.display = 'grid';
   document.getElementById('caseDetailContainer').classList.remove('show');
@@ -1339,6 +1353,7 @@ function showSelectionView() {
 }
 
 function showDetailView() {
+  document.querySelector('.cases-layout')?.classList.add('case-detail-active');
   document.getElementById('casesGridContainer').style.display = 'none';
   document.getElementById('caseDetailContainer').classList.add('show');
   // Количество относится только к текущему кейсу: при выборе нового кейса всегда начинаем с 1.
@@ -1359,7 +1374,7 @@ function renderDetailView() {
     if (price > 10000) colorClass = 'price-top';
     else if (price > 1000) colorClass = 'price-high';
     else if (price > 200) colorClass = 'price-mid';
-    return `<div class="inv-card">
+    return `<div class="inv-card case-content-item" data-item-name="${escapeHtml(item?.name || 'Предмет')}" tabindex="0">
       <div class="rarity-strip ${colorClass}"></div>
       ${imgOrPlaceholder(item,'ph')}
       <div class="inv-price">${price} 🪙</div>
@@ -2388,13 +2403,21 @@ async function renderLeaderboard(){
   if(error){list.innerHTML='<div style="color:#ff6b6b;padding:10px;text-align:center;">Не удалось загрузить рейтинг.</div>';return;}
   const presence=onlineChannel?onlineChannel.presenceState():{};
   const onlineIds=new Set(Object.keys(presence).map(String));
-  list.innerHTML=(data||[]).map((r,i)=>{
+  const rows=Array.isArray(data)?data:[];
+  const developer=rows.find(r=>String(r.username||'').trim().toLowerCase()==='rick разраб');
+  const normalRows=rows.filter(r=>!developer || r.user_id!==developer.user_id);
+  const developerHtml=developer ? `<div class="lb-developer-entry lb-entry" data-user-id="${developer.user_id}">
+      <span class="lb-dev-label">РАЗРАБОТЧИК:</span>
+      <span class="lb-username"><span class="${onlineIds.has(String(developer.user_id))?'lb-online-dot':'lb-offline-dot'}"></span>${escapeHtml(developer.username)}</span>
+      <span class="lb-rank-icon">${developer.rank_icon}</span><span class="lb-xp">${Number(developer.xp)} XP</span>
+    </div>` : '';
+  list.innerHTML=developerHtml + (normalRows.map((r,i)=>{
     const online=onlineIds.has(String(r.user_id));
     return `<div class="lb-entry ${r.user_id===currentUser.id?'current-user':''}" data-user-id="${r.user_id}">
       <span class="rank-num">${i+1}</span><span class="lb-username"><span class="${online?'lb-online-dot':'lb-offline-dot'}" title="${online?'Онлайн':'Не в сети'}"></span>${escapeHtml(r.username)}</span>
       <span class="lb-rank-icon">${r.rank_icon}</span><span class="lb-xp">${Number(r.xp)} XP</span>
     </div>`;
-  }).join('') || '<div style="color:var(--muted);padding:10px;text-align:center;">Пока нет игроков.</div>';
+  }).join('') || '<div style="color:var(--muted);padding:10px;text-align:center;">Пока нет игроков.</div>');
   list.querySelectorAll('.lb-entry').forEach(el=>el.addEventListener('click',()=>openPublicProfile(el.dataset.userId)));
 }
 
@@ -2678,59 +2701,49 @@ async function sellOneMultiResult(index){
 async function claimAllMultiResults(){
   const items=multiResultEntries.filter(entry=>entry.status==='pending');
   if(!items.length){finishCaseOpening();return;}
+  $('multiClaimAllBtn').disabled=true;$('multiSellAllBtn').disabled=true;
   try{
-    $('multiClaimAllBtn').disabled=true;$('multiSellAllBtn').disabled=true;
-    let failed=0;
     if(DEMO_MODE){
       items.forEach(entry=>addItemInstance(entry.item.id));
       items.forEach(entry=>entry.status='claimed');
     }else{
-      for(const entry of items){
-        try{
-          const {error}=await sb.rpc('claim_pending_drop',{pending_id:entry.pendingId});
-          if(error){
-            // This can happen after an interrupted previous batch. Treat it as already completed,
-            // because repeating the same pending ID must never block the whole result window.
-            if(isAlreadyProcessedError(error)){
-              entry.status='claimed';
-            }else{
-              failed++;
-              continue;
-            }
-          }else{
-            entry.status='claimed';
-          }
-        }catch(e){
-          if(isAlreadyProcessedError(e)) entry.status='claimed';
+      const results=await Promise.allSettled(items.map(entry=>sb.rpc('claim_pending_drop',{pending_id:entry.pendingId})));
+      let failed=0;
+      results.forEach((result,index)=>{
+        const entry=items[index];
+        if(result.status==='fulfilled'){
+          const error=result.value?.error;
+          if(!error || isAlreadyProcessedError(error)) entry.status='claimed';
           else failed++;
-        }
-      }
+        }else if(isAlreadyProcessedError(result.reason)){
+          entry.status='claimed';
+        }else failed++;
+      });
       await refreshMyState().catch(()=>{});
-    }
-    openResults=multiResultEntries.filter(entry=>entry.status==='pending');
-    if(openResults.length===0){
-      finishCaseOpening();
+      openResults=multiResultEntries.filter(entry=>entry.status==='pending');
+      if(openResults.length===0){finishCaseOpening();return;}
+      updateMultiResultView(failed>0 ? `⚠️ Не удалось обработать ${failed} предмет(ов). Остальные остаются доступными.` : `Осталось обработать: ${openResults.length}.`);
       return;
     }
-    const msg=failed>0
-      ? `⚠️ Не удалось обработать ${failed} предмет(ов). Остальные остаются доступными.`
-      : `Осталось обработать: ${openResults.length}.`;
-    updateMultiResultView(msg);
-    $('multiClaimAllBtn').disabled=false;$('multiSellAllBtn').disabled=false;
+    openResults=multiResultEntries.filter(entry=>entry.status==='pending');
+    if(openResults.length===0){finishCaseOpening();return;}
+    updateMultiResultView(`Осталось обработать: ${openResults.length}.`);
   }catch(e){
     console.error('claim all',e);
     openResults=multiResultEntries.filter(entry=>entry.status==='pending');
     updateMultiResultView('❌ Не удалось выполнить массовый подбор. Обработанные предметы сохранены, повторная попытка безопасна.');
-    $('multiClaimAllBtn').disabled=false;$('multiSellAllBtn').disabled=false;
+  }finally{
+    if(multiResultEntries.some(entry=>entry.status==='pending')){
+      $('multiClaimAllBtn').disabled=false;$('multiSellAllBtn').disabled=false;
+    }
   }
 }
 
 async function sellAllMultiResults(){
   const items=multiResultEntries.filter(entry=>entry.status==='pending');
   if(!items.length){finishCaseOpening();return;}
+  $('multiClaimAllBtn').disabled=true;$('multiSellAllBtn').disabled=true;
   try{
-    $('multiClaimAllBtn').disabled=true;$('multiSellAllBtn').disabled=true;
-    let failed=0;
     if(DEMO_MODE){
       const total=items.reduce((sum,entry)=>sum+getItemPrice(entry.item),0);
       game.balance+=total;
@@ -2738,42 +2751,35 @@ async function sellAllMultiResults(){
       updateBalanceUI();
       items.forEach(entry=>entry.status='sold');
     }else{
-      for(const entry of items){
-        try{
-          const {data,error}=await sb.rpc('sell_pending_drop',{pending_id:entry.pendingId});
-          if(error){
-            if(isAlreadyProcessedError(error)){
-              entry.status='sold';
-            }else{
-              failed++;
-              continue;
-            }
-          }else{
-            entry.status='sold';
-          }
-          if(data?.balance!=null)game.balance=Number(data.balance);
-        }catch(e){
-          if(isAlreadyProcessedError(e)) entry.status='sold';
+      const results=await Promise.allSettled(items.map(entry=>sb.rpc('sell_pending_drop',{pending_id:entry.pendingId})));
+      let failed=0;
+      results.forEach((result,index)=>{
+        const entry=items[index];
+        if(result.status==='fulfilled'){
+          const error=result.value?.error;
+          if(!error || isAlreadyProcessedError(error)) entry.status='sold';
           else failed++;
-        }
-      }
+        }else if(isAlreadyProcessedError(result.reason)){
+          entry.status='sold';
+        }else failed++;
+      });
       await refreshMyState().catch(()=>{});
-    }
-    openResults=multiResultEntries.filter(entry=>entry.status==='pending');
-    if(openResults.length===0){
-      finishCaseOpening();
+      openResults=multiResultEntries.filter(entry=>entry.status==='pending');
+      if(openResults.length===0){finishCaseOpening();return;}
+      updateMultiResultView(failed>0 ? `⚠️ Не удалось обработать ${failed} предмет(ов). Остальные остаются доступными.` : `Осталось обработать: ${openResults.length}.`);
       return;
     }
-    const msg=failed>0
-      ? `⚠️ Не удалось обработать ${failed} предмет(ов). Остальные остаются доступными.`
-      : `Осталось обработать: ${openResults.length}.`;
-    updateMultiResultView(msg);
-    $('multiClaimAllBtn').disabled=false;$('multiSellAllBtn').disabled=false;
+    openResults=multiResultEntries.filter(entry=>entry.status==='pending');
+    if(openResults.length===0){finishCaseOpening();return;}
+    updateMultiResultView(`Осталось обработать: ${openResults.length}.`);
   }catch(e){
     console.error('sell all',e);
     openResults=multiResultEntries.filter(entry=>entry.status==='pending');
     updateMultiResultView('❌ Не удалось выполнить массовую продажу. Обработанные предметы сохранены, повторная попытка безопасна.');
-    $('multiClaimAllBtn').disabled=false;$('multiSellAllBtn').disabled=false;
+  }finally{
+    if(multiResultEntries.some(entry=>entry.status==='pending')){
+      $('multiClaimAllBtn').disabled=false;$('multiSellAllBtn').disabled=false;
+    }
   }
 }
 
