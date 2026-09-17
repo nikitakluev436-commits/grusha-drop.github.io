@@ -1634,11 +1634,11 @@ body:not(.auth-locked) .demo-ribbon{ }
 }
 
 /* логотип: расширяем его колонку в шапке под увеличенную картинку */
-.header-inner{grid-template-columns:118px 236px minmax(430px,1fr) 366px!important}
+.header-inner{grid-template-columns:118px 236px minmax(0,1fr) 440px!important}
 .logo{width:236px!important;min-width:236px!important;max-width:236px!important}
 header .logo img{max-width:236px!important}
 @media (max-width:1290px){
-  .header-inner{grid-template-columns:110px 200px minmax(360px,1fr) 340px!important}
+  .header-inner{grid-template-columns:110px 200px minmax(0,1fr) 420px!important}
   .logo{width:200px!important;min-width:200px!important;max-width:200px!important}
   header .logo img{max-width:200px!important}
 }
@@ -1654,6 +1654,41 @@ if(typeof DEMO_MODE!=='undefined' && DEMO_MODE){
   if(ribbon)ribbon.style.display='block';
 }
 </script>
+
+
+<style id="public-profile-inventory-patch">
+/* Public profile inventory: keep item cards compact and proportionate. */
+#publicInventory{
+  grid-template-columns:repeat(auto-fill,minmax(120px,130px));
+  grid-auto-rows:130px;
+  gap:10px;
+  justify-content:start;
+  align-content:start;
+}
+#publicInventory .inv-card{
+  width:130px;
+  height:130px;
+  aspect-ratio:auto;
+  padding:10px;
+  border-radius:12px;
+}
+#publicInventory .inv-card img,
+#publicInventory .inv-card .ph{
+  width:58px;
+  height:58px;
+  border-radius:8px;
+}
+#publicInventory .inv-card .inv-price{
+  font-size:9px;
+  margin-top:4px;
+}
+@media(max-width:900px){
+  #publicInventory{grid-template-columns:repeat(auto-fill,minmax(105px,115px));grid-auto-rows:115px;gap:8px}
+  #publicInventory .inv-card{width:115px;height:115px;padding:8px}
+  #publicInventory .inv-card img,
+  #publicInventory .inv-card .ph{width:52px;height:52px}
+}
+</style>
 
 </head>
 <body>
