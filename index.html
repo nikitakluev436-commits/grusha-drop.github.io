@@ -1690,6 +1690,56 @@ if(typeof DEMO_MODE!=='undefined' && DEMO_MODE){
 }
 </style>
 
+
+<style id="jackpot-update-style">
+/* ==================== JACKPOT UPDATE ==================== */
+.case-jackpot-pill{
+  display:none;
+  color:#fff7d6!important;
+  background:linear-gradient(135deg,rgba(255,209,102,.16),rgba(255,122,61,.12))!important;
+  border-color:rgba(255,209,102,.38)!important;
+  box-shadow:0 0 20px rgba(255,190,76,.10),inset 0 1px 0 rgba(255,255,255,.04);
+  font-weight:900!important;
+}
+.case-jackpot-pill.show{display:flex!important;}
+.jackpot-update-overlay{
+  position:fixed;inset:0;z-index:1200;display:none;align-items:center;justify-content:center;padding:20px;
+  background:rgba(3,6,13,.70);backdrop-filter:blur(12px) saturate(120%);-webkit-backdrop-filter:blur(12px) saturate(120%);
+}
+.jackpot-update-overlay.show{display:flex;}
+.jackpot-update-card{
+  position:relative;width:min(470px,calc(100vw - 40px));padding:28px 30px 24px;
+  border:1px solid rgba(255,209,102,.28);border-radius:22px;
+  background:radial-gradient(320px 180px at 50% -10%,rgba(255,209,102,.14),transparent 72%),linear-gradient(145deg,rgba(22,31,53,.98),rgba(7,11,20,.99));
+  box-shadow:0 35px 100px rgba(0,0,0,.56),0 0 60px rgba(255,184,73,.12),inset 0 1px 0 rgba(255,255,255,.045);
+  animation:jackpotUpdateIn .35s cubic-bezier(.2,.8,.25,1);text-align:center;
+}
+.jackpot-update-close{
+  position:absolute;top:9px;right:11px;width:32px;height:32px;display:grid;place-items:center;
+  border:1px solid transparent;border-radius:10px;background:rgba(255,255,255,.035);color:#9ca8c2;font-size:18px;cursor:pointer;
+  transition:background .18s ease,color .18s ease,transform .12s ease;
+}
+.jackpot-update-close:hover{background:rgba(255,255,255,.08);color:#fff;transform:translateY(-1px)}
+.jackpot-update-badge{display:inline-flex;align-items:center;gap:7px;padding:7px 11px;border-radius:999px;background:rgba(255,209,102,.08);border:1px solid rgba(255,209,102,.18);color:#ffd66f;font-size:11px;font-weight:950;letter-spacing:1px;text-transform:uppercase}
+.jackpot-update-title{margin-top:14px;font-size:29px;font-weight:950;letter-spacing:-.5px;color:#fff7dd;text-shadow:0 0 30px rgba(255,207,77,.14)}
+.jackpot-update-copy{margin:10px auto 0;max-width:380px;color:#96a2be;font-size:13px;line-height:1.6}
+.jackpot-update-highlight{margin-top:16px;padding:13px 14px;border-radius:14px;background:linear-gradient(135deg,rgba(255,209,102,.11),rgba(255,122,61,.07));border:1px solid rgba(255,209,102,.16);color:#fff0c2;font-size:13px;font-weight:900}
+@keyframes jackpotUpdateIn{from{opacity:0;transform:translateY(10px) scale(.96)}to{opacity:1;transform:none}}
+.jackpot-overlay{position:fixed;inset:0;z-index:1150;display:none;align-items:center;justify-content:center;pointer-events:none;overflow:hidden}
+.jackpot-overlay.show{display:flex}
+.jackpot-overlay::before{content:"";position:absolute;width:min(720px,92vw);height:min(720px,92vw);border-radius:50%;background:radial-gradient(circle,rgba(255,210,90,.24),rgba(255,122,61,.11) 34%,transparent 70%);animation:jackpotGlow 1.8s ease-in-out infinite}
+.jackpot-sparks{position:absolute;inset:0}
+.jackpot-sparks span{position:absolute;width:7px;height:14px;border-radius:2px;background:#ffd257;box-shadow:0 0 14px rgba(255,210,87,.55);animation:jackpotSparkFall 1.55s cubic-bezier(.2,.7,.25,1) forwards}
+.jackpot-center{position:relative;text-align:center;padding:34px 42px 30px;border-radius:28px;border:2px solid rgba(255,209,102,.56);background:radial-gradient(240px 140px at 50% 0%,rgba(255,245,192,.10),transparent 72%),linear-gradient(145deg,rgba(34,39,58,.97),rgba(10,13,22,.99));box-shadow:0 35px 100px rgba(0,0,0,.62),0 0 90px rgba(255,171,60,.20),inset 0 1px 0 rgba(255,255,255,.06);animation:jackpotPop .65s cubic-bezier(.18,.85,.24,1.25)}
+.jackpot-title{font-size:clamp(38px,7vw,72px);line-height:.95;font-weight:1000;letter-spacing:-2px;color:#fff5c9;text-shadow:0 3px 0 #a85d1d,0 8px 24px rgba(0,0,0,.55),0 0 42px rgba(255,209,102,.45);animation:jackpotPulse .7s ease-in-out infinite alternate}
+.jackpot-subtitle{margin-top:12px;color:#ffcb66;font-size:17px;font-weight:950;letter-spacing:.5px}
+.jackpot-amount{margin-top:4px;color:#fff;font-size:29px;font-weight:1000;letter-spacing:-.6px}
+@keyframes jackpotGlow{0%,100%{transform:scale(.92);opacity:.72}50%{transform:scale(1.06);opacity:1}}
+@keyframes jackpotPop{0%{opacity:0;transform:translateY(22px) scale(.52) rotate(-4deg)}72%{opacity:1;transform:translateY(-5px) scale(1.05) rotate(1deg)}100%{transform:none}}
+@keyframes jackpotPulse{from{filter:brightness(1)}to{filter:brightness(1.18)}}
+@keyframes jackpotSparkFall{0%{opacity:0;transform:translate3d(0,-10vh,0) rotate(0)}10%{opacity:1}100%{opacity:0;transform:translate3d(var(--drift),110vh,0) rotate(720deg)}}
+</style>
+
 </head>
 <body>
 
@@ -1759,6 +1809,7 @@ if(typeof DEMO_MODE!=='undefined' && DEMO_MODE){
                 <div class="case-detail-stat">✦ <span id="detailCaseItemsMeta">0 предметов</span></div>
                 <div class="case-detail-stat">◇ <span id="detailCaseMaxMeta">Макс. дроп — 0 🪙</span></div>
                 <div class="case-detail-stat">◌ <span>до 5 открытий</span></div>
+                <div class="case-detail-stat case-jackpot-pill" id="detailCaseJackpot">💰 JACKPOT ДОСТУПЕН • 5 одинаковых = +1 000 000 🪙</div>
               </div>
             </div>
             <div class="case-detail-price">
@@ -1970,6 +2021,25 @@ if(typeof DEMO_MODE!=='undefined' && DEMO_MODE){
 <footer>
   <div class="wrap">Твой высокий шанс на большой дроп - <strong>"Груша-ДРОП"</strong></div>
 </footer>
+
+<!-- ===== JACKPOT / UPDATE ===== -->
+<div class="jackpot-update-overlay" id="jackpotUpdateOverlay" aria-modal="true" role="dialog" aria-labelledby="jackpotUpdateTitle">
+  <div class="jackpot-update-card">
+    <button class="jackpot-update-close" id="jackpotUpdateClose" type="button" aria-label="Закрыть">✕</button>
+    <div class="jackpot-update-badge">💰 НОВОЕ ОБНОВЛЕНИЕ</div>
+    <div class="jackpot-update-title" id="jackpotUpdateTitle">JACKPOT теперь доступен!</div>
+    <div class="jackpot-update-copy">Теперь в кейсах стоимостью от 1 500 🪙 можно поймать джекпот. Открой 5 кейсов сразу — и если выпадут 5 одинаковых предметов, сработает JACKPOT.</div>
+    <div class="jackpot-update-highlight">5 одинаковых предметов → <strong>+1 000 000 🪙</strong></div>
+  </div>
+</div>
+<div class="jackpot-overlay" id="jackpotOverlay" aria-hidden="true">
+  <div class="jackpot-sparks" id="jackpotSparks"></div>
+  <div class="jackpot-center">
+    <div class="jackpot-title">JACKPOT!</div>
+    <div class="jackpot-subtitle">5 одинаковых предметов</div>
+    <div class="jackpot-amount">+1 000 000 🪙</div>
+  </div>
+</div>
 
 <!-- ===== МОДАЛКИ ===== -->
 <div class="modal-overlay" id="modalOverlay">
@@ -2618,6 +2688,7 @@ function showSelectionView() {
   document.getElementById('detailOpenBtn').disabled = false;
   document.getElementById('winBurst').classList.remove('show');
   document.getElementById('upgradeWheelContainer').classList.remove('wheel-win-active');
+  document.getElementById('detailCaseJackpot')?.classList.remove('show');
 }
 
 function showDetailView() {
@@ -2648,6 +2719,8 @@ function renderDetailView() {
   if(heroCost) heroCost.textContent=`${c.cost} 🪙`;
   const desc = document.getElementById('detailCaseDescription');
   if(desc) desc.textContent=`Коллекция «${c.name}»: открой кейс, прокрути ленту и забери предмет, который выпадет из этого набора.`;
+  const jackpotMeta=document.getElementById('detailCaseJackpot');
+  if(jackpotMeta) jackpotMeta.classList.toggle('show',isJackpotCase(c));
   updateMultiOpenPrice();
   const grid = document.getElementById('detailContentsGrid');
   grid.innerHTML = c.items.map(({id, chance}) => {
@@ -2739,6 +2812,7 @@ function weightedRandomItem(caseItems) {
 let isOpening = false;
 let openResults = [];
 let multiResultEntries = [];
+let jackpotTriggeredThisOpening = false;
 
 document.getElementById('detailOpenBtn').onclick = function() {
   if (isOpening) return;
@@ -3803,9 +3877,10 @@ async function animateCaseRollVisual(c, results, count){
     v.viewport.classList.add('impact');
     setTimeout(()=>v.viewport.classList.remove('impact'),500);
   });
-  // При мульти-открытии проигрываем звук выбранного кейса отдельно для каждого выпадения.
-  viewports.forEach((_,idx)=>setTimeout(()=>playDropSound(c.sound),idx*90));
+  // При мульти-открытии звук кейса проигрывается один раз на весь пакет открытий.
+  playDropSound(c.sound);
   screenFlash();
+  if(jackpotTriggeredThisOpening)showJackpotAnimation();
   showMultiResultModal();
 }
 
@@ -3975,6 +4050,7 @@ async function enterGame(user){
     await setupOnlinePresence();
     await renderLeaderboard();
     handleHashRoute();
+    setTimeout(showJackpotUpdateIfNeeded,350);
   }catch(err){
     console.error(err); setAuthMessage('Не удалось загрузить профиль: '+(err.message||err));
   }
@@ -4219,6 +4295,72 @@ function renderProfileInventory(){
 }
 function renderAchievements(){const c=$('achievementsList'), ids=new Set(game.stats.achievements);c.innerHTML=ACHIEVEMENTS.map(a=>`<div style="background:${ids.has(a.id)?'var(--panel2)':'var(--panel)'};border:1px solid ${ids.has(a.id)?'var(--accent2)':'var(--border)'};border-radius:8px;padding:6px;text-align:center;opacity:${ids.has(a.id)?1:.5};"><div style="font-size:24px;">${ids.has(a.id)?'🏅':'🔒'}</div><div style="font-size:11px;font-weight:700;">${escapeHtml(a.name)}</div><div style="font-size:9px;color:var(--muted);">${escapeHtml(a.desc)}</div><div style="font-size:9px;color:var(--gold);">+${a.xpReward} XP</div></div>`).join('');}
 
+// ==================== JACKPOT UPDATE HELPERS ====================
+const JACKPOT_MIN_CASE_COST = 1500;
+const JACKPOT_AMOUNT = 1000000;
+const JACKPOT_UPDATE_VERSION = 'jackpot-v1';
+const JACKPOT_RPC = 'award_case_jackpot';
+
+function isJackpotCase(c){ return !!c && Number(c.cost||0) >= JACKPOT_MIN_CASE_COST; }
+function jackpotEligibleResults(c, entries){
+  if(!isJackpotCase(c) || !Array.isArray(entries) || entries.length!==5) return false;
+  const ids=entries.map(x=>Number(x?.item?.id));
+  return ids.every(id=>Number.isFinite(id) && id===ids[0]);
+}
+function safeLocalStorage(){ try{return window.localStorage||null;}catch(_){return null;} }
+function jackpotUpdateStorageKey(){ return `grusha_drop_${JACKPOT_UPDATE_VERSION}_${String(currentUser?.id||'demo-user')}`; }
+function showJackpotUpdateIfNeeded(){
+  const storage=safeLocalStorage(),key=jackpotUpdateStorageKey();
+  let seen=false;try{seen=storage?.getItem(key)==='1';}catch(_){seen=false;}
+  if(seen)return;
+  const overlay=$('jackpotUpdateOverlay'); if(overlay)overlay.classList.add('show');
+}
+function closeJackpotUpdate(){
+  const overlay=$('jackpotUpdateOverlay');if(overlay)overlay.classList.remove('show');
+  const storage=safeLocalStorage();try{storage?.setItem(jackpotUpdateStorageKey(),'1');}catch(_){ }
+}
+function renderJackpotSparkBurst(){
+  const host=$('jackpotSparks');if(!host)return;host.innerHTML='';
+  for(let i=0;i<42;i++){
+    const s=document.createElement('span');
+    s.style.left=(Math.random()*100)+'%';s.style.top=(-5+Math.random()*12)+'%';
+    s.style.setProperty('--drift',((Math.random()-.5)*260)+'px');s.style.animationDelay=(Math.random()*.24)+'s';
+    const size=4+Math.random()*5;s.style.width=size+'px';s.style.height=(size*1.7)+'px';s.style.transform=`rotate(${Math.random()*360}deg)`;
+    host.appendChild(s);
+  }
+}
+function showJackpotAnimation(){
+  const overlay=$('jackpotOverlay');if(!overlay)return;renderJackpotSparkBurst();overlay.classList.add('show');setTimeout(()=>overlay.classList.remove('show'),2600);
+}
+async function awardJackpotForEntries(c, entries){
+  if(!jackpotEligibleResults(c,entries))return false;
+  if(DEMO_MODE){
+    game.balance+=JACKPOT_AMOUNT;
+    game.stats.totalCoinsEarned=(game.stats.totalCoinsEarned||0)+JACKPOT_AMOUNT;
+    updateBalanceUI();
+    return true;
+  }
+  if(!sb)return false;
+  // Server side is required online so the reward is persisted and cannot be duplicated client-side.
+  const pendingIds=entries.map(x=>x.pendingId).filter(Boolean);
+  const itemId=Number(entries[0].item.id);
+  try{
+    const {data,error}=await sb.rpc(JACKPOT_RPC,{case_id:c.id,item_id:itemId,pending_ids:pendingIds,amount:JACKPOT_AMOUNT});
+    if(error){console.warn('Jackpot RPC is unavailable or failed:',error);return false;}
+    if(data?.ok===false)return false;
+    if(data?.balance!=null)game.balance=Number(data.balance);else game.balance+=JACKPOT_AMOUNT;
+    if(data?.total_coins_earned!=null)game.stats.totalCoinsEarned=Number(data.total_coins_earned);else game.stats.totalCoinsEarned=(game.stats.totalCoinsEarned||0)+JACKPOT_AMOUNT;
+    updateBalanceUI();
+    return true;
+  }catch(error){
+    console.warn('Jackpot RPC is unavailable or failed:',error);
+    return false;
+  }
+}
+
+$('jackpotUpdateClose').addEventListener('click',closeJackpotUpdate);
+$('jackpotUpdateOverlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeJackpotUpdate();});
+
 // --- Replace vulnerable local-only game actions with database RPCs ---
 $('detailOpenBtn').onclick=async function(){
   if(isOpening||!currentUser)return;
@@ -4227,6 +4369,7 @@ $('detailOpenBtn').onclick=async function(){
   const count=Math.max(1,Math.min(5,parseInt($('multiSelect').value,10)||1));
   if(game.balance<c.cost*count){alert('Недостаточно монет!');return;}
   isOpening=true;this.disabled=true;
+  jackpotTriggeredThisOpening=false;
   try{
     if(DEMO_MODE){
       const items=[];
@@ -4238,6 +4381,9 @@ $('detailOpenBtn').onclick=async function(){
       $('caseAction').classList.add('hidden');
       openResults=items;
       multiResultEntries=items.map(x=>({...x,status:'pending'}));
+      if(jackpotEligibleResults(c,items)){
+        jackpotTriggeredThisOpening=await awardJackpotForEntries(c,items);
+      }
       await animateCaseRollVisual(c,items,count);
       return;
     }
@@ -4249,6 +4395,9 @@ $('detailOpenBtn').onclick=async function(){
     $('caseAction').classList.add('hidden');
     openResults=rows.map(r=>({pendingId:r.pending_id,item:byId(ALL_ITEMS,Number(r.item_id))})).filter(x=>x.item);
     multiResultEntries=openResults.map(x=>({...x,status:'pending'}));
+    if(jackpotEligibleResults(c,openResults)){
+      jackpotTriggeredThisOpening=await awardJackpotForEntries(c,openResults);
+    }
     if(count===1){
       $('detailRollSection').classList.add('show');const track=$('detailRollTrack'),won=openResults[0].item;track.style.transition='none';track.style.transform='translateX(0)';const strip=[];for(let i=0;i<29;i++)strip.push(weightedRandomItem(c.items));strip.push(won);for(let i=0;i<12;i++)strip.push(weightedRandomItem(c.items));track.innerHTML=strip.map((it,idx)=>`<div class="roll-item" data-idx="${idx}">${imgOrPlaceholder(it,'ph')}<div class="rn">${escapeHtml(it.name)}</div></div>`).join('');const itemWidth=120,vw=document.querySelector('.roll-viewport').clientWidth,finalOffset=(29.5)*itemWidth-vw/2,ROLL_DURATION=3,ruletka=$('ruletkaSound');ruletka.loop=true;ruletka.currentTime=0;ruletka.play().catch(()=>{});requestAnimationFrame(()=>{track.style.transition=`transform ${ROLL_DURATION}s cubic-bezier(.22,.61,.36,1)`;track.style.transform=`translateX(-${finalOffset}px)`;});setTimeout(()=>{ruletka.pause();ruletka.loop=false;ruletka.currentTime=0;const last=track.querySelector('[data-idx="29"]');if(last)last.classList.add('winner');document.querySelector('.roll-viewport').classList.add('impact');playDropSound(c.sound);screenFlash();showNextModal();},3200);
     }else{
@@ -4256,7 +4405,7 @@ $('detailOpenBtn').onclick=async function(){
       // Иначе после индивидуальной продажи openResults продолжает содержать уже проданный pending_id.
       openResults=multiResultEntries;
       $('multiRollContainer').classList.add('show');const container=$('multiRollContainer');container.innerHTML='';const viewports=[];for(let i=0;i<count;i++){const vp=document.createElement('div');vp.className='roll-viewport';vp.style.cssText='flex:1 1 180px;min-width:150px;height:120px;';const pointer=document.createElement('div');pointer.className='roll-pointer';vp.appendChild(pointer);const track=document.createElement('div');track.className='roll-track';vp.appendChild(track);container.appendChild(vp);viewports.push({viewport:vp,track,won:openResults[i].item});}
-      const ruletka=$('ruletkaSound');ruletka.loop=true;ruletka.currentTime=0;ruletka.play().catch(()=>{});viewports.forEach((vp,idx)=>{const strip=[];for(let i=0;i<29;i++)strip.push(weightedRandomItem(c.items));strip.push(vp.won);for(let i=0;i<10;i++)strip.push(weightedRandomItem(c.items));vp.track.innerHTML=strip.map((it,idx2)=>`<div class="roll-item" data-idx="${idx2}" style="width:80px;height:120px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border-right:1px solid #2a3455;">${imgOrPlaceholder(it,'ph')}<div class="rn" style="font-size:8px;text-align:center;padding:0 2px;">${escapeHtml(it.name)}</div></div>`).join('');const vw=vp.viewport.clientWidth||200,fo=29.5*80-vw/2;vp.track.style.transition='none';vp.track.style.transform='translateX(0)';setTimeout(()=>{vp.track.style.transition='transform 3s cubic-bezier(.22,.61,.36,1)';vp.track.style.transform=`translateX(-${fo}px)`;},idx*100);});setTimeout(()=>{ruletka.pause();ruletka.loop=false;ruletka.currentTime=0;viewports.forEach(v=>{const it=v.track.querySelector('[data-idx="29"]');if(it)it.classList.add('winner');v.viewport.classList.add('impact');});viewports.forEach((vp,idx)=>setTimeout(()=>playDropSound(c.sound),idx*90));screenFlash();showMultiResultModal();},3300);
+      const ruletka=$('ruletkaSound');ruletka.loop=true;ruletka.currentTime=0;ruletka.play().catch(()=>{});viewports.forEach((vp,idx)=>{const strip=[];for(let i=0;i<29;i++)strip.push(weightedRandomItem(c.items));strip.push(vp.won);for(let i=0;i<10;i++)strip.push(weightedRandomItem(c.items));vp.track.innerHTML=strip.map((it,idx2)=>`<div class="roll-item" data-idx="${idx2}" style="width:80px;height:120px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border-right:1px solid #2a3455;">${imgOrPlaceholder(it,'ph')}<div class="rn" style="font-size:8px;text-align:center;padding:0 2px;">${escapeHtml(it.name)}</div></div>`).join('');const vw=vp.viewport.clientWidth||200,fo=29.5*80-vw/2;vp.track.style.transition='none';vp.track.style.transform='translateX(0)';setTimeout(()=>{vp.track.style.transition='transform 3s cubic-bezier(.22,.61,.36,1)';vp.track.style.transform=`translateX(-${fo}px)`;},idx*100);});setTimeout(()=>{ruletka.pause();ruletka.loop=false;ruletka.currentTime=0;viewports.forEach(v=>{const it=v.track.querySelector('[data-idx="29"]');if(it)it.classList.add('winner');v.viewport.classList.add('impact');});playDropSound(c.sound);screenFlash();if(jackpotTriggeredThisOpening)showJackpotAnimation();showMultiResultModal();},3300);
     }
   }catch(e){isOpening=false;this.disabled=false;alert(e.message||'Не удалось открыть кейс.');}
 };
@@ -4287,6 +4436,7 @@ function closeMultiResultModal(){
 function finishCaseOpening(){
   openResults=[];
   multiResultEntries=[];
+  jackpotTriggeredThisOpening=false;
   isOpening=false;
   $('detailOpenBtn').disabled=false;
   $('caseAction').classList.remove('hidden');
@@ -4692,6 +4842,7 @@ if(DEMO_MODE){
   updateUI();
   renderCasesGrid();
   renderLeaderboard();
+  setTimeout(showJackpotUpdateIfNeeded,350);
 }else{
   document.body.classList.add('auth-locked');
   (async()=>{
