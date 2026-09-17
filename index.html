@@ -3,7 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <title>Груша-ДРОП</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const DEMO_MODE = location.protocol === 'file:' && new URLSearchParams(location.search).get('demo') === '1';
+if(!DEMO_MODE) document.write('<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"><\/script>');
+</script>
 <style>
 /* ========== СТИЛИ (полная версия) ========== */
 :root{
@@ -136,12 +139,12 @@ main{padding:28px 0 60px;}
 .up-preview .price{font-size:13px; color:var(--gold); font-weight:700;}
 .up-empty{color:var(--muted); font-size:13px; padding:20px 0;}
 .up-middle{background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:16px 14px 18px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; min-height:395px;}
-.upgrade-wheel-container{position:relative;width:270px;height:270px;max-width:100%;margin:0 auto;border-radius:50%;padding:7px;background:radial-gradient(circle at 50% 35%,rgba(255,255,255,.05),transparent 40%),#10172a;box-shadow:0 18px 42px rgba(0,0,0,.34),0 0 42px rgba(47,143,255,.08);overflow:visible;flex:0 0 auto;}
-.wheel-rotor{position:absolute;inset:7px;border-radius:50%;transform:none!important;transform-origin:50% 50%;will-change:auto;}
+.upgrade-wheel-container{position:relative;width:270px;height:auto;aspect-ratio:1/1;max-width:100%;margin:0 auto;border-radius:50%;padding:7px;background:radial-gradient(circle at 50% 35%,rgba(255,255,255,.05),transparent 40%),#10172a;box-shadow:0 18px 42px rgba(0,0,0,.34),0 0 42px rgba(47,143,255,.08);overflow:visible;flex:0 0 auto;}
+.wheel-rotor{position:absolute;inset:7px;border-radius:50%;transform:none!important;transform-origin:50% 50%;}
 .wheel-rotor canvas{display:block;width:100%;height:100%;border-radius:50%;background:transparent;}
 .upgrade-wheel-container::after{content:"";position:absolute;inset:8px;border-radius:50%;box-shadow:inset 0 0 0 2px rgba(255,255,255,.08),inset 0 0 24px rgba(0,0,0,.35),0 0 0 1px rgba(0,0,0,.45);pointer-events:none;z-index:2;}
-.wheel-pointer{position:absolute;inset:7px;border-radius:50%;transform:rotate(0deg);transform-origin:50% 50%;will-change:transform;z-index:8;pointer-events:none;}
-.wheel-pointer::before{content:"";position:absolute;left:50%;top:-3px;transform:translateX(-50%);width:0;height:0;border-left:11px solid transparent;border-right:11px solid transparent;border-top:22px solid #ffd257;filter:drop-shadow(0 4px 7px rgba(0,0,0,.72));}
+.wheel-pointer{position:absolute;inset:7px;border-radius:50%;transform:rotate(0deg);transform-origin:50% 50%;will-change:transform;backface-visibility:hidden;z-index:8;pointer-events:none;}
+.wheel-pointer::before{content:"";position:absolute;left:50%;top:-5px;transform:translateX(-50%);width:0;height:0;border-left:13px solid transparent;border-right:13px solid transparent;border-top:26px solid #ffd257;filter:drop-shadow(0 4px 7px rgba(0,0,0,.72));transition:transform .18s ease;}
 .wheel-pointer::after{content:"";position:absolute;left:50%;top:50%;width:10px;height:10px;border-radius:50%;background:transparent;transform:translate(-50%,-50%);box-shadow:none;}
 .wheel-center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:46%;height:46%;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:radial-gradient(circle at 50% 28%,#1a243e 0%,#0d1320 68%,#090d17 100%);border:2px solid rgba(255,255,255,.08);box-shadow:0 12px 28px rgba(0,0,0,.42),inset 0 0 28px rgba(0,0,0,.34),inset 0 2px 0 rgba(255,255,255,.04);z-index:5;pointer-events:none;overflow:hidden;padding:8px;}
 .wheel-chance{position:static;transform:none;font-family:'Segoe UI Black','Arial Black',Impact,sans-serif;font-size:34px;line-height:.95;font-weight:900;letter-spacing:-1.5px;color:#fff;white-space:nowrap;font-variant-numeric:tabular-nums;text-align:center;display:block;text-shadow:0 1px 0 rgba(255,255,255,.35),0 2px 0 rgba(0,0,0,.95),0 4px 0 rgba(0,0,0,.74),0 7px 9px rgba(0,0,0,.62);}
@@ -150,10 +153,11 @@ main{padding:28px 0 60px;}
 .upgrade-wheel-container.wheel-fail{box-shadow:0 18px 50px rgba(0,0,0,.28),0 0 70px rgba(255,49,49,.18);}
 .upgrade-wheel-container.wheel-win-active{animation:wheelWinPulse .5s ease-in-out 4;}
 @keyframes wheelWinPulse{0%,100%{filter:brightness(1);}50%{filter:brightness(1.15);box-shadow:0 18px 50px rgba(0,0,0,.28),0 0 80px rgba(57,255,20,.42);}}
-.upgrade-wheel-container.wheel-win-active canvas{animation:wheelCanvasFlash .5s ease-in-out 4;transform:none!important;filter:saturate(.55) brightness(1.08);}
+.upgrade-wheel-container.wheel-win-active canvas{animation:wheelCanvasFlash .55s ease-in-out 4;}
+.wheel-pointer.kick::before{transform:translateX(-50%) translateY(3px) scale(.94);}
 @keyframes wheelCanvasFlash{0%,100%{filter:brightness(1) saturate(1);}50%{filter:brightness(1.18) saturate(1.14);}}
 .wheel-win-overlay{position:absolute;inset:8px;border-radius:50%;background:radial-gradient(circle at 50% 42%,rgba(126,255,112,.42),rgba(36,255,54,.28) 52%,rgba(36,190,54,.22) 78%,rgba(36,190,54,.08) 100%);border:3px solid rgba(102,255,110,.78);opacity:0;pointer-events:none;z-index:4;mix-blend-mode:screen;box-shadow:inset 0 0 45px rgba(75,255,83,.42),0 0 35px rgba(75,255,83,.34);}
-.upgrade-wheel-container.wheel-win-active .wheel-win-overlay{opacity:1;animation:wheelOverlayGlow .7s ease-in-out infinite;}
+.upgrade-wheel-container.wheel-win-active .wheel-win-overlay{opacity:.85;animation:wheelOverlayGlow .7s ease-in-out infinite;}
 @keyframes wheelOverlayGlow{0%,100%{box-shadow:0 0 28px rgba(57,255,20,.18);}50%{box-shadow:0 0 50px rgba(57,255,20,.42);}}
 .win-burst{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(.3);font-size:36px;font-weight:900;letter-spacing:1px;color:#fff;text-shadow:0 2px 4px rgba(0,0,0,.85),0 0 18px rgba(0,0,0,.6);opacity:0;pointer-events:none;z-index:9;white-space:nowrap;}
 .win-burst.show{animation:winBurstPop 1.4s cubic-bezier(.2,.8,.3,1.2) forwards;}
@@ -308,7 +312,7 @@ footer{border-top:1px solid var(--border); margin-top:40px; padding:20px 0; text
 .auth-screen.hidden{display:none;}
 .auth-card{width:min(460px,100%);background:rgba(22,29,48,.96);border:1px solid var(--border);border-radius:20px;padding:34px;box-shadow:0 30px 80px rgba(0,0,0,.45);text-align:center;}
 .auth-logo{display:flex;flex-direction:column;align-items:center;gap:8px;margin-bottom:22px;}
-.auth-logo img{width:100px;height:100px;object-fit:contain;border-radius:24px;}
+.auth-logo img{width:150px;height:150px;object-fit:contain;border-radius:24px;}
 .auth-logo .auth-fallback{font-size:72px;line-height:1;}
 .auth-logo .title{font-size:28px;font-weight:900;letter-spacing:1px;}
 .auth-logo .sub{font-size:11px;color:var(--muted);letter-spacing:3px;}
@@ -347,13 +351,13 @@ body.auth-locked>header,body.auth-locked>main,body.auth-locked>footer,body.auth-
 
 @media(max-width:1300px){
   .up-selection{grid-template-columns:minmax(0,1fr) 315px minmax(0,1fr);}
-  .upgrade-wheel-container{width:270px;height:270px;}
+  .upgrade-wheel-container{width:270px;height:auto;aspect-ratio:1/1;}
   .wheel-chance{font-size:32px;}
 }
 @media(max-width:1050px){
   .up-selection{grid-template-columns:1fr;}
   .up-middle{min-height:0;}
-  .upgrade-wheel-container{width:290px;height:290px;max-width:90vw;}
+  .upgrade-wheel-container{width:290px;height:auto;aspect-ratio:1/1;max-width:90vw;}
 }
 </style>
 
@@ -406,7 +410,7 @@ header > .wrap{max-width:1480px;padding:0 28px;}
   min-width:0;
 }
 .header-rank{min-width:205px;max-width:220px;padding:6px 14px 6px 8px;}
-.balance-box{min-width:120px;justify-content:center;padding:10px 14px;}
+.balance-box{min-width:170px;justify-content:center;padding:10px 18px;white-space:nowrap;flex:0 0 auto;}
 
 /* Gentle hover motion for cards; no gameplay changes. */
 .inv-card,.inv-item,.case-card,.up-item,.up-target-card,.public-item-card,.result-card{
@@ -444,6 +448,1213 @@ header > .wrap{max-width:1480px;padding:0 28px;}
   .header-rank{min-width:170px;}
 }
 </style>
+
+<style id="premium-ui-overhaul">
+/* =========================================================
+   GRUSHA-DROP — PREMIUM VISUAL OVERHAUL
+   Visual-only layer: does not change IDs, data, handlers or game logic.
+   ========================================================= */
+:root{
+  --bg:#070b14;
+  --bg-deep:#050812;
+  --panel:#0e1422;
+  --panel2:#141c2f;
+  --panel3:#1a2440;
+  --border:rgba(151,169,211,.16);
+  --border-strong:rgba(151,169,211,.28);
+  --text:#f4f7ff;
+  --muted:#8d98b7;
+  --accent:#ff7a3d;
+  --accent2:#ffc857;
+  --gold:#ffd75a;
+  --glow-orange:rgba(255,122,61,.24);
+  --glow-gold:rgba(255,200,87,.20);
+  --shadow:0 24px 70px rgba(0,0,0,.34);
+  --ease:cubic-bezier(.2,.75,.2,1);
+}
+
+html,body{
+  background:
+    radial-gradient(900px 500px at 8% -8%,rgba(255,122,61,.11),transparent 62%),
+    radial-gradient(900px 600px at 92% 0%,rgba(83,117,255,.10),transparent 64%),
+    radial-gradient(700px 500px at 50% 100%,rgba(255,200,87,.055),transparent 68%),
+    var(--bg);
+}
+
+body{
+  min-height:100vh;
+  background-attachment:fixed;
+}
+
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:-1;
+  opacity:.32;
+  background-image:
+    linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.014) 1px,transparent 1px);
+  background-size:48px 48px;
+  mask-image:linear-gradient(to bottom,black,transparent 88%);
+}
+
+/* Header */
+header{
+  position:sticky;
+  top:0;
+  z-index:80;
+  background:rgba(7,11,20,.76)!important;
+  border-bottom:1px solid rgba(151,169,211,.14)!important;
+  box-shadow:0 12px 40px rgba(0,0,0,.22);
+  backdrop-filter:blur(22px) saturate(135%);
+  -webkit-backdrop-filter:blur(22px) saturate(135%);
+}
+
+header::after{
+  content:"";
+  position:absolute;
+  left:0;right:0;bottom:-1px;
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,200,87,.38),rgba(255,122,61,.34),transparent);
+  opacity:.7;
+}
+
+.header-inner{min-height:112px!important;}
+
+.logo img{
+  filter:drop-shadow(0 12px 26px rgba(0,0,0,.32));
+}
+.logo:hover img{
+  filter:drop-shadow(0 14px 30px rgba(255,200,87,.25));
+}
+
+.online-badge,.balance-box,.header-rank{
+  background:linear-gradient(145deg,rgba(20,28,47,.88),rgba(11,16,29,.88))!important;
+  border-color:rgba(151,169,211,.18)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.045),0 10px 28px rgba(0,0,0,.16);
+}
+
+.balance-box{
+  color:#fff;
+  min-width:170px;
+  padding:10px 18px!important;
+  white-space:nowrap;
+  overflow:visible;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 0 0 1px rgba(255,200,87,.04),0 10px 28px rgba(0,0,0,.18);
+}
+.balance-box #balance{font-variant-numeric:tabular-nums;letter-spacing:.2px}
+
+.badge-bonus{
+  box-shadow:0 0 18px rgba(127,219,127,.10);
+}
+
+/* Tabs */
+.tabs .tab{
+  position:relative;
+  overflow:hidden;
+  background:rgba(18,25,42,.34);
+  border-color:transparent;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025);
+}
+
+.tabs .tab::before{
+  content:"";
+  position:absolute;
+  left:12%;
+  right:12%;
+  bottom:0;
+  height:2px;
+  border-radius:99px;
+  background:linear-gradient(90deg,var(--accent2),var(--accent));
+  transform:scaleX(0);
+  transform-origin:center;
+  transition:transform .28s var(--ease);
+}
+
+.tabs .tab:hover::before,
+.tabs .tab.active::before{transform:scaleX(1);}
+
+.tabs .tab.active{
+  background:linear-gradient(180deg,rgba(35,47,78,.88),rgba(19,27,46,.88))!important;
+  border-color:rgba(255,200,87,.15)!important;
+  color:#ffd36a!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 10px 30px rgba(0,0,0,.18);
+}
+
+/* Main / panels */
+main{
+  padding-top:36px!important;
+}
+
+.panel.active{
+  animation:premiumPanelIn .42s var(--ease) both!important;
+}
+
+@keyframes premiumPanelIn{
+  from{opacity:0;transform:translateY(10px);filter:blur(2px)}
+  to{opacity:1;transform:none;filter:none}
+}
+
+/* Cards */
+.case-card,.up-card,.up-middle,.up-inv-col,.profile-avatar,.profile-inventory,
+.profile-coupon,.public-profile-wrap,.public-section,.leaderboard-wrap,
+.case-action-wrapper,.stat-card{
+  background:
+    linear-gradient(145deg,rgba(23,32,54,.90),rgba(11,16,29,.92))!important;
+  border-color:rgba(151,169,211,.15)!important;
+  box-shadow:0 16px 44px rgba(0,0,0,.20),inset 0 1px 0 rgba(255,255,255,.035);
+}
+
+.case-card{
+  border-width:1px!important;
+  overflow:hidden;
+  isolation:isolate;
+}
+
+.case-card::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index:-1;
+  background:radial-gradient(300px 150px at 50% 0%,rgba(255,200,87,.075),transparent 72%);
+  opacity:0;
+  transition:opacity .3s ease;
+}
+
+.case-card:hover:not(.locked)::before{opacity:1;}
+
+.case-card:hover:not(.locked){
+  transform:translateY(-7px) scale(1.018)!important;
+  border-color:rgba(255,200,87,.32)!important;
+  box-shadow:0 24px 54px rgba(0,0,0,.30),0 0 34px rgba(255,178,61,.10)!important;
+}
+
+.case-card .case-img{
+  position:relative;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.055);
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.15);
+}
+
+.case-card .case-img::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(120deg,transparent 25%,rgba(255,255,255,.10) 45%,transparent 65%);
+  transform:translateX(-130%);
+  transition:transform .7s ease;
+  pointer-events:none;
+}
+
+.case-card:hover .case-img::after{transform:translateX(130%);}
+
+.case-card h3{
+  letter-spacing:.15px;
+}
+
+.case-card .cost{
+  text-shadow:0 0 20px rgba(255,215,90,.16);
+}
+
+/* Leaderboard */
+.leaderboard-wrap{
+  scrollbar-color:rgba(151,169,211,.24) transparent;
+}
+.leaderboard-wrap .lb-entry{
+  border:1px solid transparent;
+  padding:8px 9px;
+  transition:transform .2s var(--ease),background .2s ease,border-color .2s ease;
+}
+.leaderboard-wrap .lb-entry:hover{
+  transform:translateX(3px);
+  background:rgba(31,42,69,.72);
+  border-color:rgba(255,200,87,.10);
+}
+.leaderboard-wrap .lb-entry.current-user{
+  background:linear-gradient(90deg,rgba(255,200,87,.10),rgba(255,122,61,.045))!important;
+  border-left:3px solid var(--accent2);
+}
+
+/* Detail / action */
+.case-action-wrapper{
+  position:relative;
+  overflow:hidden;
+}
+
+.case-action-wrapper::before{
+  content:"";
+  position:absolute;
+  width:420px;height:180px;
+  left:50%;top:-90px;
+  transform:translateX(-50%);
+  background:radial-gradient(circle,rgba(255,200,87,.11),transparent 68%);
+  pointer-events:none;
+}
+
+.case-action .price-tag{
+  font-size:30px!important;
+  text-shadow:0 0 28px rgba(255,207,77,.18);
+}
+
+.case-action .open-btn,.exchange-btn,.auth-submit,.modal-box .claim-btn{
+  position:relative;
+  overflow:hidden;
+  isolation:isolate;
+  background:linear-gradient(135deg,#ffd05a 0%,#ff9a3d 48%,#ff6f38 100%)!important;
+  box-shadow:0 8px 0 #a9471e,0 18px 40px rgba(255,122,61,.20)!important;
+  transition:transform .2s var(--ease),filter .2s ease,box-shadow .2s ease!important;
+}
+
+.case-action .open-btn::before,.exchange-btn::before,.auth-submit::before,.modal-box .claim-btn::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(110deg,transparent 25%,rgba(255,255,255,.30) 45%,transparent 65%);
+  transform:translateX(-130%);
+  transition:transform .65s ease;
+  z-index:-1;
+}
+
+.case-action .open-btn:hover:not(:disabled)::before,
+.exchange-btn:hover:not(:disabled)::before,
+.auth-submit:hover:not(:disabled)::before,
+.modal-box .claim-btn:hover::before{transform:translateX(130%);}
+
+.case-action .open-btn:hover:not(:disabled),
+.exchange-btn:hover:not(:disabled),
+.auth-submit:hover:not(:disabled),
+.modal-box .claim-btn:hover{
+  transform:translateY(-3px)!important;
+  filter:brightness(1.06)!important;
+  box-shadow:0 11px 0 #a9471e,0 24px 46px rgba(255,122,61,.25)!important;
+}
+
+/* Selects / inputs */
+select,input{
+  transition:border-color .2s ease,box-shadow .2s ease,background .2s ease,transform .2s ease;
+}
+.auth-form input,
+.profile-avatar .username-input,
+.profile-coupon input{
+  background:rgba(10,15,27,.78)!important;
+  border-color:rgba(151,169,211,.18)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025);
+}
+.auth-form input:focus,
+.profile-avatar .username-input:focus,
+.profile-coupon input:focus{
+  border-color:rgba(255,200,87,.62)!important;
+  box-shadow:0 0 0 4px rgba(255,200,87,.08),0 10px 28px rgba(0,0,0,.16);
+  transform:translateY(-1px);
+}
+.multi-count-selector{
+  display:flex!important;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding:0!important;
+  border:0!important;
+  background:transparent!important;
+}
+.multi-count-btn{
+  width:42px;
+  height:42px;
+  padding:0;
+  border:1px solid transparent;
+  border-radius:9px;
+  background:transparent;
+  color:#c5cee2;
+  font-size:17px;
+  font-weight:900;
+  line-height:1;
+  cursor:pointer;
+  transition:background .18s ease,border-color .18s ease,color .18s ease,box-shadow .18s ease,transform .12s ease;
+}
+.multi-count-btn:hover:not(:disabled){
+  background:rgba(255,200,87,.08);
+  color:#fff2ca;
+  transform:translateY(-1px);
+}
+.multi-count-btn.active{
+  border-color:rgba(255,200,87,.78);
+  background:rgba(255,200,87,.10);
+  color:#fff4cf;
+  box-shadow:0 0 0 2px rgba(255,200,87,.08),inset 0 1px 0 rgba(255,255,255,.04);
+}
+.multi-count-btn:disabled{
+  color:#4f5870!important;
+  background:rgba(255,255,255,.02)!important;
+  border-color:transparent!important;
+  box-shadow:none!important;
+  cursor:not-allowed;
+  transform:none!important;
+  opacity:1;
+}
+.case-action .multi-count-selector{
+  padding:0!important;
+  border:0!important;
+  background:transparent!important;
+}
+.case-action .multi-count-btn{
+  width:40px;
+  height:40px;
+  border-radius:10px;
+}
+
+
+/* Inventory */
+.inv-card,.inv-item,.up-inv-item,.up-target-item,.multi-result-card{
+  background:linear-gradient(145deg,rgba(25,35,59,.92),rgba(12,18,31,.94))!important;
+  border-color:rgba(151,169,211,.14)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025);
+}
+.inv-card:hover,.inv-item:hover,.up-inv-item:hover,.up-target-item:hover,.multi-result-card:hover{
+  border-color:rgba(255,200,87,.28)!important;
+  box-shadow:0 16px 32px rgba(0,0,0,.25),0 0 24px rgba(255,200,87,.06)!important;
+}
+
+.up-inv-item.active,.up-target-item.active{
+  border-color:var(--accent)!important;
+  box-shadow:0 0 0 2px rgba(255,122,61,.10),0 0 24px rgba(255,122,61,.18)!important;
+}
+
+/* Upgrade wheel */
+.upgrade-wheel-container{
+  box-shadow:
+    0 24px 60px rgba(0,0,0,.42),
+    0 0 0 1px rgba(255,255,255,.04),
+    0 0 70px rgba(47,143,255,.10)!important;
+}
+.upgrade-wheel-container::before{
+  content:"";
+  position:absolute;
+  inset:-8px;
+  border-radius:50%;
+  border:1px solid rgba(255,255,255,.045);
+  box-shadow:0 0 35px rgba(255,200,87,.06);
+  pointer-events:none;
+}
+.wheel-pointer::before{
+  filter:drop-shadow(0 0 8px rgba(255,210,87,.55)) drop-shadow(0 5px 7px rgba(0,0,0,.72))!important;
+}
+
+/* Result cards / modal */
+.modal-overlay{
+  background:rgba(3,6,13,.72)!important;
+  backdrop-filter:blur(14px) saturate(125%);
+  -webkit-backdrop-filter:blur(14px) saturate(125%);
+}
+.modal-box{
+  background:
+    radial-gradient(400px 220px at 50% -20%,rgba(255,200,87,.12),transparent 70%),
+    linear-gradient(145deg,rgba(22,31,53,.97),rgba(8,13,24,.98))!important;
+  border-color:rgba(255,207,77,.45)!important;
+  box-shadow:0 30px 100px rgba(0,0,0,.55),0 0 70px rgba(255,207,77,.10)!important;
+  animation:premiumModal .45s var(--ease)!important;
+}
+@keyframes premiumModal{
+  from{opacity:0;transform:translateY(16px) scale(.94)}
+  to{opacity:1;transform:none}
+}
+
+.multi-result-box{
+  border-radius:24px;
+  background:
+    radial-gradient(600px 250px at 50% 0%,rgba(255,200,87,.08),transparent 70%),
+    linear-gradient(145deg,rgba(17,25,43,.98),rgba(7,11,20,.98));
+  border:1px solid rgba(151,169,211,.17);
+  box-shadow:0 35px 110px rgba(0,0,0,.58),inset 0 1px 0 rgba(255,255,255,.04);
+}
+
+/* Auth */
+.auth-screen{
+  background:
+    radial-gradient(700px 500px at 50% 5%,rgba(255,154,61,.14),transparent 65%),
+    radial-gradient(800px 600px at 0% 100%,rgba(72,102,255,.10),transparent 65%),
+    #060a13!important;
+}
+.auth-card{
+  position:relative;
+  overflow:hidden;
+  background:linear-gradient(145deg,rgba(21,29,49,.94),rgba(8,13,24,.97))!important;
+  border-color:rgba(151,169,211,.17)!important;
+  box-shadow:0 35px 100px rgba(0,0,0,.52),inset 0 1px 0 rgba(255,255,255,.045)!important;
+}
+.auth-card::before{
+  content:"";
+  position:absolute;
+  width:320px;height:180px;
+  top:-130px;left:50%;
+  transform:translateX(-50%);
+  background:radial-gradient(circle,rgba(255,200,87,.13),transparent 68%);
+  pointer-events:none;
+}
+.auth-logo img{
+  box-shadow:0 18px 45px rgba(0,0,0,.30);
+}
+
+/* Notifications */
+.notification{
+  background:linear-gradient(145deg,rgba(24,34,57,.96),rgba(10,15,27,.97))!important;
+  border:1px solid rgba(151,169,211,.14);
+  border-left:4px solid var(--accent2)!important;
+  box-shadow:0 18px 40px rgba(0,0,0,.35)!important;
+  backdrop-filter:blur(12px);
+}
+
+/* Scrollbars */
+*{
+  scrollbar-width:thin;
+  scrollbar-color:rgba(151,169,211,.25) transparent;
+}
+*::-webkit-scrollbar{width:8px;height:8px}
+*::-webkit-scrollbar-track{background:transparent}
+*::-webkit-scrollbar-thumb{
+  background:linear-gradient(180deg,rgba(255,200,87,.30),rgba(151,169,211,.22));
+  border-radius:99px;
+  border:2px solid transparent;
+  background-clip:padding-box;
+}
+
+/* Accessibility / reduced motion */
+:focus-visible{
+  outline:2px solid rgba(255,200,87,.75);
+  outline-offset:3px;
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation-duration:.001ms!important;
+    animation-iteration-count:1!important;
+    scroll-behavior:auto!important;
+    transition-duration:.001ms!important;
+  }
+}
+
+/* Better desktop scaling without touching existing behavior */
+@media (min-width:1400px){
+  main.wrap{max-width:1480px;}
+  .cases-grid{gap:20px;}
+}
+@media (max-width:900px){
+  html,body{min-width:0;}
+  main.wrap{padding-left:16px!important;padding-right:16px!important;}
+  .header-inner{padding-left:16px!important;padding-right:16px!important;}
+  .case-card:hover:not(.locked){transform:translateY(-3px)!important;}
+}
+</style>
+
+
+<style id="premium-ui-v2">
+/* =========================================================
+   GRUSHA-DROP — PREMIUM UI v2
+   Visual enhancement layer + demo-only interaction branches.
+   Online Supabase behavior remains the existing source of truth.
+   ========================================================= */
+:root{
+  --lux-bg:#050812;
+  --lux-surface:rgba(15,22,38,.82);
+  --lux-surface-2:rgba(21,30,50,.78);
+  --lux-line:rgba(173,190,232,.15);
+  --lux-line-2:rgba(255,210,105,.22);
+  --lux-gold:#ffd166;
+  --lux-orange:#ff824b;
+  --lux-blue:#6aa8ff;
+  --lux-mint:#58e1b2;
+  --lux-shadow:0 28px 90px rgba(0,0,0,.42);
+}
+
+/* Header becomes a proper premium navigation rail */
+.header-inner{
+  min-height:152px!important;
+  gap:14px!important;
+}
+header .logo{transform:translateZ(0);transition:transform .35s cubic-bezier(.2,.8,.2,1)}
+header .logo:hover{transform:translateY(-1px) scale(1.015)}
+header .logo img{width:auto!important;height:136px!important;max-width:100%;border-radius:0!important;object-fit:contain}
+.tabs{
+  position:relative;
+  padding:5px!important;
+  border:1px solid rgba(169,188,231,.12)!important;
+  border-radius:18px!important;
+  background:rgba(7,11,20,.66)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.03),0 12px 30px rgba(0,0,0,.18)!important;
+  backdrop-filter:blur(16px);
+}
+.tabs .tab{
+  min-width:108px;
+  padding:10px 15px!important;
+  border-radius:13px!important;
+  color:#929db8!important;
+  font-size:11px!important;
+  font-weight:900!important;
+  letter-spacing:.9px!important;
+  transition:all .26s cubic-bezier(.2,.8,.2,1)!important;
+}
+.tabs .tab::after{
+  position:relative;
+  margin-left:7px;
+  font-size:12px;
+  opacity:.78;
+}
+.tabs .tab[data-tab="cases"]::after{content:'◈';}
+.tabs .tab[data-tab="upgrade"]::after{content:'↗';}
+.tabs .tab[data-tab="profile"]::after{content:'◎';}
+.tabs .tab::before{left:14px!important;right:14px!important;bottom:3px!important;height:2px!important}
+.tabs .tab:hover{color:#eef3ff!important;transform:translateY(-1px)}
+.tabs .tab.active{
+  color:#fff3ce!important;
+  background:linear-gradient(135deg,rgba(255,209,102,.16),rgba(255,130,75,.12))!important;
+  border-color:rgba(255,209,102,.18)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 10px 24px rgba(0,0,0,.18)!important;
+}
+
+/* Shared premium section eyebrow / hierarchy */
+.cases-layout,.upgrade-title,.profile-container{position:relative}
+.cases-layout::before,.profile-container::before{
+  content:'';
+  position:absolute;
+  left:0;top:-20px;
+  width:72px;height:2px;
+  border-radius:99px;
+  background:linear-gradient(90deg,var(--lux-gold),var(--lux-orange));
+  box-shadow:0 0 18px rgba(255,189,92,.18);
+}
+
+/* CASE HUB */
+#panel-cases{padding-bottom:10px}
+#panel-cases .cases-grid-wrap{min-width:0}
+#panel-cases .cases-grid-wrap::before{content:none;display:none;}
+.cases-grid{
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:18px!important;
+}
+.case-card{
+  position:relative;
+  min-height:250px;
+  padding:20px!important;
+  border-radius:22px!important;
+  background:
+    radial-gradient(180px 110px at 50% 0%,rgba(255,210,102,.11),transparent 74%),
+    linear-gradient(155deg,rgba(24,34,57,.97),rgba(9,14,25,.98))!important;
+  border:1px solid rgba(177,193,230,.15)!important;
+  box-shadow:0 22px 52px rgba(0,0,0,.30),inset 0 1px 0 rgba(255,255,255,.045)!important;
+}
+.case-card::after{
+  content:'';
+  position:absolute;
+  inset:0;
+  border-radius:22px;
+  pointer-events:none;
+  background:linear-gradient(135deg,rgba(255,255,255,.07),transparent 26%,transparent 70%,rgba(255,170,74,.05));
+  opacity:.8;
+}
+.case-card .case-img{
+  width:118px!important;height:118px!important;
+  margin:2px auto 14px!important;
+  border-radius:22px!important;
+  object-fit:cover!important;
+  border:1px solid rgba(255,255,255,.08)!important;
+  box-shadow:0 20px 42px rgba(0,0,0,.34),0 0 32px rgba(255,190,85,.08)!important;
+  transition:transform .45s cubic-bezier(.16,.8,.22,1),filter .35s ease,box-shadow .35s ease!important;
+}
+.case-card:hover:not(.locked) .case-img{transform:translateY(-6px) scale(1.045) rotate(-1deg);filter:saturate(1.08);box-shadow:0 26px 46px rgba(0,0,0,.42),0 0 34px rgba(255,190,85,.14)!important}
+.case-card h3{
+  font-size:15px!important;
+  line-height:1.25!important;
+  margin:0 0 8px!important;
+  color:#f7f9ff!important;
+}
+.case-card .cost{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  padding:7px 10px!important;
+  border-radius:999px!important;
+  background:rgba(255,205,105,.08)!important;
+  border:1px solid rgba(255,205,105,.13)!important;
+  color:#ffd97b!important;
+  font-size:11px!important;
+  font-weight:900!important;
+}
+.case-card .rank-req{
+  margin-top:9px!important;
+  color:#8995b3!important;
+  font-size:9px!important;
+  letter-spacing:.6px!important;
+}
+.case-card.locked{filter:saturate(.55);opacity:.68}
+.case-card .lock-icon{z-index:3!important;top:13px!important;right:13px!important}
+
+/* Leaderboard becomes a compact glass side module */
+.leaderboard-wrap{
+  width:320px!important;
+  flex:0 0 320px!important;
+  border-radius:22px!important;
+  padding:18px!important;
+  background:linear-gradient(160deg,rgba(16,23,39,.92),rgba(7,12,22,.95))!important;
+}
+.leaderboard-wrap h3{
+  margin-bottom:13px!important;
+  font-size:11px!important;
+  letter-spacing:1.9px!important;
+  color:#9eabc7!important;
+}
+.leaderboard-wrap .lb-entry{border-radius:12px!important;margin:4px 0;padding:9px 10px!important}
+.leaderboard-wrap .lb-entry:first-of-type{background:linear-gradient(90deg,rgba(255,214,106,.11),transparent)}
+
+/* CASE DETAIL — visual focal point */
+.case-detail-view{gap:15px!important;align-items:stretch!important}
+.case-detail-view .back-btn{
+  width:max-content;
+  border-radius:999px!important;
+  padding:8px 14px!important;
+  color:#c5cee3!important;
+  background:rgba(12,18,31,.7)!important;
+  border-color:rgba(169,188,231,.14)!important;
+}
+.case-detail-view .back-btn:hover{background:rgba(22,31,51,.94)!important;transform:translateX(-2px)}
+.case-detail-hero{
+  position:relative;
+  display:grid;
+  grid-template-columns:180px minmax(0,1fr) auto;
+  gap:24px;
+  align-items:center;
+  min-height:190px;
+  padding:24px;
+  overflow:hidden;
+  border-radius:28px;
+  border:1px solid rgba(183,199,237,.16);
+  background:
+    radial-gradient(360px 180px at 15% 50%,rgba(255,199,93,.13),transparent 70%),
+    radial-gradient(320px 180px at 86% 0%,rgba(97,145,255,.08),transparent 70%),
+    linear-gradient(145deg,rgba(23,33,56,.96),rgba(7,12,23,.98));
+  box-shadow:var(--lux-shadow),inset 0 1px 0 rgba(255,255,255,.04);
+}
+.case-detail-hero::after{
+  content:'';position:absolute;inset:auto -10% -75% -10%;height:180px;
+  background:radial-gradient(closest-side,rgba(255,190,87,.09),transparent);
+  pointer-events:none;
+}
+.case-detail-art{
+  width:160px;height:160px;
+  object-fit:cover;
+  border-radius:28px;
+  border:1px solid rgba(255,255,255,.09);
+  box-shadow:0 26px 50px rgba(0,0,0,.42),0 0 45px rgba(255,195,92,.11);
+  transform:rotate(-2deg);
+}
+.case-detail-kicker{
+  color:#a0acc5;
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:2.6px;
+  margin-bottom:8px;
+}
+.case-detail-title{
+  margin:0!important;
+  font-size:34px!important;
+  line-height:1.05!important;
+  font-weight:950!important;
+  letter-spacing:-.7px!important;
+}
+.case-detail-copy{
+  max-width:660px;
+  margin:10px 0 13px;
+  color:#8793af;
+  font-size:12px;
+  line-height:1.6;
+}
+.case-detail-stats{display:flex;flex-wrap:wrap;gap:8px}
+.case-detail-stat{
+  display:flex;align-items:center;gap:6px;
+  padding:7px 10px;border-radius:999px;
+  background:rgba(255,255,255,.035);
+  border:1px solid rgba(173,190,232,.10);
+  color:#bbc4d9;font-size:10px;font-weight:800;
+}
+.case-detail-price{
+  display:flex;flex-direction:column;align-items:flex-end;justify-content:center;
+  min-width:150px;
+  padding-left:18px;
+  border-left:1px solid rgba(173,190,232,.11);
+}
+.case-detail-price .label{font-size:9px;color:#7f8ba8;font-weight:900;letter-spacing:1.7px}
+.case-detail-price .value{font-size:28px;font-weight:950;color:#ffd56e;margin-top:5px;text-shadow:0 0 24px rgba(255,201,90,.15)}
+
+.case-action-wrapper{
+  border-radius:24px!important;
+  min-height:248px!important;
+  padding:30px!important;
+  background:
+    radial-gradient(360px 150px at 50% 0%,rgba(255,201,92,.09),transparent 70%),
+    linear-gradient(145deg,rgba(18,27,47,.97),rgba(8,13,24,.98))!important;
+}
+.case-action{display:flex;align-items:center;justify-content:center;gap:14px!important;flex-wrap:wrap}
+.case-action .price-tag{font-size:31px!important;font-weight:950!important}
+.case-action .multi-selector{padding:8px 10px!important;border:1px solid rgba(173,190,232,.12);border-radius:13px;background:rgba(5,9,17,.44)}
+.case-action .multi-selector label{font-size:10px!important;letter-spacing:.4px}
+.case-action .multi-selector select{border-radius:9px!important;padding:8px 24px 8px 10px!important}
+.case-action .open-btn{min-width:178px!important;border-radius:14px!important}
+.inv-section{margin-top:4px}
+.inv-section h3{
+  margin:0 0 10px!important;
+  color:#9ca8c2!important;
+  font-size:10px!important;
+  letter-spacing:2px!important;
+}
+#detailContentsGrid{gap:12px!important}
+#detailContentsGrid .case-content-item{
+  min-height:150px!important;
+  border-radius:18px!important;
+  padding:12px!important;
+  position:relative;
+  overflow:hidden;
+}
+#detailContentsGrid .case-content-item img,#detailContentsGrid .case-content-item .ph{width:88px!important;height:88px!important;border-radius:16px!important}
+#detailContentsGrid .case-content-item .inv-price{font-size:11px!important;font-weight:900}
+
+/* UPGRADE — premium workshop */
+#panel-upgrade{padding-bottom:18px}
+.upgrade-title{
+  display:flex;align-items:flex-end;gap:10px;
+  margin:0 0 18px!important;
+  font-size:28px!important;
+  font-weight:950!important;
+  letter-spacing:-.8px!important;
+}
+.upgrade-title::after{content:none;display:none;}
+.upgrade-subtitle{
+  margin:-7px 0 20px;
+  color:#838fa9;font-size:12px;line-height:1.6;
+  max-width:760px;
+}
+.upgrade-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:0 0 16px}
+.upgrade-metric{padding:11px 13px;border:1px solid rgba(173,190,232,.10);border-radius:14px;background:rgba(10,16,28,.52);box-shadow:inset 0 1px 0 rgba(255,255,255,.025)}
+.upgrade-metric .m-value{font-size:15px;font-weight:950;color:#eff3ff}
+.upgrade-metric .m-label{margin-top:3px;color:#72809e;font-size:8px;font-weight:900;letter-spacing:1.1px}
+.up-selection{grid-template-columns:minmax(0,1fr) 365px minmax(0,1fr)!important;gap:16px!important}
+.up-card,.up-middle{border-radius:24px!important;background:linear-gradient(150deg,rgba(19,28,47,.95),rgba(7,12,22,.97))!important}
+.up-card{padding:18px!important}
+.up-card h4{font-size:10px!important;letter-spacing:1.5px!important;color:#7c89a5!important;margin-bottom:13px!important}
+.up-preview{width:100%;min-height:226px!important}
+.up-middle{min-height:468px!important;padding:18px!important;position:relative}
+.up-middle::before{content:none!important}
+.upgrade-wheel-container{
+  width:min(330px,100%)!important;
+  height:auto!important;
+  aspect-ratio:1/1!important;
+  border-radius:50%!important;
+}
+.upgrade-wheel-container canvas{max-width:100%;max-height:100%}
+.wheel-center{transform:translate(-50%,-50%) translateZ(0)!important}
+.wheel-chance{font-size:25px!important;font-weight:950!important;letter-spacing:-.6px;text-shadow:0 0 20px rgba(255,255,255,.08)}
+.wheel-caption{font-size:8px!important;letter-spacing:1.6px!important;text-transform:uppercase;color:#6f7b97!important}
+.exchange-btn{width:100%!important;max-width:330px;border-radius:14px!important;font-size:12px!important;letter-spacing:1px!important}
+.up-result-bar{margin:4px 0 16px}
+.up-result{min-height:20px!important;border-radius:13px!important;background:rgba(10,16,28,.56);border:1px solid rgba(173,190,232,.09);padding:10px 12px!important;font-size:10px!important}
+.up-inventory-area{gap:16px!important}
+.up-inv-col{border-radius:22px!important;padding:16px!important}
+.up-inv-col h4{font-size:9px!important;letter-spacing:1.5px!important;color:#77849e!important}
+.up-inv-grid,.up-target-grid{gap:9px!important}
+.up-inv-item,.up-target-item{
+  min-height:122px;
+  border-radius:16px!important;
+  padding:9px!important;
+  transition:transform .22s cubic-bezier(.2,.8,.2,1),border-color .22s ease,box-shadow .22s ease!important;
+}
+.up-inv-item:hover,.up-target-item:hover{transform:translateY(-3px)}
+.up-inv-item.active,.up-target-item.active{transform:translateY(-3px) scale(1.01)}
+.up-inv-item .n,.up-target-item .n{font-size:9px!important;font-weight:800!important}
+.up-inv-item .qty,.up-target-item .price{font-size:9px!important}
+
+/* Profile showcase = hero card instead of utility box */
+#upgradedItemBlock{
+  padding:17px!important;
+  border-radius:22px!important;
+  background:
+    radial-gradient(170px 120px at 18% 50%,color-mix(in srgb,var(--upgrade-color,#2f8fff) 18%,transparent),transparent 75%),
+    linear-gradient(145deg,rgba(17,27,50,.98),rgba(7,12,23,.99))!important;
+  border-width:1px!important;
+  box-shadow:0 24px 60px color-mix(in srgb,var(--upgrade-color,#2f8fff) 13%,transparent),inset 0 1px 0 rgba(255,255,255,.05)!important;
+  animation:none!important;
+}
+#upgradedItemBlock::before{content:none;display:none;}
+.upgraded-item-block .upg-content{gap:14px!important}
+.upgraded-item-block .upg-content img{
+  width:82px!important;height:82px!important;border-radius:18px!important;
+  border:1px solid rgba(255,255,255,.08)!important;
+  box-shadow:0 16px 32px rgba(0,0,0,.34)!important;
+}
+.upgraded-item-block .upg-name{font-size:18px!important;line-height:1.15}
+.upgraded-item-block .upg-price{font-size:10px!important;margin-top:5px}
+.upgraded-item-block .upg-menu{top:16px!important;right:16px!important;width:28px;height:28px;display:grid;place-items:center;border-radius:9px;background:rgba(255,255,255,.035)}
+.upgraded-item-block .upg-menu:hover{background:rgba(255,255,255,.07)}
+#upgradedItemBlock .dropdown{top:36px!important;border-radius:13px!important;min-width:190px!important;padding:6px!important;box-shadow:0 20px 50px rgba(0,0,0,.42)!important}
+#upgradedItemBlock .dropdown div{border-radius:9px;padding:9px 11px!important}
+#upgradedItemBlock .dropdown .upgrade-color-palette{padding:8px 10px!important}
+.profile-container{grid-template-columns:252px minmax(0,1fr)!important;gap:20px!important}
+.profile-avatar{border-radius:24px!important;padding:18px!important}
+.profile-avatar .avatar-wrap{width:142px!important;height:142px!important;border-radius:34px!important;border-width:1px!important;box-shadow:0 24px 52px rgba(0,0,0,.34)!important;transition:transform .3s ease,box-shadow .3s ease}
+.profile-avatar .avatar-wrap:hover{transform:translateY(-4px) scale(1.015);box-shadow:0 30px 60px rgba(0,0,0,.44),0 0 28px rgba(255,202,98,.10)!important}
+.profile-avatar .username{font-size:20px!important;font-weight:950!important;margin-top:10px}
+.profile-avatar .username-save{border-radius:11px!important;padding:8px 11px!important}
+.profile-stats{gap:10px!important}
+.stat-card{min-height:90px!important;border-radius:17px!important;padding:13px!important}
+.stat-card .val{font-size:18px!important;font-weight:950!important}
+.stat-card .lbl{font-size:8px!important;letter-spacing:1px!important;color:#7986a2!important}
+.profile-coupon{border-radius:18px!important;padding:11px!important;margin-top:14px!important}
+.profile-coupon button{border-radius:11px!important}
+.profile-inventory{border-radius:20px!important;padding:15px!important}
+.inv-list{gap:9px!important}
+.inv-item{border-radius:16px!important;padding:10px!important;min-width:0!important}
+.inv-item .inv-img{width:68px!important;height:68px!important;border-radius:15px!important;box-shadow:0 12px 26px rgba(0,0,0,.26)}
+.inv-item .inv-name{font-size:10px!important;font-weight:800!important}
+.inv-item .inv-price{font-size:9px!important}
+.inv-item .sell-btn{border-radius:9px!important;padding:6px 9px!important;font-size:9px!important}
+.inv-item .improve-btn{
+  background:linear-gradient(135deg,#8db8ff,#4f7cff)!important;
+  box-shadow:0 4px 0 #2e4d9b!important;
+  color:white!important;
+}
+.inv-item.is-upgraded{
+  border-color:color-mix(in srgb,var(--upgrade-color,#2f8fff) 55%,transparent)!important;
+  box-shadow:0 0 30px color-mix(in srgb,var(--upgrade-color,#2f8fff) 14%,transparent),inset 0 0 22px rgba(255,255,255,.025)!important;
+}
+
+/* subtle motion on buttons / cards */
+.case-detail-stat,.upgrade-metric,.tabs .tab,.profile-inventory,.up-inv-col,.leaderboard-wrap{will-change:transform}
+@media (max-width:1100px){
+  .cases-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+  .leaderboard-wrap{width:280px!important;flex-basis:280px!important}
+  .up-selection{grid-template-columns:1fr 320px 1fr!important}
+  .case-detail-hero{grid-template-columns:150px minmax(0,1fr)!important}
+  .case-detail-price{grid-column:2;align-items:flex-start;border-left:0;padding-left:0}
+}
+@media (max-width:900px){
+  .header-inner{flex-wrap:wrap!important;justify-content:center!important;padding-top:10px;padding-bottom:10px}
+  header .logo{margin-right:auto}
+  .header-right{margin-left:auto}
+  .tabs{order:3;width:100%;justify-content:stretch}
+  .tabs .tab{flex:1}
+  .cases-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .leaderboard-wrap{width:100%!important;flex-basis:auto!important}
+  .cases-layout{flex-direction:column}
+  .case-detail-hero{grid-template-columns:120px minmax(0,1fr)!important;padding:18px}
+  .case-detail-art{width:108px;height:108px}
+  .case-detail-title{font-size:25px!important}
+  .profile-container{grid-template-columns:1fr!important}
+  .upgrade-metrics{grid-template-columns:1fr}
+  .up-selection{grid-template-columns:1fr!important}
+  .up-middle{min-height:420px!important}
+}
+@media (max-width:600px){
+  .header-inner{min-height:104px!important}
+  header .logo img{width:auto!important;height:92px!important}
+  .header-right .header-rank{display:none!important}
+  .tabs .tab{min-width:0;font-size:9px!important;padding:9px 7px!important}
+  .cases-grid{grid-template-columns:1fr!important}
+  .case-card{min-height:228px}
+  .case-detail-hero{grid-template-columns:1fr!important;text-align:center}
+  .case-detail-art{margin:0 auto}
+  .case-detail-stats{justify-content:center}
+  .case-detail-price{grid-column:auto;align-items:center;border-top:1px solid rgba(173,190,232,.10);padding:14px 0 0}
+  .case-action{gap:10px!important}
+}
+</style>
+
+
+<style id="demo-ribbon-style">
+.demo-ribbon{
+  display:none;
+  position:fixed;z-index:100;left:50%;bottom:14px;transform:translateX(-50%);
+  padding:7px 11px;border-radius:999px;
+  border:1px solid rgba(255,209,102,.18);
+  background:rgba(8,13,24,.82);color:#aeb9d0;
+  font-size:8px;font-weight:950;letter-spacing:1.7px;
+  box-shadow:0 12px 32px rgba(0,0,0,.32),inset 0 1px 0 rgba(255,255,255,.04);
+  backdrop-filter:blur(14px);pointer-events:none;
+}
+body:not(.auth-locked) .demo-ribbon{ }
+
+/* ==================== ФИНАЛЬНЫЙ ПРОХОД: АПГРЕЙД + МЕЛОЧИ ==================== */
+
+/* --- Названия предметов при наведении в содержимом кейса --- */
+#detailContentsGrid .case-content-item{overflow:hidden!important}
+#detailContentsGrid .case-content-item::after{
+  content:attr(data-item-name);
+  position:absolute;left:0;right:0;bottom:0;
+  padding:8px 8px 9px;
+  background:linear-gradient(180deg,rgba(6,10,19,0),rgba(6,10,19,.93) 45%);
+  color:#eef2fb;font-size:10px;font-weight:800;line-height:1.25;
+  letter-spacing:.2px;text-align:center;
+  opacity:0;transform:translateY(100%);
+  transition:opacity .18s ease,transform .22s cubic-bezier(.2,.8,.2,1);
+  pointer-events:none;
+}
+#detailContentsGrid .case-content-item:hover::after,
+#detailContentsGrid .case-content-item:focus-visible::after{opacity:1;transform:translateY(0)}
+
+/* Тоже для сеток апгрейда — там имя обрезается, показываем полностью */
+.up-inv-item,.up-target-item{position:relative}
+.up-inv-item .n,.up-target-item .n{
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+}
+
+/* --- Строки таблицы лидеров кликабельны --- */
+.leaderboard-wrap .lb-entry{cursor:pointer}
+.leaderboard-wrap .lb-entry:focus-visible{outline:2px solid var(--accent2);outline-offset:2px}
+.leaderboard-wrap .lb-entry::after{
+  content:'›';margin-left:6px;color:#5d6a87;font-weight:900;font-size:15px;
+  opacity:0;transform:translateX(-4px);transition:opacity .16s ease,transform .16s ease;
+}
+.leaderboard-wrap .lb-entry:hover::after{opacity:1;transform:translateX(0)}
+
+/* ==================== АПГРЕЙД: РЕДИЗАЙН ==================== */
+#panel-upgrade{padding-top:4px}
+.upgrade-title{
+  justify-content:flex-start;
+  background:linear-gradient(92deg,#ffffff 0%,#ffe6b0 55%,#ffb45e 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+
+/* три колонки: карточка — колесо — карточка */
+.up-selection{align-items:stretch!important}
+.up-card{
+  border-radius:24px!important;
+  background:
+    radial-gradient(240px 140px at 50% -10%,rgba(255,205,105,.07),transparent 72%),
+    linear-gradient(160deg,rgba(21,29,50,.95),rgba(9,13,24,.97))!important;
+  border:1px solid rgba(175,192,232,.13)!important;
+  box-shadow:0 20px 48px rgba(0,0,0,.30),inset 0 1px 0 rgba(255,255,255,.04)!important;
+  display:flex;flex-direction:column;
+}
+.up-card h4{
+  display:flex;align-items:center;gap:8px;
+  padding-bottom:11px;border-bottom:1px solid rgba(175,192,232,.09);
+}
+.up-preview{
+  flex:1;
+  display:flex!important;flex-direction:column!important;flex-wrap:nowrap!important;
+  align-items:center;justify-content:center;gap:8px;
+  padding:14px!important;
+  border-radius:18px;
+  background:rgba(6,10,19,.45);
+  border:1px dashed rgba(175,192,232,.12);
+  overflow-y:auto;scrollbar-width:none;
+}
+.up-preview::-webkit-scrollbar{width:0;display:none}
+.up-preview .up-item{
+  background:linear-gradient(165deg,rgba(30,40,66,.85),rgba(12,17,30,.9))!important;
+  border:1px solid rgba(175,192,232,.10);
+  padding:7px 10px!important;border-radius:12px!important;
+}
+.up-preview .up-total{color:#ffcf4d!important;font-weight:900;border-top-color:rgba(175,192,232,.12)!important}
+.up-empty{
+  width:100%;margin:auto;text-align:center;
+  color:#5f6c88!important;font-size:11px!important;font-weight:700;letter-spacing:.6px;
+}
+
+/* средняя колонка — «станок» */
+.up-middle{
+  border-radius:26px!important;
+  background:
+    radial-gradient(300px 200px at 50% 0%,rgba(90,150,255,.10),transparent 70%),
+    linear-gradient(165deg,rgba(19,27,47,.96),rgba(7,11,21,.98))!important;
+  border:1px solid rgba(175,192,232,.14)!important;
+  box-shadow:0 26px 64px rgba(0,0,0,.36),inset 0 1px 0 rgba(255,255,255,.045)!important;
+  gap:18px!important;
+}
+.upgrade-wheel-container{
+  box-shadow:
+    0 26px 64px rgba(0,0,0,.48),
+    0 0 0 1px rgba(255,255,255,.05),
+    0 0 90px rgba(47,143,255,.10)!important;
+}
+.wheel-chance{
+  font-size:27px!important;
+  background:linear-gradient(180deg,#ffffff,#cfd9f2);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  text-shadow:none!important;
+}
+.upgrade-wheel-container.wheel-success .wheel-chance{
+  background:linear-gradient(180deg,#e9ffe6,#63f75a);-webkit-background-clip:text;background-clip:text;
+}
+.upgrade-wheel-container.wheel-fail .wheel-chance{
+  background:linear-gradient(180deg,#ffe9ea,#ff6670);-webkit-background-clip:text;background-clip:text;
+}
+.wheel-caption{color:#66738f!important;letter-spacing:1.8px!important}
+
+/* кнопка */
+.exchange-btn{
+  position:relative;overflow:hidden;
+  padding:15px 20px!important;
+  font-weight:950!important;
+  color:#2a1500!important;
+  background:linear-gradient(180deg,#ffd257,#ff8a3d)!important;
+  box-shadow:0 6px 0 #a8501d,0 16px 34px rgba(255,140,60,.26)!important;
+  transition:transform .12s ease,box-shadow .12s ease,filter .2s ease;
+}
+.exchange-btn:hover:not(:disabled){filter:brightness(1.06)}
+.exchange-btn:active:not(:disabled){transform:translateY(4px);box-shadow:0 2px 0 #a8501d!important}
+.exchange-btn:disabled{
+  background:linear-gradient(180deg,#2a3450,#1a2237)!important;
+  color:#6b789a!important;box-shadow:none!important;opacity:1!important;
+}
+.exchange-btn::after{
+  content:'';position:absolute;top:0;left:-140%;width:55%;height:100%;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.45),transparent);
+  transform:skewX(-18deg);
+}
+.exchange-btn:not(:disabled)::after{animation:exShine 3.4s ease-in-out infinite}
+@keyframes exShine{0%,72%{left:-140%}92%,100%{left:170%}}
+
+/* строка результата */
+.up-result{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  min-height:42px!important;font-size:12px!important;font-weight:700;
+  border-radius:16px!important;
+  transition:border-color .25s ease,box-shadow .25s ease,color .25s ease;
+}
+.up-result.success{
+  color:#8dff86!important;border-color:rgba(99,247,90,.34)!important;
+  box-shadow:0 0 34px rgba(70,235,70,.14);
+}
+.up-result.fail{
+  color:#ff8189!important;border-color:rgba(255,90,99,.30)!important;
+  box-shadow:0 0 34px rgba(255,70,80,.12);
+}
+
+/* нижние колонки инвентаря */
+.up-inv-col{
+  background:
+    linear-gradient(160deg,rgba(20,28,48,.94),rgba(8,12,22,.97))!important;
+  border:1px solid rgba(175,192,232,.12)!important;
+  box-shadow:0 18px 44px rgba(0,0,0,.26),inset 0 1px 0 rgba(255,255,255,.035)!important;
+}
+.up-inv-col h4{
+  display:flex;align-items:center;gap:8px;
+  padding-bottom:10px;margin-bottom:12px!important;
+  border-bottom:1px solid rgba(175,192,232,.09);
+}
+.up-inv-grid,.up-target-grid{max-height:270px!important;padding-right:2px}
+.up-inv-item,.up-target-item{
+  background:linear-gradient(165deg,rgba(28,38,62,.85),rgba(11,16,28,.9))!important;
+  border:1px solid rgba(175,192,232,.11)!important;
+}
+.up-inv-item.active,.up-target-item.active{
+  background:linear-gradient(165deg,rgba(58,44,24,.9),rgba(20,15,10,.92))!important;
+}
+.up-inv-item .price,.up-target-item .price{color:#ffcf4d!important;font-weight:900}
+
+@media (max-width:900px){
+  .up-middle{gap:14px!important}
+  .exchange-btn{max-width:100%}
+}
+
+/* ==================== СЛОТЫ ИСХОДНЫХ ПРЕДМЕТОВ ==================== */
+#upFromPreview{
+  justify-content:flex-start!important;
+  align-items:stretch!important;
+  gap:12px!important;
+}
+.up-slots{
+  width:100%;
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  grid-template-rows:repeat(2,minmax(0,1fr));
+  grid-auto-flow:row;                 /* сначала верхний ряд, потом нижний */
+  gap:10px;
+}
+.up-slot{
+  position:relative;
+  aspect-ratio:1/1;
+  min-height:0;
+  border-radius:16px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  padding:8px 6px;
+  text-align:center;
+  overflow:hidden;
+  transition:transform .16s cubic-bezier(.2,.8,.2,1),box-shadow .2s ease,border-color .2s ease,background .2s ease;
+}
+.up-slot.empty{
+  border:1px dashed rgba(175,192,232,.20);
+  background:
+    repeating-linear-gradient(135deg,rgba(255,255,255,.014) 0 8px,transparent 8px 16px),
+    rgba(9,14,25,.5);
+  color:#4d5a76;
+}
+.up-slot.empty .s-plus{font-size:26px;font-weight:300;line-height:1;color:#42506d}
+.up-slot.empty .s-hint{font-size:8px;font-weight:900;letter-spacing:1.6px;color:#3d4963}
+.up-slot.filled{
+  cursor:pointer;
+  border:1px solid rgba(255,205,105,.30);
+  background:linear-gradient(165deg,rgba(44,36,20,.92),rgba(14,18,30,.95));
+  box-shadow:0 10px 26px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.05);
+}
+.up-slot.filled:hover{
+  transform:translateY(-3px);
+  border-color:rgba(255,205,105,.55);
+  box-shadow:0 16px 34px rgba(0,0,0,.42),0 0 22px rgba(255,190,80,.14);
+}
+.up-slot.filled:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.up-slot .s-img{display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.up-slot .s-img img,.up-slot .s-img .ph{
+  width:56px!important;height:56px!important;border-radius:12px;object-fit:cover;
+  background:#0e1320;display:flex;align-items:center;justify-content:center;font-size:24px;
+}
+.up-slot .s-name{
+  font-size:9.5px;font-weight:800;line-height:1.2;color:#e6ecfb;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+  max-width:100%;
+}
+.up-slot .s-price{font-size:9px;font-weight:900;color:#ffcf4d}
+.up-slot .s-remove{
+  position:absolute;top:5px;right:6px;
+  width:18px;height:18px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;line-height:1;font-weight:700;
+  background:rgba(0,0,0,.5);color:#ffb3b8;
+  opacity:0;transform:scale(.7);transition:opacity .15s ease,transform .15s ease;
+}
+.up-slot.filled:hover .s-remove{opacity:1;transform:scale(1)}
+#upFromPreview .up-total{
+  width:100%;margin-top:auto;padding-top:9px;
+  border-top:1px solid rgba(175,192,232,.12);
+  font-size:12px;font-weight:900;color:#ffcf4d;text-align:center;
+}
+@media (max-width:1290px){
+  .up-slot .s-img img,.up-slot .s-img .ph{width:46px!important;height:46px!important}
+  .up-slot .s-name{font-size:8.5px}
+}
+@media (max-width:900px){
+  .up-slots{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+
+/* логотип: расширяем его колонку в шапке под увеличенную картинку */
+.header-inner{grid-template-columns:118px 236px minmax(430px,1fr) 366px!important}
+.logo{width:236px!important;min-width:236px!important;max-width:236px!important}
+header .logo img{max-width:236px!important}
+@media (max-width:1290px){
+  .header-inner{grid-template-columns:110px 200px minmax(360px,1fr) 340px!important}
+  .logo{width:200px!important;min-width:200px!important;max-width:200px!important}
+  header .logo img{max-width:200px!important}
+}
+@media (max-width:900px){
+  .header-inner{grid-template-columns:1fr auto!important}
+  .logo{width:auto!important;min-width:0!important;max-width:60vw!important}
+  header .logo img{max-width:100%!important}
+}
+</style>
+<script>
+if(typeof DEMO_MODE!=='undefined' && DEMO_MODE){
+  const ribbon=document.getElementById('demoRibbon');
+  if(ribbon)ribbon.style.display='block';
+}
+</script>
+
 </head>
 <body>
 
@@ -493,6 +1704,8 @@ header > .wrap{max-width:1480px;padding:0 28px;}
   </div>
 </header>
 
+<div class="demo-ribbon" id="demoRibbon" aria-label="Демо режим">DEMO MODE • OFFLINE TEST</div>
+
 <main class="wrap">
   <!-- ===== КЕЙСЫ ===== -->
   <section class="panel active" id="panel-cases">
@@ -501,19 +1714,34 @@ header > .wrap{max-width:1480px;padding:0 28px;}
         <div id="casesGridContainer" class="cases-grid"></div>
         <div id="caseDetailContainer" class="case-detail-view">
           <button class="back-btn" id="backToCasesBtn">← Назад к выбору</button>
-          <div class="case-name" id="detailCaseName">Тимур-КЕЙС</div>
+          <div class="case-detail-hero">
+            <img id="detailCaseHeroImg" class="case-detail-art" src="" alt="Кейс">
+            <div class="case-detail-copy-block">
+              <div class="case-detail-kicker" id="detailCaseKicker" style="display:none"></div>
+              <h1 class="case-detail-title" id="detailCaseTitle">Тимур-КЕЙС</h1>
+              <p class="case-detail-copy" id="detailCaseDescription">Открой кейс и собери предметы из его коллекции.</p>
+              <div class="case-detail-stats">
+                <div class="case-detail-stat">✦ <span id="detailCaseItemsMeta">0 предметов</span></div>
+                <div class="case-detail-stat">◇ <span id="detailCaseMaxMeta">Макс. дроп — 0 🪙</span></div>
+                <div class="case-detail-stat">◌ <span>до 5 открытий</span></div>
+              </div>
+            </div>
+            <div class="case-detail-price">
+              <span class="label">СТОИМОСТЬ ОТКРЫТИЯ</span>
+              <span class="value" id="detailCaseHeroCost">50 🪙</span>
+            </div>
+          </div>
+          <div class="case-name" id="detailCaseName" style="position:absolute;left:-9999px;">Тимур-КЕЙС</div>
           <div class="case-action-wrapper">
             <div class="case-action" id="caseAction">
               <div class="price-tag" id="detailCaseCost">50 🪙</div>
-              <div class="multi-selector">
-                <label style="color:var(--muted);">Количество:</label>
-                <select id="multiSelect">
-                  <option value="1">1</option>
-                  <option value="2">2</option>
-                  <option value="3">3</option>
-                  <option value="4">4</option>
-                  <option value="5">5</option>
-                </select>
+              <div class="multi-selector multi-count-selector" id="multiCountSelector" aria-label="Количество открытий">
+                <input type="hidden" id="multiSelect" value="1">
+                <button type="button" class="multi-count-btn active" data-count="1" aria-pressed="true">1</button>
+                <button type="button" class="multi-count-btn" data-count="2" aria-pressed="false">2</button>
+                <button type="button" class="multi-count-btn" data-count="3" aria-pressed="false">3</button>
+                <button type="button" class="multi-count-btn" data-count="4" aria-pressed="false">4</button>
+                <button type="button" class="multi-count-btn" data-count="5" aria-pressed="false">5</button>
               </div>
               <button class="open-btn" id="detailOpenBtn">🎰 ОТКРЫТЬ</button>
             </div>
@@ -540,7 +1768,12 @@ header > .wrap{max-width:1480px;padding:0 28px;}
 
   <!-- ===== АПГРЕЙД ===== -->
   <section class="panel" id="panel-upgrade">
-    <div class="upgrade-title">МОДЕРНИЗАЦИЯ 2.0</div>
+    <div class="upgrade-title">АПГРЕЙД</div>
+    <div class="upgrade-metrics" aria-hidden="true" style="display:none">
+      <div class="upgrade-metric"><div class="m-value" id="upgradeSourceMetric">0 🪙</div><div class="m-label">СТОИМОСТЬ ИСХОДНИКОВ</div></div>
+      <div class="upgrade-metric"><div class="m-value" id="upgradeTargetMetric">—</div><div class="m-label">ЦЕЛЕВОЙ ПРЕДМЕТ</div></div>
+      <div class="upgrade-metric"><div class="m-value" id="upgradeModeMetric">ONLINE</div><div class="m-label">РЕЖИМ ИГРЫ</div></div>
+    </div>
     <div class="up-selection">
       <div class="up-card">
         <h4>ИСХОДНЫЕ ПРЕДМЕТЫ (выберите снизу, можно несколько)</h4>
@@ -566,7 +1799,7 @@ header > .wrap{max-width:1480px;padding:0 28px;}
         <div class="up-preview" id="upToPreview"><div class="up-empty">Ничего не выбрано</div></div>
       </div>
     </div>
-    <div class="up-result-bar"><div class="up-result" id="upResult">Выберите исходные и целевой предметы, затем нажмите «Прокачать».</div></div>
+    <div class="up-result-bar"><div class="up-result" id="upResult"></div></div>
     <div class="up-inventory-area">
       <div class="up-inv-col">
         <h4>🧰 ВАШ ИНВЕНТАРЬ (каждый экземпляр отдельно)</h4>
@@ -1365,6 +2598,21 @@ function renderDetailView() {
   const c = getCurrentCase();
   if (!c) return;
   document.getElementById('detailCaseName').textContent = c.name;
+  const heroImg = document.getElementById('detailCaseHeroImg');
+  if(heroImg){ heroImg.src=c.img; heroImg.alt=c.name; }
+  const title = document.getElementById('detailCaseTitle');
+  if(title) title.textContent=c.name;
+  const kicker = document.getElementById('detailCaseKicker');
+  if(kicker) kicker.textContent=`CASE ${String(c.id).padStart(2,'0')} • ${c.items.length} DROP${c.items.length===1?'':'S'}`;
+  const maxDrop = Math.max(...c.items.map(({id})=>getItemPrice(byId(ALL_ITEMS,id))||0));
+  const meta = document.getElementById('detailCaseItemsMeta');
+  if(meta) meta.textContent=`${c.items.length} предметов`;
+  const maxMeta = document.getElementById('detailCaseMaxMeta');
+  if(maxMeta) maxMeta.textContent=`Макс. дроп — ${maxDrop} 🪙`;
+  const heroCost = document.getElementById('detailCaseHeroCost');
+  if(heroCost) heroCost.textContent=`${c.cost} 🪙`;
+  const desc = document.getElementById('detailCaseDescription');
+  if(desc) desc.textContent=`Коллекция «${c.name}»: открой кейс, прокрути ленту и забери предмет, который выпадет из этого набора.`;
   updateMultiOpenPrice();
   const grid = document.getElementById('detailContentsGrid');
   grid.innerHTML = c.items.map(({id, chance}) => {
@@ -1383,31 +2631,36 @@ function renderDetailView() {
   document.getElementById('detailRollSection').classList.remove('show');
   document.getElementById('multiRollContainer').classList.remove('show');
   document.getElementById('caseAction').classList.remove('hidden');
-  document.getElementById('detailOpenBtn').disabled = false;
+  updateMultiOpenPrice();
 }
 
 function updateMultiSelectAvailability() {
   const select = document.getElementById('multiSelect');
+  const selector = document.getElementById('multiCountSelector');
   const c = getCurrentCase();
-  if (!select || !c) return;
+  if (!select || !selector || !c) return;
 
   const maxAffordable = Math.max(0, Math.min(5, Math.floor(Number(game.balance || 0) / Number(c.cost || 1))));
-  const options = Array.from(select.options);
-  options.forEach(option => {
-    const n = Number(option.value);
-    option.disabled = n > maxAffordable;
-  });
+  const buttons = Array.from(selector.querySelectorAll('.multi-count-btn'));
 
   let current = Number(select.value) || 1;
+  if (maxAffordable > 0 && current > maxAffordable) current = maxAffordable;
+  select.value = String(current);
+
+  buttons.forEach(btn => {
+    const n = Number(btn.dataset.count);
+    const disabled = n > maxAffordable;
+    btn.disabled = disabled;
+    btn.classList.toggle('active', n === current);
+    btn.setAttribute('aria-pressed', n === current ? 'true' : 'false');
+  });
+
   if (maxAffordable === 0) {
+    buttons.forEach(btn => {
+      btn.classList.remove('active');
+      btn.setAttribute('aria-pressed', 'false');
+    });
     select.value = '1';
-    select.disabled = true;
-  } else {
-    select.disabled = false;
-    if (current > maxAffordable) {
-      current = maxAffordable;
-      select.value = String(current);
-    }
   }
 }
 
@@ -1422,9 +2675,18 @@ function updateMultiOpenPrice() {
   const total = c.cost * count;
   const priceTag = document.getElementById('detailCaseCost');
   priceTag.textContent = `${total} 🪙`;
+  const heroCost=document.getElementById('detailCaseHeroCost'); if(heroCost) heroCost.textContent=`${total} 🪙`;
   document.getElementById('detailOpenBtn').disabled = (Number(game.balance || 0) < total);
 }
-document.getElementById('multiSelect').addEventListener('change', updateMultiOpenPrice);
+
+document.getElementById('multiCountSelector').addEventListener('click', (e) => {
+  const btn = e.target.closest('.multi-count-btn');
+  if (!btn || btn.disabled) return;
+  const select = document.getElementById('multiSelect');
+  if (!select) return;
+  select.value = String(Math.max(1, Math.min(5, Number(btn.dataset.count) || 1)));
+  updateMultiOpenPrice();
+});
 
 // ---------- 11. Открытие кейсов ----------
 function weightedRandomItem(caseItems) {
@@ -1517,6 +2779,7 @@ document.getElementById('detailOpenBtn').onclick = function() {
     const finalOffset = (REEL_LEN - 0.5) * itemWidth - viewportWidth / 2;
     const ROLL_DURATION = 3;
     const ruletka = document.getElementById('ruletkaSound');
+    ruletka.loop = true;
     ruletka.currentTime = 0;
     ruletka.play().catch(() => {});
     requestAnimationFrame(() => {
@@ -1525,6 +2788,7 @@ document.getElementById('detailOpenBtn').onclick = function() {
     });
     setTimeout(() => {
       ruletka.pause();
+      ruletka.loop = false;
       ruletka.currentTime = 0;
       const last = track.querySelector(`[data-idx="${REEL_LEN-1}"]`);
       if (last) last.classList.add('winner');
@@ -1557,6 +2821,7 @@ document.getElementById('detailOpenBtn').onclick = function() {
       viewports.push({ viewport:vp, track, won: items[i] });
     }
     const ruletka = document.getElementById('ruletkaSound');
+    ruletka.loop = true;
     ruletka.currentTime = 0;
     ruletka.play().catch(() => {});
     const ROLL_DURATION = 3;
@@ -1587,6 +2852,7 @@ document.getElementById('detailOpenBtn').onclick = function() {
     });
     setTimeout(() => {
       ruletka.pause();
+      ruletka.loop = false;
       ruletka.currentTime = 0;
       viewports.forEach(vp => {
         const items = vp.track.querySelectorAll('.roll-item');
@@ -1594,7 +2860,7 @@ document.getElementById('detailOpenBtn').onclick = function() {
         vp.viewport.classList.add('impact');
         setTimeout(() => vp.viewport.classList.remove('impact'), 500);
       });
-      playDropSound(c.sound);
+      viewports.forEach((vp,idx)=>setTimeout(()=>playDropSound(c.sound),idx*90));
       screenFlash();
       openResults = viewports.map(vp => vp.won);
       showMultiResultModal();
@@ -1662,9 +2928,136 @@ document.getElementById('backToCasesBtn').onclick = function() {
   showSelectionView();
 };
 
+
+/* ================= ЗВУКОВОЙ ДВИЖОК (без доп. файлов) ================= */
+const SFX=(function(){
+  let ac=null, master=null, enabled=true;
+  function ctx(){
+    if(!ac){
+      const AC=window.AudioContext||window.webkitAudioContext;
+      if(!AC) return null;
+      ac=new AC();
+      master=ac.createGain();
+      master.gain.value=0.5;
+      master.connect(ac.destination);
+    }
+    if(ac.state==='suspended') ac.resume().catch(()=>{});
+    return ac;
+  }
+  function tone({freq=440,dur=.1,type='sine',vol=.3,sweep=null,delay=0,attack=.005}){
+    if(!enabled) return;
+    const a=ctx(); if(!a) return;
+    const t0=a.currentTime+delay;
+    const o=a.createOscillator(), g=a.createGain();
+    o.type=type;
+    o.frequency.setValueAtTime(freq,t0);
+    if(sweep) o.frequency.exponentialRampToValueAtTime(Math.max(20,sweep),t0+dur);
+    g.gain.setValueAtTime(0.0001,t0);
+    g.gain.exponentialRampToValueAtTime(Math.max(.0002,vol),t0+attack);
+    g.gain.exponentialRampToValueAtTime(0.0001,t0+dur);
+    o.connect(g); g.connect(master);
+    o.start(t0); o.stop(t0+dur+.02);
+  }
+  function noise({dur=.08,vol=.2,hp=900,delay=0}){
+    if(!enabled) return;
+    const a=ctx(); if(!a) return;
+    const t0=a.currentTime+delay;
+    const len=Math.max(1,Math.floor(a.sampleRate*dur));
+    const buf=a.createBuffer(1,len,a.sampleRate);
+    const d=buf.getChannelData(0);
+    for(let i=0;i<len;i++) d[i]=(Math.random()*2-1)*(1-i/len);
+    const src=a.createBufferSource(); src.buffer=buf;
+    const f=a.createBiquadFilter(); f.type='highpass'; f.frequency.value=hp;
+    const g=a.createGain(); g.gain.value=vol;
+    src.connect(f); f.connect(g); g.connect(master);
+    src.start(t0);
+  }
+  return {
+    setEnabled(v){enabled=!!v;},
+    unlock(){ctx();},
+    tick(v){ tone({freq:1750,dur:.035,type:'square',vol:.055*(v==null?1:v)}); noise({dur:.02,vol:.05*(v==null?1:v),hp:3200}); },
+    click(){ tone({freq:660,dur:.055,type:'triangle',vol:.16,sweep:380}); },
+    hover(){ tone({freq:1180,dur:.035,type:'sine',vol:.05}); },
+    whoosh(){ noise({dur:.5,vol:.2,hp:500}); tone({freq:150,dur:.45,type:'sine',vol:.2,sweep:520}); },
+    impact(){
+      tone({freq:210,dur:.28,type:'sine',vol:.42,sweep:70});
+      noise({dur:.16,vol:.3,hp:600});
+      tone({freq:920,dur:.1,type:'square',vol:.1,sweep:420});
+    },
+    win(level){
+      const L=Math.max(0,Math.min(3,level|0));
+      const notes=[[523.25,659.25,783.99],[587.33,739.99,880,1174.66],[523.25,659.25,783.99,1046.5,1318.5],[659.25,830.61,987.77,1318.5,1661.2]][L];
+      notes.forEach((f,i)=>{
+        tone({freq:f,dur:.42+L*.08,type:'triangle',vol:.22,delay:i*.075});
+        tone({freq:f*2,dur:.22,type:'sine',vol:.07,delay:i*.075});
+      });
+      if(L>=2) noise({dur:.6,vol:.12,hp:2200,delay:.05});
+    },
+    fail(){ tone({freq:300,dur:.4,type:'sawtooth',vol:.22,sweep:90}); }
+  };
+})();
+window.SFX=SFX;
+['pointerdown','keydown'].forEach(ev=>window.addEventListener(ev,()=>SFX.unlock(),{once:true}));
+
+/* Тики барабана: следим за реальным положением ленты и щёлкаем на каждом предмете */
+function startRollTicker(track,itemWidth,durationMs){
+  if(!track) return;
+  const started=performance.now();
+  let lastIndex=0;
+  function read(){
+    const t=getComputedStyle(track).transform;
+    if(!t||t==='none') return 0;
+    const m=t.match(/matrix.*\((.+)\)/);
+    if(!m) return 0;
+    const p=m[1].split(',').map(Number);
+    return Math.abs(p.length===16?p[12]:p[4]);
+  }
+  function frame(now){
+    const elapsed=now-started;
+    const idx=Math.floor(read()/itemWidth);
+    if(idx>lastIndex){
+      lastIndex=idx;
+      SFX.tick(0.45+0.55*Math.max(0,1-elapsed/durationMs));
+    }
+    if(elapsed<durationMs+120) requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+}
+
+/* Клики по интерфейсу */
+document.addEventListener('click',e=>{
+  const t=e.target;
+  if(!t||!t.closest) return;
+  if(t.closest('.open-btn')) return;
+  if(t.closest('.tab')||t.closest('.case-card')||t.closest('.back-btn')||
+     t.closest('.up-inv-item')||t.closest('.up-target-item')||t.closest('.lb-entry')||
+     t.closest('button')){ SFX.click(); }
+},true);
+document.addEventListener('pointerenter',e=>{
+  const t=e.target;
+  if(t&&t.closest&&(t.closest('.case-card')||t.closest('.tab'))) SFX.hover();
+},true);
+
+function rarityLevel(r){
+  return ({common:0,uncommon:0,rare:1,epic:2,legendary:3,mythical:3})[r]||0;
+}
+
 function playDropSound(soundId) {
-  const el = document.getElementById(soundId);
-  if (el) { el.currentTime = 0; el.play().catch(()=>{}); }
+  const el = soundId ? document.getElementById(soundId) : null;
+  // Если у кейса почему-то нет своего звука — берём общий dropSound, чтобы тишины не было.
+  const target = el || document.getElementById('dropSound');
+  if (!target) return;
+  try { target.pause(); target.currentTime = 0; } catch (_) {}
+  const p = target.play();
+  if (p && p.catch) p.catch(() => {
+    // Autoplay-политика: пробуем ещё раз клоном.
+    const clone = target.cloneNode(true);
+    clone.removeAttribute('id');
+    clone.addEventListener('ended', () => clone.remove(), { once: true });
+    document.body.appendChild(clone);
+    const q = clone.play();
+    if (q && q.catch) q.catch(() => clone.remove());
+  });
 }
 function screenFlash(){
   const flash = document.createElement('div');
@@ -1941,18 +3334,92 @@ function renderAchievements() {
 const wheelCanvas = document.getElementById('upgradeWheelCanvas');
 const ctx = wheelCanvas ? wheelCanvas.getContext('2d') : null;
 const wheelPointer = document.querySelector('#upgradeWheelContainer .wheel-pointer');
+const wheelRotor = document.getElementById('upgradeWheelRotor');
 const W = 520, H = 520, cx = W/2, cy = H/2, radius = 212, arcWidth = 38;
 let wheelArrowAngle = 0;
 let isWheelSpinning = false;
 
 function drawUpgradeWheel(chance){
-  if(!ctx)return;const safeChance=Math.max(0,Math.min(MAX_UPGRADE_CHANCE,Number(chance)||0));const tau=Math.PI*2,greenStart=-Math.PI/2,greenAngle=safeChance/100*tau,greenEnd=greenStart+greenAngle;ctx.clearRect(0,0,W,H);ctx.save();
-  ctx.beginPath();ctx.arc(cx,cy,radius+18,0,tau);ctx.fillStyle='#18213a';ctx.fill();
-  ctx.beginPath();ctx.arc(cx,cy,radius,-Math.PI/2,Math.PI*1.5,false);ctx.arc(cx,cy,radius-arcWidth,Math.PI*1.5,-Math.PI/2,true);ctx.closePath();ctx.fillStyle='#f04450';ctx.fill();
-  if(greenAngle>0.0001){ctx.beginPath();ctx.arc(cx,cy,radius,greenStart,greenEnd,false);ctx.arc(cx,cy,radius-arcWidth,greenEnd,greenStart,true);ctx.closePath();ctx.fillStyle='#44e83e';ctx.fill();}
-  ctx.strokeStyle='rgba(255,255,255,.25)';ctx.lineWidth=3;for(const a of (greenAngle>0.0001?[greenStart,greenEnd]:[greenStart])){ctx.beginPath();ctx.moveTo(cx+(radius-arcWidth-2)*Math.cos(a),cy+(radius-arcWidth-2)*Math.sin(a));ctx.lineTo(cx+(radius+3)*Math.cos(a),cy+(radius+3)*Math.sin(a));ctx.stroke();}
-  for(let i=0;i<36;i++){const a=i/36*tau-Math.PI/2,outer=radius+12,inner=radius+5;ctx.beginPath();ctx.moveTo(cx+inner*Math.cos(a),cy+inner*Math.sin(a));ctx.lineTo(cx+outer*Math.cos(a),cy+outer*Math.sin(a));ctx.strokeStyle=i%3===0?'rgba(255,255,255,.15)':'rgba(255,255,255,.05)';ctx.lineWidth=i%3===0?2.2:1.2;ctx.stroke();}
-  ctx.beginPath();ctx.arc(cx,cy,radius-arcWidth-6,0,tau);ctx.fillStyle='#0d1320';ctx.fill();ctx.strokeStyle='rgba(255,255,255,.10)';ctx.lineWidth=2.5;ctx.stroke();ctx.restore();$('upgradeChanceText').textContent=`${safeChance.toFixed(1)}%`;
+  if(!ctx)return;
+  const safeChance=Math.max(0,Math.min(MAX_UPGRADE_CHANCE,Number(chance)||0));
+  const tau=Math.PI*2, greenStart=-Math.PI/2, greenAngle=safeChance/100*tau, greenEnd=greenStart+greenAngle;
+  ctx.clearRect(0,0,W,H);
+  ctx.save();
+
+  // тёмная подложка под кольцом
+  const base=ctx.createRadialGradient(cx,cy-40,40,cx,cy,radius+22);
+  base.addColorStop(0,'#1b2440'); base.addColorStop(1,'#0c1222');
+  ctx.beginPath();ctx.arc(cx,cy,radius+20,0,tau);ctx.fillStyle=base;ctx.fill();
+
+  // насечки по внешнему краю
+  for(let i=0;i<72;i++){
+    const a=i/72*tau-Math.PI/2, big=i%6===0;
+    const inner=radius+6, outer=radius+(big?16:11);
+    ctx.beginPath();
+    ctx.moveTo(cx+inner*Math.cos(a),cy+inner*Math.sin(a));
+    ctx.lineTo(cx+outer*Math.cos(a),cy+outer*Math.sin(a));
+    ctx.strokeStyle=big?'rgba(255,255,255,.20)':'rgba(255,255,255,.07)';
+    ctx.lineWidth=big?2.4:1.2;
+    ctx.stroke();
+  }
+
+  function ring(from,to,fill,glow){
+    ctx.save();
+    if(glow){ctx.shadowColor=glow;ctx.shadowBlur=26;}
+    ctx.beginPath();
+    ctx.arc(cx,cy,radius,from,to,false);
+    ctx.arc(cx,cy,radius-arcWidth,to,from,true);
+    ctx.closePath();
+    ctx.fillStyle=fill;ctx.fill();
+    ctx.restore();
+  }
+
+  // красный сектор (весь круг) + зелёный поверх
+  const red=ctx.createLinearGradient(0,cy-radius,0,cy+radius);
+  red.addColorStop(0,'#ff5a63'); red.addColorStop(1,'#d9313d');
+  ring(-Math.PI/2,Math.PI*1.5,red,null);
+
+  if(greenAngle>0.0001){
+    const green=ctx.createLinearGradient(0,cy-radius,0,cy+radius);
+    green.addColorStop(0,'#63f75a'); green.addColorStop(1,'#27c22a');
+    ring(greenStart,greenEnd,green,'rgba(70,235,70,.30)');
+  }
+
+  // блик сверху по кольцу
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(cx,cy,radius,0,tau);
+  ctx.arc(cx,cy,radius-arcWidth,0,tau,true);
+  ctx.clip();
+  const gloss=ctx.createLinearGradient(0,cy-radius,0,cy);
+  gloss.addColorStop(0,'rgba(255,255,255,.16)');
+  gloss.addColorStop(1,'rgba(255,255,255,0)');
+  ctx.fillStyle=gloss;ctx.fillRect(0,cy-radius,W,radius);
+  ctx.restore();
+
+  // границы секторов
+  const edges = greenAngle>0.0001 ? [greenStart,greenEnd] : [greenStart];
+  for(const a of edges){
+    ctx.beginPath();
+    ctx.moveTo(cx+(radius-arcWidth-3)*Math.cos(a),cy+(radius-arcWidth-3)*Math.sin(a));
+    ctx.lineTo(cx+(radius+4)*Math.cos(a),cy+(radius+4)*Math.sin(a));
+    ctx.strokeStyle='rgba(255,255,255,.55)';ctx.lineWidth=3;ctx.lineCap='round';ctx.stroke();
+  }
+
+  // обводки кольца
+  ctx.beginPath();ctx.arc(cx,cy,radius+1,0,tau);
+  ctx.strokeStyle='rgba(0,0,0,.45)';ctx.lineWidth=3;ctx.stroke();
+  ctx.beginPath();ctx.arc(cx,cy,radius-arcWidth-1,0,tau);
+  ctx.strokeStyle='rgba(0,0,0,.45)';ctx.lineWidth=3;ctx.stroke();
+
+  // внутренний диск
+  const inner=ctx.createRadialGradient(cx,cy-50,20,cx,cy,radius-arcWidth);
+  inner.addColorStop(0,'#1a2440'); inner.addColorStop(1,'#0a0f1c');
+  ctx.beginPath();ctx.arc(cx,cy,radius-arcWidth-6,0,tau);ctx.fillStyle=inner;ctx.fill();
+  ctx.strokeStyle='rgba(255,255,255,.10)';ctx.lineWidth=2.5;ctx.stroke();
+
+  ctx.restore();
+  $('upgradeChanceText').textContent=`${safeChance.toFixed(1)}%`;
 }
 function secureRandom01(){
   if(window.crypto && crypto.getRandomValues){
@@ -1976,29 +3443,48 @@ function pickVisualStopAngle(chance,success){
 }
 
 function normalizeDeg(deg){return ((deg%360)+360)%360;}
+function applyWheelRotation(deg){
+  wheelArrowAngle=deg;
+  if(wheelPointer) wheelPointer.style.transform=`rotate(${deg}deg)`;
+}
 function animateUpgradeWheel(chance, success, stopAngleDeg, spins=6){
   if(isWheelSpinning)return Promise.resolve();
   isWheelSpinning=true;
-  const safeChance=Math.max(0,Math.min(MAX_UPGRADE_CHANCE,Number(chance)||0));
   const stopAngle=normalizeDeg(Number(stopAngleDeg));
   const start=Number(wheelArrowAngle||0);
-  let delta=normalizeDeg(stopAngle-normalizeDeg(start));
-  if(delta<20) delta+=360;
+  // стрелка должна доехать ровно до точки stopAngle на кольце
+  const targetMod=normalizeDeg(stopAngle);
+  let delta=normalizeDeg(targetMod-normalizeDeg(start));
+  if(delta<30) delta+=360;
   const end=start+spins*360+delta;
-  const duration=3200;
+  const duration=3600;
   const started=performance.now();
   const wheel=$('upgradeWheelContainer');
+  const pointerEl=wheelPointer;
   wheel.classList.remove('wheel-success','wheel-fail','wheel-win-active');
+  let lastTick=Math.floor(start/(360/36));
   return new Promise(resolve=>{
     function frame(now){
       const t=Math.min(1,(now-started)/duration);
-      const eased=1-Math.pow(1-t,3);
-      const angle=start+(end-start)*eased;
-      wheelArrowAngle=angle;
-      if(wheelPointer)wheelPointer.style.transform=`rotate(${angle}deg)`;
+      // плавное замедление + едва заметное «дожатие» в конце
+      const eased=1-Math.pow(1-t,4);
+      const settle=t>0.72?Math.exp(-(t-0.72)*15)*Math.sin((t-0.72)*44)*5.5:0;
+      const angle=start+(end-start)*eased+settle;
+      applyWheelRotation(angle);
+
+      // тик стрелки на каждой насечке + щелчок
+      const tick=Math.floor(angle/(360/36));
+      if(tick!==lastTick){
+        lastTick=tick;
+        if(pointerEl){
+          pointerEl.classList.add('kick');
+          setTimeout(()=>pointerEl.classList.remove('kick'),55);
+        }
+        if(window.SFX && t>0.6) SFX.tick(0.22+0.35*(1-t));
+      }
+
       if(t<1){requestAnimationFrame(frame);return;}
-      wheelArrowAngle=end;
-      if(wheelPointer)wheelPointer.style.transform=`rotate(${end}deg)`;
+      applyWheelRotation(end);
       isWheelSpinning=false;
       wheel.classList.add(success?'wheel-success':'wheel-fail');
       resolve();
@@ -2051,10 +3537,40 @@ function getUpgradeChance(){
 }
 function renderUpgradePreviews(){
   const from=document.getElementById('upFromPreview'), to=document.getElementById('upToPreview');
-  from.innerHTML=selectedUpgradeInstances.length?selectedUpgradeInstances.map(inst=>{const item=byId(ALL_ITEMS,inst.itemId);return item?`<div class="up-item">${imgOrPlaceholder(item,'ph')}<span class="up-item-name">${item.name}</span><span class="up-item-price">${getItemPrice(item)} 🪙</span></div>`:''}).join('')+`<div class="up-total">Сумма: ${getUpgradeSourceTotal()} 🪙</div>`:'<div class="up-empty">Ничего не выбрано</div>';
+  const slots=[];
+  for(let i=0;i<MAX_UPGRADE_SOURCES;i++){
+    const inst=selectedUpgradeInstances[i];
+    const item=inst?byId(ALL_ITEMS,inst.itemId):null;
+    if(item){
+      slots.push(`<div class="up-slot filled" data-uid="${escapeHtml(inst.uniqueId)}" role="button" tabindex="0" title="Убрать «${escapeHtml(item.name)}»">
+        <div class="s-img">${imgOrPlaceholder(item,'ph')}</div>
+        <div class="s-name">${escapeHtml(item.name)}</div>
+        <div class="s-price">${getItemPrice(item)} 🪙</div>
+        <div class="s-remove">×</div>
+      </div>`);
+    }else{
+      slots.push(`<div class="up-slot empty" aria-hidden="true"><span class="s-plus">+</span><span class="s-hint">СЛОТ ${i+1}</span></div>`);
+    }
+  }
+  from.innerHTML=`<div class="up-slots">${slots.join('')}</div>
+    <div class="up-total">Выбрано ${selectedUpgradeInstances.length}/${MAX_UPGRADE_SOURCES} • Сумма: ${getUpgradeSourceTotal()} 🪙</div>`;
   const target=selectedUpgradeTargetId==null?null:byId(ALL_ITEMS,selectedUpgradeTargetId);
   to.innerHTML=target?`${imgOrPlaceholder(target,'ph')}<div class="pn">${target.name}</div><div class="price">${getItemPrice(target)} 🪙</div><div class="pq">Шанс: ${getUpgradeChance().toFixed(1)}%</div>`:'<div class="up-empty">Ничего не выбрано</div>';
 }
+(function bindUpgradeSlotClicks(){
+  const from=document.getElementById('upFromPreview');
+  if(!from)return;
+  const drop=el=>{
+    const uid=el&&el.dataset?el.dataset.uid:null;
+    if(uid==null)return;
+    const i=selectedUpgradeInstances.findIndex(x=>String(x.uniqueId)===String(uid));
+    if(i>=0){selectedUpgradeInstances.splice(i,1);renderUpgradeTab();}
+  };
+  from.addEventListener('click',e=>drop(e.target.closest('.up-slot.filled')));
+  from.addEventListener('keydown',e=>{
+    if(e.key==='Enter'||e.key===' '){const el=e.target.closest('.up-slot.filled');if(el){e.preventDefault();drop(el);}}
+  });
+})();
 function isItemUnlockedForUpgrade(itemId){
   const containingCases = CASES.filter(c => c.items.some(entry => Number(entry.id) === Number(itemId)));
   if (!containingCases.length) return true;
@@ -2128,8 +3644,15 @@ function renderUpgradeTab(){
   }));
 
   renderUpgradePreviews();
+  const sourceMetric=document.getElementById('upgradeSourceMetric');
+  if(sourceMetric) sourceMetric.textContent=`${getUpgradeSourceTotal()} 🪙`;
+  const targetMetric=document.getElementById('upgradeTargetMetric');
+  const targetMetricItem=selectedUpgradeTargetId==null?null:byId(ALL_ITEMS,selectedUpgradeTargetId);
+  if(targetMetric) targetMetric.textContent=targetMetricItem?`${targetMetricItem.name} • ${getItemPrice(targetMetricItem)} 🪙`:'—';
+  const modeMetric=document.getElementById('upgradeModeMetric');
+  if(modeMetric){ modeMetric.textContent=DEMO_MODE?'DEMO / OFFLINE':'ONLINE / SUPABASE'; }
   drawUpgradeWheel(getUpgradeChance());
-  if(wheelPointer) wheelPointer.style.transform=`rotate(${wheelArrowAngle}deg)`;
+  applyWheelRotation(wheelArrowAngle);
   document.getElementById('exchangeBtn').disabled=!(
     selectedUpgradeInstances.length &&
     selectedUpgradeTargetId!==null &&
@@ -2142,6 +3665,18 @@ function renderUpgradeTab(){
 
 async function claimDailyBonusOnline(){
   if(!currentUser)return;
+  if(DEMO_MODE){
+    if(!game.stats.__demoDailyBonusClaimed){
+      game.balance+=300;
+      game.stats.xp+=30;
+      game.stats.__demoDailyBonusClaimed=true;
+      updateBalanceUI();
+      $('couponMessage').textContent='🎁 Тестовый ежедневный бонус: +300 монет и +30 XP';
+      $('couponMessage').style.color='#7fdb7f';
+      setTimeout(()=>{$('couponMessage').textContent='';},3500);
+    }
+    return;
+  }
   try{
     const {data,error}=await sb.rpc('claim_daily_bonus');
     if(error) throw error;
@@ -2170,12 +3705,23 @@ document.querySelectorAll('#tabs .tab[data-tab]').forEach(t=>t.addEventListener(
 </script>
 
 <script>
-// Локальный режим тестирования: откройте index.html?demo=1 прямо из папки.
-// Он не требует входа и не изменяет Supabase.
-const DEMO_MODE = location.protocol === 'file:' && new URLSearchParams(location.search).get('demo') === '1';
-
+// Локальный режим тестирования уже определён в <head>.
 async function animateCaseRollVisual(c, results, count){
   const items=results.map(x=>x.item);
+  const ruletka = $('ruletkaSound');
+
+  // Рулетка играет всё время прокрутки, а после остановки срабатывает
+  // индивидуальный звук, заранее привязанный к конкретному кейсу через c.sound.
+  if(ruletka){
+    try{
+      ruletka.pause();
+      ruletka.currentTime=0;
+      ruletka.loop=true;
+      const p=ruletka.play();
+      if(p?.catch) p.catch(()=>{});
+    }catch(_){}
+  }
+
   if(count===1){
     $('detailRollSection').classList.add('show');
     const track=$('detailRollTrack'),won=items[0];
@@ -2185,7 +3731,15 @@ async function animateCaseRollVisual(c, results, count){
     const itemWidth=120,vw=document.querySelector('.roll-viewport').clientWidth,finalOffset=29.5*itemWidth-vw/2;
     requestAnimationFrame(()=>{track.style.transition='transform 3s cubic-bezier(.22,.61,.36,1)';track.style.transform=`translateX(-${finalOffset}px)`;});
     await new Promise(r=>setTimeout(r,3300));
+    if(ruletka){
+      try{ruletka.pause();ruletka.loop=false;ruletka.currentTime=0;}catch(_){}
+    }
     track.querySelector('[data-idx="29"]')?.classList.add('winner');
+    const viewportEl=document.querySelector('.roll-viewport');
+    viewportEl?.classList.add('impact');
+    if(viewportEl) setTimeout(()=>viewportEl.classList.remove('impact'),500);
+    playDropSound(c.sound);
+    screenFlash();
     showNextModal();
     return;
   }
@@ -2206,7 +3760,17 @@ async function animateCaseRollVisual(c, results, count){
     setTimeout(()=>{vp.track.style.transition=`transform ${ROLL_DURATION}s cubic-bezier(.22,.61,.36,1)`;vp.track.style.transform=`translateX(-${fo}px)`;},idx*80);
   });
   await new Promise(r=>setTimeout(r,ROLL_DURATION*1000+450));
-  viewports.forEach(v=>v.track.querySelector('[data-idx="29"]')?.classList.add('winner'));
+  if(ruletka){
+    try{ruletka.pause();ruletka.loop=false;ruletka.currentTime=0;}catch(_){}
+  }
+  viewports.forEach(v=>{
+    v.track.querySelector('[data-idx="29"]')?.classList.add('winner');
+    v.viewport.classList.add('impact');
+    setTimeout(()=>v.viewport.classList.remove('impact'),500);
+  });
+  // При мульти-открытии проигрываем звук выбранного кейса отдельно для каждого выпадения.
+  viewports.forEach((_,idx)=>setTimeout(()=>playDropSound(c.sound),idx*90));
+  screenFlash();
   showMultiResultModal();
 }
 
@@ -2215,9 +3779,11 @@ async function animateCaseRollVisual(c, results, count){
 // ============================================================================
 const SUPABASE_URL = 'https://rlxfwmkhihjxfdztglff.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_bPcHQqlGQyrnfLznM9lIiw_jZSk2DhD';
-const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-  auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
-});
+const sb = (!DEMO_MODE && window.supabase?.createClient)
+  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+    })
+  : null;
 
 let currentUser = null;
 let onlineChannel = null;
@@ -2397,7 +3963,10 @@ async function leaveOnline(){
 
 async function renderLeaderboard(){
   const list=$('leaderboardList'); if(!list||!currentUser)return;
-  if(DEMO_MODE){list.innerHTML='<div class="lb-entry current-user"><span class="rank-num">1</span><span class="lb-username">demo</span><span class="lb-rank-icon">👑</span><span class="lb-xp">10000 XP</span></div>';return;}
+  if(DEMO_MODE){
+    list.innerHTML='<div class="lb-entry current-user" role="button" tabindex="0" data-user-id="demo-user"><span class="rank-num">1</span><span class="lb-username">demo</span><span class="lb-rank-icon">👑</span><span class="lb-xp">'+Number(game.stats.xp||0)+' XP</span></div>';
+    return;
+  }
   list.innerHTML='<div style="color:var(--muted);padding:10px;text-align:center;">Загрузка...</div>';
   const {data,error}=await sb.rpc('get_leaderboard');
   if(error){list.innerHTML='<div style="color:#ff6b6b;padding:10px;text-align:center;">Не удалось загрузить рейтинг.</div>';return;}
@@ -2413,27 +3982,62 @@ async function renderLeaderboard(){
     </div>` : '';
   list.innerHTML=developerHtml + (normalRows.map((r,i)=>{
     const online=onlineIds.has(String(r.user_id));
-    return `<div class="lb-entry ${r.user_id===currentUser.id?'current-user':''}" data-user-id="${r.user_id}">
+    return `<div class="lb-entry ${r.user_id===currentUser.id?'current-user':''}" data-user-id="${escapeHtml(r.user_id)}" role="button" tabindex="0">
       <span class="rank-num">${i+1}</span><span class="lb-username"><span class="${online?'lb-online-dot':'lb-offline-dot'}" title="${online?'Онлайн':'Не в сети'}"></span>${escapeHtml(r.username)}</span>
       <span class="lb-rank-icon">${r.rank_icon}</span><span class="lb-xp">${Number(r.xp)} XP</span>
     </div>`;
   }).join('') || '<div style="color:var(--muted);padding:10px;text-align:center;">Пока нет игроков.</div>');
-  list.querySelectorAll('.lb-entry').forEach(el=>el.addEventListener('click',()=>openPublicProfile(el.dataset.userId)));
+  list.querySelectorAll('.lb-entry').forEach(el=>{
+    el.setAttribute('role','button');
+    el.setAttribute('tabindex','0');
+  });
 }
+// Делегированный обработчик: работает и после любой перерисовки списка.
+(function bindLeaderboardClicks(){
+  const list=document.getElementById('leaderboardList');
+  if(!list) return;
+  const open=el=>{ const id=el&&el.dataset?el.dataset.userId:null; if(id) openPublicProfile(id); };
+  list.addEventListener('click',e=>{ open(e.target.closest('.lb-entry')); });
+  list.addEventListener('keydown',e=>{
+    if(e.key==='Enter'||e.key===' '){ const el=e.target.closest('.lb-entry'); if(el){e.preventDefault(); open(el);} }
+  });
+})();
 
 function escapeHtml(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
 
 async function openPublicProfile(userId){
   if(!userId||!currentUser)return;
-  publicProfileUserId=userId;
+  publicProfileUserId=String(userId);
   publicProfileReturnTab=document.querySelector('main .panel.active')?.id?.replace('panel-','')||'cases';
-  location.hash='profile='+encodeURIComponent(userId);
+  const wantedHash='profile='+encodeURIComponent(String(userId));
+  if(location.hash.slice(1)!==wantedHash){
+    try{ history.replaceState(null,'','#'+wantedHash); }catch(_){ location.hash=wantedHash; }
+  }
   switchTab('public-profile');
-  const {data,error}=await sb.rpc('get_public_profile',{target_user_id:userId});
+
+  if(DEMO_MODE){
+    const upgraded=game.stats.upgradedItemId?byId(ALL_ITEMS,Number(game.stats.upgradedItemId)):null;
+    renderPublicProfile({
+      profile:{username:game.username||'demo',avatar_url:''},
+      state:{
+        xp:Number(game.stats.xp||0),
+        balance:Number(game.balance||0),
+        total_cases_opened:Number(game.stats.totalCasesOpened||0),
+        total_upgrade_success:Number(game.stats.totalUpgradeSuccess||0),
+        total_coins_earned:Number(game.stats.totalCoinsEarned||0),
+        upgraded_item_id:upgraded?.id||null,
+        upgraded_color:game.stats.upgradedColor||'#2f8fff'
+      },
+      inventory:(game.inventory||[]).map(inst=>({item_id:inst.itemId}))
+    });
+    return;
+  }
+
+  const {data,error}=await sb.rpc('get_public_profile',{target_user_id:String(userId)});
   if(error){$('publicName').textContent='Ошибка';$('publicInventory').innerHTML='<div class="inv-empty">Не удалось загрузить профиль.</div>';return;}
   // Цвет запрашиваем отдельным RPC, чтобы он работал даже со старой версией get_public_profile.
   try{
-    const {data:upgradeColor}=await sb.rpc('get_public_upgrade_color',{target_user_id:userId});
+    const {data:upgradeColor}=await sb.rpc('get_public_upgrade_color',{target_user_id:String(userId)});
     if(data && typeof data==='object'){data.state={...(data.state||{}),upgraded_color:upgradeColor||data.state?.upgraded_color||'#2f8fff'};}
   }catch(_){/* старый backend: оставляем стандартный синий */}
   renderPublicProfile(data);
@@ -2457,7 +4061,7 @@ function renderPublicProfile(d){
   const inv=$('publicInventory'); inv.innerHTML=(d.inventory||[]).map(inst=>{const it=itemBy(inst.item_id);return it?`<div class="inv-card">${imgOrPlaceholder(it,'ph')}<div class="inv-price">${getItemPrice(it)} 🪙</div></div>`:''}).join('')||'<div class="inv-empty">Инвентарь пуст</div>';
   const achIds=new Set((d.achievements||[]).map(String)); $('publicAchievements').innerHTML=ACHIEVEMENTS.map(a=>`<div style="background:${achIds.has(String(a.id))?'var(--panel2)':'var(--panel)'};border:1px solid ${achIds.has(String(a.id))?'var(--accent2)':'var(--border)'};border-radius:8px;padding:6px;text-align:center;opacity:${achIds.has(String(a.id))?1:.5};"><div style="font-size:22px;">${achIds.has(String(a.id))?'🏅':'🔒'}</div><div style="font-size:10px;font-weight:700;">${escapeHtml(a.name)}</div></div>`).join('');
 }
-$('publicProfileBack').addEventListener('click',()=>{location.hash='';switchTab(publicProfileReturnTab||'cases');});
+$('publicProfileBack').addEventListener('click',()=>{try{history.replaceState(null,'',location.pathname+location.search);}catch(_){location.hash='';}switchTab(publicProfileReturnTab||'cases');});
 
 function switchTab(tabName){
   if(!['cases','upgrade','profile','public-profile'].includes(tabName))return;
@@ -2469,7 +4073,7 @@ function switchTab(tabName){
   else if(tabName==='profile'){ updateProfileStats(); claimDailyBonusOnline(); }
 }
 document.querySelectorAll('#tabs .tab[data-tab]').forEach(t=>t.addEventListener('click',()=>switchTab(t.dataset.tab)));
-$('logoLink').addEventListener('click',()=>{location.hash='';game.selectedCaseId=null;showSelectionView();switchTab('cases');});
+$('logoLink').addEventListener('click',()=>{try{history.replaceState(null,'',location.pathname+location.search);}catch(_){location.hash='';}game.selectedCaseId=null;showSelectionView();switchTab('cases');});
 
 // --- Server-backed profile rendering ---
 async function updateProfileStats(){
@@ -2528,11 +4132,25 @@ function renderProfileInventory(){
   container.querySelectorAll('[data-improve]').forEach(btn=>btn.addEventListener('click',async()=>{
     try{
       btn.disabled=true;
-      const {error}=await sb.rpc('set_upgraded_item',{inventory_id:btn.dataset.improve});
-      if(error)throw error;
-      const colorResult=await sb.rpc('set_upgrade_color',{new_color:'#2f8fff'});
-      if(colorResult.error)throw colorResult.error;
-      await refreshMyState();
+      if(DEMO_MODE){
+        const inventoryId=String(btn.dataset.improve);
+        const inst=game.inventory.find(x=>String(x.uniqueId)===inventoryId);
+        const item=inst?byId(ALL_ITEMS,Number(inst.itemId)):null;
+        if(!inst||!item) throw new Error('Тестовый предмет не найден.');
+        if(getItemPrice(item)<50000) throw new Error('Для улучшения нужен предмет от 50000 🪙.');
+        game.stats.upgradedItemId=Number(item.id);
+        game.stats.upgradedInventoryId=inst.uniqueId;
+        game.stats.upgradedColor='#2f8fff';
+        updateUI();
+        updateProfileStats();
+        showNotification(`⭐ ${item.name} выставлен в профиль`, 'rankup');
+      }else{
+        const {error}=await sb.rpc('set_upgraded_item',{inventory_id:btn.dataset.improve});
+        if(error)throw error;
+        const colorResult=await sb.rpc('set_upgrade_color',{new_color:'#2f8fff'});
+        if(colorResult.error)throw colorResult.error;
+        await refreshMyState();
+      }
     }catch(e){
       alert(e.message||'Не удалось установить улучшение.');
       btn.disabled=false;
@@ -2541,9 +4159,23 @@ function renderProfileInventory(){
   container.querySelectorAll('.sell-btn[data-unique]').forEach(btn=>btn.addEventListener('click',async()=>{
     try{
       btn.disabled=true;
-      const {error}=await sb.rpc('sell_inventory_item',{inventory_id:btn.dataset.unique});
-      if(error)throw error;
-      await refreshMyState();
+      if(DEMO_MODE){
+        const idx=game.inventory.findIndex(inst=>String(inst.uniqueId)===String(btn.dataset.unique));
+        if(idx<0)throw new Error('Предмет не найден.');
+        const item=byId(ALL_ITEMS,Number(game.inventory[idx].itemId));
+        const price=item?getItemPrice(item):0;
+        const removedId=String(game.inventory[idx].uniqueId);
+        game.inventory.splice(idx,1);
+        game.balance+=price;
+        game.stats.totalCoinsEarned=(game.stats.totalCoinsEarned||0)+price;
+        if(String(game.stats.upgradedInventoryId||'')===removedId){game.stats.upgradedInventoryId=null;game.stats.upgradedItemId=null;}
+        updateUI();
+        updateProfileStats();
+      }else{
+        const {error}=await sb.rpc('sell_inventory_item',{inventory_id:btn.dataset.unique});
+        if(error)throw error;
+        await refreshMyState();
+      }
     }catch(e){
       alert(e.message||'Не удалось продать предмет.');
       btn.disabled=false;
@@ -2583,13 +4215,13 @@ $('detailOpenBtn').onclick=async function(){
     openResults=rows.map(r=>({pendingId:r.pending_id,item:byId(ALL_ITEMS,Number(r.item_id))})).filter(x=>x.item);
     multiResultEntries=openResults.map(x=>({...x,status:'pending'}));
     if(count===1){
-      $('detailRollSection').classList.add('show');const track=$('detailRollTrack'),won=openResults[0].item;track.style.transition='none';track.style.transform='translateX(0)';const strip=[];for(let i=0;i<29;i++)strip.push(weightedRandomItem(c.items));strip.push(won);for(let i=0;i<12;i++)strip.push(weightedRandomItem(c.items));track.innerHTML=strip.map((it,idx)=>`<div class="roll-item" data-idx="${idx}">${imgOrPlaceholder(it,'ph')}<div class="rn">${escapeHtml(it.name)}</div></div>`).join('');const itemWidth=120,vw=document.querySelector('.roll-viewport').clientWidth,finalOffset=(29.5)*itemWidth-vw/2,ROLL_DURATION=3,ruletka=$('ruletkaSound');ruletka.currentTime=0;ruletka.play().catch(()=>{});requestAnimationFrame(()=>{track.style.transition=`transform ${ROLL_DURATION}s cubic-bezier(.22,.61,.36,1)`;track.style.transform=`translateX(-${finalOffset}px)`;});setTimeout(()=>{ruletka.pause();ruletka.currentTime=0;const last=track.querySelector('[data-idx="29"]');if(last)last.classList.add('winner');document.querySelector('.roll-viewport').classList.add('impact');playDropSound(c.sound);screenFlash();showNextModal();},3200);
+      $('detailRollSection').classList.add('show');const track=$('detailRollTrack'),won=openResults[0].item;track.style.transition='none';track.style.transform='translateX(0)';const strip=[];for(let i=0;i<29;i++)strip.push(weightedRandomItem(c.items));strip.push(won);for(let i=0;i<12;i++)strip.push(weightedRandomItem(c.items));track.innerHTML=strip.map((it,idx)=>`<div class="roll-item" data-idx="${idx}">${imgOrPlaceholder(it,'ph')}<div class="rn">${escapeHtml(it.name)}</div></div>`).join('');const itemWidth=120,vw=document.querySelector('.roll-viewport').clientWidth,finalOffset=(29.5)*itemWidth-vw/2,ROLL_DURATION=3,ruletka=$('ruletkaSound');ruletka.loop=true;ruletka.currentTime=0;ruletka.play().catch(()=>{});requestAnimationFrame(()=>{track.style.transition=`transform ${ROLL_DURATION}s cubic-bezier(.22,.61,.36,1)`;track.style.transform=`translateX(-${finalOffset}px)`;});setTimeout(()=>{ruletka.pause();ruletka.loop=false;ruletka.currentTime=0;const last=track.querySelector('[data-idx="29"]');if(last)last.classList.add('winner');document.querySelector('.roll-viewport').classList.add('impact');playDropSound(c.sound);screenFlash();showNextModal();},3200);
     }else{
       // Для мульти-открытия оба массива должны ссылаться на одни и те же записи.
       // Иначе после индивидуальной продажи openResults продолжает содержать уже проданный pending_id.
       openResults=multiResultEntries;
       $('multiRollContainer').classList.add('show');const container=$('multiRollContainer');container.innerHTML='';const viewports=[];for(let i=0;i<count;i++){const vp=document.createElement('div');vp.className='roll-viewport';vp.style.cssText='flex:1 1 180px;min-width:150px;height:120px;';const pointer=document.createElement('div');pointer.className='roll-pointer';vp.appendChild(pointer);const track=document.createElement('div');track.className='roll-track';vp.appendChild(track);container.appendChild(vp);viewports.push({viewport:vp,track,won:openResults[i].item});}
-      const ruletka=$('ruletkaSound');ruletka.currentTime=0;ruletka.play().catch(()=>{});viewports.forEach((vp,idx)=>{const strip=[];for(let i=0;i<29;i++)strip.push(weightedRandomItem(c.items));strip.push(vp.won);for(let i=0;i<10;i++)strip.push(weightedRandomItem(c.items));vp.track.innerHTML=strip.map((it,idx2)=>`<div class="roll-item" data-idx="${idx2}" style="width:80px;height:120px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border-right:1px solid #2a3455;">${imgOrPlaceholder(it,'ph')}<div class="rn" style="font-size:8px;text-align:center;padding:0 2px;">${escapeHtml(it.name)}</div></div>`).join('');const vw=vp.viewport.clientWidth||200,fo=29.5*80-vw/2;vp.track.style.transition='none';vp.track.style.transform='translateX(0)';setTimeout(()=>{vp.track.style.transition='transform 3s cubic-bezier(.22,.61,.36,1)';vp.track.style.transform=`translateX(-${fo}px)`;},idx*100);});setTimeout(()=>{ruletka.pause();ruletka.currentTime=0;viewports.forEach(v=>{const it=v.track.querySelector('[data-idx="29"]');if(it)it.classList.add('winner');v.viewport.classList.add('impact');playDropSound(c.sound);});screenFlash();showMultiResultModal();},3300);
+      const ruletka=$('ruletkaSound');ruletka.loop=true;ruletka.currentTime=0;ruletka.play().catch(()=>{});viewports.forEach((vp,idx)=>{const strip=[];for(let i=0;i<29;i++)strip.push(weightedRandomItem(c.items));strip.push(vp.won);for(let i=0;i<10;i++)strip.push(weightedRandomItem(c.items));vp.track.innerHTML=strip.map((it,idx2)=>`<div class="roll-item" data-idx="${idx2}" style="width:80px;height:120px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border-right:1px solid #2a3455;">${imgOrPlaceholder(it,'ph')}<div class="rn" style="font-size:8px;text-align:center;padding:0 2px;">${escapeHtml(it.name)}</div></div>`).join('');const vw=vp.viewport.clientWidth||200,fo=29.5*80-vw/2;vp.track.style.transition='none';vp.track.style.transform='translateX(0)';setTimeout(()=>{vp.track.style.transition='transform 3s cubic-bezier(.22,.61,.36,1)';vp.track.style.transform=`translateX(-${fo}px)`;},idx*100);});setTimeout(()=>{ruletka.pause();ruletka.loop=false;ruletka.currentTime=0;viewports.forEach(v=>{const it=v.track.querySelector('[data-idx="29"]');if(it)it.classList.add('winner');v.viewport.classList.add('impact');});viewports.forEach((vp,idx)=>setTimeout(()=>playDropSound(c.sound),idx*90));screenFlash();showMultiResultModal();},3300);
     }
   }catch(e){isOpening=false;this.disabled=false;alert(e.message||'Не удалось открыть кейс.');}
 };
@@ -2598,7 +4230,8 @@ $('detailOpenBtn').onclick=async function(){
 function showNextModal(){
   if(openResults.length===0){
     isOpening=false;$('detailOpenBtn').disabled=false;$('caseAction').classList.remove('hidden');$('detailRollSection').classList.remove('show');$('multiRollContainer').classList.remove('show');
-    refreshMyState().catch(console.error);return;
+    if(DEMO_MODE){ updateUI(); updateProfileStats(); renderCasesGrid(); }else{ refreshMyState().catch(console.error); }
+    return;
   }
   const won=openResults.shift();
   window.pendingItem=won;
@@ -2609,7 +4242,7 @@ function showNextModal(){
   $('modalPrice').textContent=`💰 Цена: ${price} 🪙`;
   $('modalBonus').textContent=won.item.bonus;
   $('modalOverlay').classList.add('show');
-  launchConfetti(20);
+  launchConfetti(20+rarityLevel(won.item.rarity)*18);
 }
 
 function closeMultiResultModal(){
@@ -2626,7 +4259,13 @@ function finishCaseOpening(){
   $('multiRollContainer').classList.remove('show');
   closeMultiResultModal();
   window.pendingItem=null;
-  refreshMyState().catch(console.error);
+  if(DEMO_MODE){
+    updateUI();
+    updateProfileStats();
+    renderCasesGrid();
+  }else{
+    refreshMyState().catch(console.error);
+  }
 }
 
 function isAlreadyProcessedError(error){
@@ -2819,13 +4458,24 @@ $('modalSellBtn').onclick=async function(){
 
 // Remove old local-only listeners by replacing elements where necessary.
 function replaceWithClone(id){const old=$(id);const clone=old.cloneNode(true);old.replaceWith(clone);return clone;}
-const sellAllBtn=replaceWithClone('sellAllBtn');sellAllBtn.addEventListener('click',async()=>{if(!game.inventory.length){alert('Инвентарь пуст!');return;}if(!confirm('Продать все предметы?'))return;try{sellAllBtn.disabled=true;const {error}=await sb.rpc('sell_all_inventory');if(error)throw error;await refreshMyState();}catch(e){alert(e.message||'Не удалось продать инвентарь.');}finally{sellAllBtn.disabled=false;}});
-const usernameSave=replaceWithClone('usernameSaveBtn');usernameSave.addEventListener('click',async()=>{const name=$('usernameInput').value.trim();if(!name){alert('Введите никнейм');return;}try{usernameSave.disabled=true;const {error}=await sb.rpc('update_my_profile',{new_username:name,new_avatar_url:null});if(error)throw error;$('usernameInput').value='';await refreshMyState();}catch(e){alert(e.message||'Не удалось изменить никнейм.');}finally{usernameSave.disabled=false;}});
+const sellAllBtn=replaceWithClone('sellAllBtn');sellAllBtn.addEventListener('click',async()=>{if(!game.inventory.length){alert('Инвентарь пуст!');return;}if(!confirm('Продать все предметы?'))return;try{sellAllBtn.disabled=true;if(DEMO_MODE){const total=game.inventory.reduce((sum,inst)=>{const item=byId(ALL_ITEMS,Number(inst.itemId));return sum+(item?getItemPrice(item):0);},0);game.balance+=total;game.stats.totalCoinsEarned=(game.stats.totalCoinsEarned||0)+total;game.inventory=[];game.stats.upgradedItemId=null;game.stats.upgradedInventoryId=null;updateUI();updateProfileStats();}else{const {error}=await sb.rpc('sell_all_inventory');if(error)throw error;await refreshMyState();}}catch(e){alert(e.message||'Не удалось продать инвентарь.');}finally{sellAllBtn.disabled=false;}});
+const usernameSave=replaceWithClone('usernameSaveBtn');usernameSave.addEventListener('click',async()=>{const name=$('usernameInput').value.trim();if(!name){alert('Введите никнейм');return;}try{usernameSave.disabled=true;if(DEMO_MODE){game.username=name;$('usernameInput').value='';updateUI();updateProfileStats();}else{const {error}=await sb.rpc('update_my_profile',{new_username:name,new_avatar_url:null});if(error)throw error;$('usernameInput').value='';await refreshMyState();}}catch(e){alert(e.message||'Не удалось изменить никнейм.');}finally{usernameSave.disabled=false;}});
 const couponBtn=replaceWithClone('couponBtn');couponBtn.addEventListener('click',activateCouponOnline);const couponInput=replaceWithClone('couponInput');couponInput.addEventListener('keydown',e=>{if(e.key==='Enter')activateCouponOnline();});
 async function activateCouponOnline(){
   const input=$('couponInput'),msg=$('couponMessage'),code=input.value.trim().toLowerCase();
   if(!code){msg.textContent='❌ Введите промокод';msg.style.color='#ff6b6b';return;}
   try{
+    if(DEMO_MODE){
+      const reward=code==='zhilet'?100500:5000;
+      game.balance+=reward;
+      game.stats.totalCoinsEarned=(game.stats.totalCoinsEarned||0)+reward;
+      input.value='';
+      updateUI();
+      msg.textContent=`✅ DEMO-промокод активирован: +${reward} монет`;
+      msg.style.color='#7fdb7f';
+      setTimeout(()=>{msg.textContent='';},3500);
+      return;
+    }
     if(code==='zhilet'){
       const {data,error}=await sb.rpc('activate_zhilet_coupon');
       if(error)throw error;
@@ -2841,7 +4491,7 @@ async function activateCouponOnline(){
     if(error)throw error;msg.textContent=`✅ Промокод активирован! +${Number(data.reward)} монет`;msg.style.color='#7fdb7f';input.value='';await refreshMyState();
   }catch(e){msg.textContent='❌ '+(e.message||'Неверный промокод');msg.style.color='#ff6b6b';}
 }
-const avatarWrapClone=replaceWithClone('avatarWrap');const avatarInputClone=replaceWithClone('avatarInput');avatarWrapClone.addEventListener('click',()=>avatarInputClone.click());avatarInputClone.addEventListener('change',async e=>{const file=e.target.files?.[0];if(!file||!currentUser)return;try{const ext=(file.name.split('.').pop()||'jpg').toLowerCase();const path=`${currentUser.id}/avatar.${ext}`;const {error:upErr}=await sb.storage.from('avatars').upload(path,file,{upsert:true,contentType:file.type});if(upErr)throw upErr;const {data}=sb.storage.from('avatars').getPublicUrl(path);const {error:pErr}=await sb.rpc('update_my_profile',{new_username:null,new_avatar_url:data.publicUrl});if(pErr)throw pErr;await refreshMyState();}catch(err){alert(err.message||'Не удалось загрузить аватар.');}finally{avatarInputClone.value='';}});
+const avatarWrapClone=replaceWithClone('avatarWrap');const avatarInputClone=replaceWithClone('avatarInput');avatarWrapClone.addEventListener('click',()=>avatarInputClone.click());avatarInputClone.addEventListener('change',async e=>{const file=e.target.files?.[0];if(!file||!currentUser)return;try{if(DEMO_MODE){const reader=new FileReader();reader.onload=()=>{renderAvatar(reader.result);};reader.readAsDataURL(file);}else{const ext=(file.name.split('.').pop()||'jpg').toLowerCase();const path=`${currentUser.id}/avatar.${ext}`;const {error:upErr}=await sb.storage.from('avatars').upload(path,file,{upsert:true,contentType:file.type});if(upErr)throw upErr;const {data}=sb.storage.from('avatars').getPublicUrl(path);const {error:pErr}=await sb.rpc('update_my_profile',{new_username:null,new_avatar_url:data.publicUrl});if(pErr)throw pErr;await refreshMyState();}}catch(err){alert(err.message||'Не удалось загрузить аватар.');}finally{avatarInputClone.value='';}});
 // Remove the legacy local listeners from the menu/button before wiring the server-backed versions.
 const upgMenu=replaceWithClone('upgMenu');
 upgMenu.addEventListener('click',e=>{e.stopPropagation();$('upgDropdown').classList.toggle('show');});
@@ -2855,11 +4505,19 @@ removeUpgradeBtn.addEventListener('click',async e=>{
   showConfirmModal(`Снять улучшение с "${item.name}"?`,`Предмет останется в инвентаре. Снимается только отметка «Улучшен». Вы уверены?`,async()=>{
     try{
       removeUpgradeBtn.disabled=true;
-      const {error}=await sb.rpc('remove_upgraded_item');
-      if(error)throw error;
-      game.stats.upgradedItemId=null;
-      game.stats.upgradedInventoryId=null;
-      await refreshMyState();
+      if(DEMO_MODE){
+        game.stats.upgradedItemId=null;
+        game.stats.upgradedInventoryId=null;
+        game.stats.upgradedColor='#2f8fff';
+        updateUI();
+        updateProfileStats();
+      }else{
+        const {error}=await sb.rpc('remove_upgraded_item');
+        if(error)throw error;
+        game.stats.upgradedItemId=null;
+        game.stats.upgradedInventoryId=null;
+        await refreshMyState();
+      }
     }catch(err){alert(err.message||'Не удалось снять улучшение.');}
     finally{removeUpgradeBtn.disabled=false;}
   },()=>{});
@@ -2875,11 +4533,18 @@ upgradeColorPalette.querySelectorAll('.color-swatch').forEach(btn=>btn.addEventL
   if(!/^#[0-9a-f]{6}$/i.test(color)||!game.stats.upgradedItemId)return;
   try{
     btn.disabled=true;
-    const {error}=await sb.rpc('set_upgrade_color',{new_color:color});
-    if(error)throw error;
-    game.stats.upgradedColor=color;
-    upgradeColorPalette.classList.remove('show');
-    await refreshMyState();
+    if(DEMO_MODE){
+      game.stats.upgradedColor=color;
+      upgradeColorPalette.classList.remove('show');
+      updateUI();
+      updateProfileStats();
+    }else{
+      const {error}=await sb.rpc('set_upgrade_color',{new_color:color});
+      if(error)throw error;
+      game.stats.upgradedColor=color;
+      upgradeColorPalette.classList.remove('show');
+      await refreshMyState();
+    }
   }catch(err){alert(err.message||'Не удалось изменить цвет улучшения.');}
   finally{btn.disabled=false;}
 }));
@@ -2897,12 +4562,18 @@ const exchange=replaceWithClone('exchangeBtn');exchange.addEventListener('click'
   const result=$('upResult');
   const wheel=$('upgradeWheelContainer');
   try{
-    const {data,error}=await sb.rpc('upgrade_items',{source_inventory_ids:ids,target_item_id:targetId});
-    if(error)throw error;
-    const chance=Number(data?.chance ?? localChance);
-    const success=data?.success===true || data?.success==='true' || data?.success===1;
-    const serverStop = Number(data?.stop_angle);
-    const stopAngle = Number.isFinite(serverStop) ? serverStop : pickVisualStopAngle(chance,success);
+    let chance=localChance, success=false, stopAngle=null;
+    if(DEMO_MODE){
+      success=secureRandom01()*100 < chance;
+      stopAngle=pickVisualStopAngle(chance,success);
+    }else{
+      const {data,error}=await sb.rpc('upgrade_items',{source_inventory_ids:ids,target_item_id:targetId});
+      if(error)throw error;
+      chance=Number(data?.chance ?? localChance);
+      success=data?.success===true || data?.success==='true' || data?.success===1;
+      const serverStop = Number(data?.stop_angle);
+      stopAngle = Number.isFinite(serverStop) ? serverStop : pickVisualStopAngle(chance,success);
+    }
 
     // Звук рулетки играет ровно во время вращения. На успешном результате
     // после остановки запускается отдельный звук победы.
@@ -2922,11 +4593,23 @@ const exchange=replaceWithClone('exchangeBtn');exchange.addEventListener('click'
     }else{
       result.textContent='💥 Неудача. Исходные предметы сгорели.';
       result.className='up-result fail';
+      if(window.SFX) SFX.fail();
+    }
+    if(DEMO_MODE){
+      const sourceIds=new Set(ids.map(String));
+      game.inventory=game.inventory.filter(inst=>!sourceIds.has(String(inst.uniqueId)));
+      if(success){
+        addItemInstance(targetId);
+        game.stats.totalUpgradeSuccess=(game.stats.totalUpgradeSuccess||0)+1;
+      }
+      updateUI();
+      updateProfileStats();
+    }else{
+      await refreshMyState();
     }
     selectedUpgradeInstances=[];
     selectedUpgradeTargetId=null;
-    wheelPointer && (wheelPointer.style.transform=`rotate(${wheelArrowAngle}deg)`);
-    await refreshMyState();
+    applyWheelRotation(wheelArrowAngle);
     setTimeout(()=>{wheel.classList.remove('wheel-win-active');$('winBurst').classList.remove('show');},2200);
   }catch(e){
     result.textContent='❌ '+(e.message||'Апгрейд не выполнен.');
@@ -2944,8 +4627,8 @@ const localAddXp=addXp; addXp=function(amount,source,skip){game.stats.xp+=Number
 const localSaveGame=saveGame; saveGame=function(){};
 
 function handleHashRoute(){
-  const m=location.hash.match(/^#profile=([0-9a-f-]{20,})$/i);
-  if(m&&m[1]){openPublicProfile(m[1]);}else{switchTab('cases');}
+  const m=location.hash.match(/^#profile=(.+)$/);
+  if(m&&m[1]){openPublicProfile(decodeURIComponent(m[1]));}else{switchTab('cases');}
 }
 window.addEventListener('hashchange',()=>{if(!location.hash) switchTab('cases'); else handleHashRoute();});
 
@@ -2955,11 +4638,20 @@ if(leaderboardTimer)clearInterval(leaderboardTimer); leaderboardTimer=setInterva
 // Auth session bootstrap.
 if(DEMO_MODE){
   currentUser={id:'demo-user'};
+  game.username='demo';
   document.body.classList.remove('auth-locked');
   $('authScreen').classList.add('hidden');
   game.balance=1000000;
   game.inventory=[];
   for(let i=0;i<12;i++) addItemInstance(CASES[0].items[i%CASES[0].items.length].id);
+  const demoHighValue=ALL_ITEMS.filter(it=>getItemPrice(it)>=50000).sort((a,b)=>getItemPrice(a)-getItemPrice(b));
+  demoHighValue.slice(0,8).forEach(it=>addItemInstance(it.id));
+  game.stats.totalCoinsEarned=0;
+  game.stats.totalCoinsSpent=0;
+  game.stats.totalUpgradeSuccess=0;
+  game.stats.upgradedItemId=null;
+  game.stats.upgradedInventoryId=null;
+  game.stats.upgradedColor='#2f8fff';
   game.stats.xp=10000;
   game.stats.unlockedCases=CASES.map(c=>c.id);
   updateUI();
